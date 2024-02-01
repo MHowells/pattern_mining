@@ -5,10 +5,6 @@ def get_n(q, pathway_matrix, states):
     Gets n(q), the number of pathways entering state q.
     """
     i = states.index(q)
-    if i == 0:
-        # Starting state, number entering is number leaving
-        return pathway_matrix[:, 0, :].sum()
-    # All other states, it's the number entering
     return pathway_matrix[:, :, i].sum()
 
 
@@ -56,7 +52,7 @@ def merge_two_states(q1, q2, pathway_matrix, states):
     pathway_matrix_copy = np.dstack((np.delete(pathway_matrix_copy, [i1, i2], 2), new_column))
     new_row = pathway_matrix_copy[:, i1, :] + pathway_matrix_copy[:, i2, :]
     pathway_matrix_copy = np.dstack((np.delete(pathway_matrix_copy, [i1, i2], 1).transpose(0, 2, 1), new_row)).transpose(0, 2, 1)
-    next_state = max(states_copy) + 1
+    next_state = max(states_copy[1:]) + 1
     states_copy.append(next_state)
     states_copy.remove(q1)
     states_copy.remove(q2)
