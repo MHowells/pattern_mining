@@ -2,6 +2,7 @@ import numpy as np
 import pattern_mining
 
 states = [0, 1, 2, 3, 4, 5, 6]
+states_alternate_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 alphabet = [0, 1, 2]
 pathway_matrix = np.array([
     [
@@ -34,50 +35,63 @@ pathway_matrix = np.array([
 ])
 
 def test_get_n():
-    assert pattern_mining.get_n(0, pathway_matrix) == 30
-    assert pattern_mining.get_n(1, pathway_matrix) == 15
-    assert pattern_mining.get_n(2, pathway_matrix) == 7
-    assert pattern_mining.get_n(3, pathway_matrix) == 15
-    assert pattern_mining.get_n(4, pathway_matrix) == 5
-    assert pattern_mining.get_n(5, pathway_matrix) == 5
-    assert pattern_mining.get_n(6, pathway_matrix) == 2
+    assert pattern_mining.get_n(0, pathway_matrix, states) == 30
+    assert pattern_mining.get_n(1, pathway_matrix, states) == 15
+    assert pattern_mining.get_n(2, pathway_matrix, states) == 7
+    assert pattern_mining.get_n(3, pathway_matrix, states) == 15
+    assert pattern_mining.get_n(4, pathway_matrix, states) == 5
+    assert pattern_mining.get_n(5, pathway_matrix, states) == 5
+    assert pattern_mining.get_n(6, pathway_matrix, states) == 2
+
+    assert pattern_mining.get_n("A", pathway_matrix, states_alternate_names) == 30
+    assert pattern_mining.get_n("B", pathway_matrix, states_alternate_names) == 15
+    assert pattern_mining.get_n("C", pathway_matrix, states_alternate_names) == 7
+    assert pattern_mining.get_n("D", pathway_matrix, states_alternate_names) == 15
+    assert pattern_mining.get_n("E", pathway_matrix, states_alternate_names) == 5
+    assert pattern_mining.get_n("F", pathway_matrix, states_alternate_names) == 5
+    assert pattern_mining.get_n("G", pathway_matrix, states_alternate_names) == 2
 
 
 def test_get_pi():
-    assert pattern_mining.get_pi(0, 0, pathway_matrix) == 1/2
-    assert pattern_mining.get_pi(0, 1, pathway_matrix) == 1/2
-    assert pattern_mining.get_pi(0, 2, pathway_matrix) == 0
-    assert pattern_mining.get_pi(1, 0, pathway_matrix) == 0
-    assert pattern_mining.get_pi(1, 1, pathway_matrix) == 7/15
-    assert pattern_mining.get_pi(1, 2, pathway_matrix) == 0
-    assert pattern_mining.get_pi(2, 0, pathway_matrix) == 0
-    assert pattern_mining.get_pi(2, 1, pathway_matrix) == 0
-    assert pattern_mining.get_pi(2, 2, pathway_matrix) == 0
-    assert pattern_mining.get_pi(3, 0, pathway_matrix) == 1/3
-    assert pattern_mining.get_pi(3, 1, pathway_matrix) == 1/3
-    assert pattern_mining.get_pi(3, 2, pathway_matrix) == 2/15
-    assert pattern_mining.get_pi(4, 0, pathway_matrix) == 0
-    assert pattern_mining.get_pi(4, 1, pathway_matrix) == 0
-    assert pattern_mining.get_pi(4, 2, pathway_matrix) == 0
-    assert pattern_mining.get_pi(5, 0, pathway_matrix) == 0
-    assert pattern_mining.get_pi(5, 1, pathway_matrix) == 0
-    assert pattern_mining.get_pi(5, 2, pathway_matrix) == 0
-    assert pattern_mining.get_pi(6, 0, pathway_matrix) == 0
-    assert pattern_mining.get_pi(6, 1, pathway_matrix) == 0
-    assert pattern_mining.get_pi(6, 2, pathway_matrix) == 0
+    assert pattern_mining.get_pi(0, 0, pathway_matrix, states) == 1/2
+    assert pattern_mining.get_pi(0, 1, pathway_matrix, states) == 1/2
+    assert pattern_mining.get_pi(0, 2, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(1, 0, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(1, 1, pathway_matrix, states) == 7/15
+    assert pattern_mining.get_pi(1, 2, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(2, 0, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(2, 1, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(2, 2, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(3, 0, pathway_matrix, states) == 1/3
+    assert pattern_mining.get_pi(3, 1, pathway_matrix, states) == 1/3
+    assert pattern_mining.get_pi(3, 2, pathway_matrix, states) == 2/15
+    assert pattern_mining.get_pi(4, 0, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(4, 1, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(4, 2, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(5, 0, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(5, 1, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(5, 2, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(6, 0, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(6, 1, pathway_matrix, states) == 0
+    assert pattern_mining.get_pi(6, 2, pathway_matrix, states) == 0
+
+    assert pattern_mining.get_pi("D", 2, pathway_matrix, states_alternate_names) == 2/15
 
 
 def test_get_pi_endpoint():
-    obtained_endpoints = [pattern_mining.get_pi_endpoint(i, pathway_matrix, alphabet) for i in range(7)]
+    obtained_endpoints = [pattern_mining.get_pi_endpoint(i, pathway_matrix, alphabet, states) for i in range(7)]
     expected_endpoints = [0, 8/15, 1, 1/5, 1, 1, 1]
     assert np.allclose(obtained_endpoints, expected_endpoints)
 
 
 def test_hoeffding_bound():
-    assert pattern_mining.hoeffding_bound(0, 1, 0.2, pathway_matrix, alphabet) == True
-    assert pattern_mining.hoeffding_bound(1, 5, 0.2, pathway_matrix, alphabet) == True
-    assert pattern_mining.hoeffding_bound(2, 0, 0.2, pathway_matrix, alphabet) == False
-    assert pattern_mining.hoeffding_bound(5, 0, 0.2, pathway_matrix, alphabet) == False
+    assert pattern_mining.hoeffding_bound(0, 1, 0.2, pathway_matrix, alphabet, states) == True
+    assert pattern_mining.hoeffding_bound(1, 5, 0.2, pathway_matrix, alphabet, states) == True
+    assert pattern_mining.hoeffding_bound(2, 0, 0.2, pathway_matrix, alphabet, states) == False
+    assert pattern_mining.hoeffding_bound(5, 0, 0.2, pathway_matrix, alphabet, states) == False
+
+    assert pattern_mining.hoeffding_bound("B", "F", 0.2, pathway_matrix, alphabet, states_alternate_names) == True
+    assert pattern_mining.hoeffding_bound("C", "A", 0.2, pathway_matrix, alphabet, states_alternate_names) == False
 
 
 def test_merge_two_states():
