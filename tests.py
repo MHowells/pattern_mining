@@ -186,3 +186,40 @@ def test_check_is_deterministic():
     obtained_nondeterministic_pairs = pattern_mining.check_is_deterministic(obtained_pathway_matrix, obtained_states, alphabet)
     expected_nondeterministic_pairs = [(1, 4), (5, 7)]
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
+
+def test_check_is_deterministic_with_multiple_pairs():
+    wrong_pathway_matrix = np.array([
+        [
+            [0, 32, 0, 0, 0, 0, 0, 0],
+            [0, 0, 15, 0, 0, 0, 0, 2],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 5, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 15, 0, 0, 0],
+            [0, 0, 0, 7, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 5, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 2],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+        ]
+    ])
+    obtained_nondeterministic_pairs = pattern_mining.check_is_deterministic(wrong_pathway_matrix, states, alphabet)
+    expected_nondeterministic_pairs = [(1, 6), (1, 4), (2, 4)]
+    assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs

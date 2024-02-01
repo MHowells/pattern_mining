@@ -65,10 +65,10 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
     Returns a list of non-deterministic state pairs.
     """ 
     nondeterministic_pairs = []
-    expected_number_of_zeroes = len(states) - 1
     for a in alphabet:
-        final_row = pathway_matrix[a, -1, :]
-        nonzero_entries = np.nonzero(final_row)[0]
-        if nonzero_entries.size > 1: 
-            nondeterministic_pairs.append(tuple(states[i] for i in nonzero_entries))
+        rows = np.where((pathway_matrix[a, :, :] > 0).sum(axis=1) > 1)[0]
+        pathway_matrix[a, rows, :] > 0
+        n_rows = rows.shape[0]
+        nond_pairs = np.reshape(np.where(pathway_matrix[a, rows, :] > 0)[1], (n_rows, 2))
+        nondeterministic_pairs += [tuple(states[i] for i in r) for r in nond_pairs]
     return nondeterministic_pairs
