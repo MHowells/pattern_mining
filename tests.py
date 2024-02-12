@@ -1,6 +1,15 @@
 import numpy as np
 import pattern_mining
 
+list_of_sequences = ["0", "0", "0", "0", "0", "0", "0", "0", "01", "01",
+                   "01", "01", "01", "01", "01", "10", "10", "10", "10", "10",
+                   "11", "11", "11", "11", "11", "12", "12", "1", "1", "1"]
+
+def test_get_alphabet():
+    obtained_alphabet = pattern_mining.get_alphabet(list_of_sequences)
+    expected_alphabet = ['0', '1', '2']
+    assert obtained_alphabet == expected_alphabet
+
 states = ["S", 0, 1, 2, 3, 4, 5, 6]
 states_alternate_names = ["S", 'A', 'B', 'C', 'D', 'E', 'F', 'G']
 alphabet = [0, 1, 2]

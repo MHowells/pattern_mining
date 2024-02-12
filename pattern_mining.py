@@ -1,5 +1,11 @@
 import numpy as np
 
+def get_alphabet(sequences):
+    """
+    A function that returns the alphabet of a PPTA.
+    """
+    return sorted(list(set(''.join(sequences))))
+
 def get_n(q, pathway_matrix, states):
     """
     Gets n(q), the number of pathways entering state q.
