@@ -1,9 +1,9 @@
 import numpy as np
 import pattern_mining
 
-list_of_sequences = ["0", "0", "0", "0", "0", "0", "0", "0", "01", "01",
-                   "01", "01", "01", "01", "01", "10", "10", "10", "10", "10",
-                   "11", "11", "11", "11", "11", "12", "12", "1", "1", "1"]
+list_of_sequences = ["0", "0", "0", "0", "0", "0", "0", "0", "01", "01", 
+                     "01", "01", "01", "01", "01", "10", "10", "10", "10", "10",
+                     "11", "11", "11", "11", "11", "12", "12", "1", "1", "1"]
 
 def test_get_alphabet():
     obtained_alphabet = pattern_mining.get_alphabet(list_of_sequences)
@@ -14,6 +14,42 @@ def test_state_paths():
     obtained_state_paths = pattern_mining.state_paths(list_of_sequences)
     expected_state_paths = ['0', '1', '12', '01', '10', '11']
     assert obtained_state_paths.sort() == expected_state_paths.sort()
+
+def test_transition_matrix():
+    obtained_transition_matrix = pattern_mining.transition_matrix(list_of_sequences)
+    expected_pathway_matrix = np.array([
+    [
+        [0, 30, 0, 0, 0, 0, 0, 0],
+        [0, 0, 15, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 5, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+    ],
+    [
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 15, 0, 0, 0],
+        [0, 0, 0, 7, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 5, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+    ],
+    [
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 2],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+    ]
+])
+    assert np.allclose(obtained_transition_matrix, expected_pathway_matrix)
 
 states = ["S", 0, 1, 2, 3, 4, 5, 6]
 states_alternate_names = ["S", 'A', 'B', 'C', 'D', 'E', 'F', 'G']

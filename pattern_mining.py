@@ -17,6 +17,25 @@ def state_paths(sequences):
             all_nodes.append(j)
     return all_nodes
 
+def transition_matrix(sequences):
+    """
+    A function that returns the transition matrix of a PPTA, given a list of sequences.
+    """
+    alphabet = get_alphabet(sequences)
+    all_nodes = state_paths(sequences)
+    all_nodes.sort()
+    all_nodes.insert(0, "")
+    all_nodes.insert(0, "S")
+    n = len(all_nodes)
+    pathway_matrix = np.zeros((len(alphabet), n, n), dtype=int)
+    pathway_matrix[0, 0, 1] = len(sequences)
+    for i in range(1, n):
+        for k in range(len(alphabet)):
+            next_node = all_nodes[i] + alphabet[k]
+            if next_node in all_nodes:
+                pathway_matrix[k, i, all_nodes.index(next_node)] = len([x for x in sequences if x.startswith(next_node)])
+    return pathway_matrix
+
 def get_n(q, pathway_matrix, states):
     """
     Gets n(q), the number of pathways entering state q.
