@@ -6,6 +6,17 @@ def get_alphabet(sequences):
     """
     return sorted(list(set(''.join(sequences))))
 
+def state_paths(sequences):
+    """
+    A function that returns the state paths of a PPTA.
+    """
+    all_nodes = []
+    for i in range(1, len(max(sequences, key=len)) + 1):
+        this_iter = list(set([x[:i] for x in sequences if len(x) > i-1]))
+        for j in this_iter:
+            all_nodes.append(j)
+    return all_nodes
+
 def get_n(q, pathway_matrix, states):
     """
     Gets n(q), the number of pathways entering state q.
