@@ -109,19 +109,18 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
         nondeterministic_pairs += [tuple(states[i] for i in r) for r in nond_pairs]
     return nondeterministic_pairs
 
-def recursive_merge(non_deterministic_pairs, alpha, pathway_matrix, alphabet, states):
+def recursive_merge_two_states(q1, q2, pathway_matrix, states, alpha, alphabet):
     """
-    Recursively merges non-deterministic states until the PPTA is deterministic.
+    A function to recursively merge two states until the PPTA is deterministic.
     """
     initial_pathway_matrix = np.copy(pathway_matrix)
     initial_states = states.copy()
-    current_pathway_matrix = np.copy(pathway_matrix)
-    current_states = states.copy()
-    non_det_pairs = non_deterministic_pairs.copy()
+    new_matrix, new_states = merge_two_states(q1, q2, pathway_matrix, states)
+    non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
     while non_det_pairs:
-        if hoeffding_bound(non_det_pairs[0][0], non_det_pairs[0][1], alpha, current_pathway_matrix, alphabet, current_states):
-            current_pathway_matrix, current_states = merge_two_states(non_det_pairs[0][0], non_det_pairs[0][1], current_pathway_matrix, current_states)
-            non_det_pairs = check_is_deterministic(current_pathway_matrix, current_states, alphabet)
+        if hoeffding_bound(non_det_pairs[0][0], non_det_pairs[0][1], alpha, new_matrix, alphabet, new_states):
+            new_matrix, new_states = merge_two_states(non_det_pairs[0][0], non_det_pairs[0][1], new_matrix, new_states)
+            non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
         else:
             return initial_pathway_matrix, initial_states
-    return current_pathway_matrix, current_states
+    return new_matrix, new_states
