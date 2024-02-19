@@ -64,7 +64,7 @@ def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
     Returns a Boolean indicating whether the Hoeffding bound is satisfied.
     """
     alpha_constant = (np.log(2 / alpha) / 2) ** 0.5
-    rhs = np.sqrt(1/2 * np.log(2/0.05)) * ((1/np.sqrt(get_n(q1, pathway_matrix, states))) + (1/np.sqrt(get_n(q2, pathway_matrix, states))))
+    rhs = alpha_constant * ((1/np.sqrt(get_n(q1, pathway_matrix, states))) + (1/np.sqrt(get_n(q2, pathway_matrix, states))))
     for z in alphabet:
         lhs = abs(get_pi(q1, z, pathway_matrix, states) - get_pi(q2, z, pathway_matrix, states))
         if lhs > rhs:
