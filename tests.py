@@ -138,7 +138,7 @@ def test_get_pi_endpoint():
 
 
 def test_hoeffding_bound():
-    assert pattern_mining.hoeffding_bound(0, 1, 0.2, pathway_matrix, alphabet, states) == True
+    assert pattern_mining.hoeffding_bound(0, 3, 0.2, pathway_matrix, alphabet, states) == True
     assert pattern_mining.hoeffding_bound(1, 5, 0.2, pathway_matrix, alphabet, states) == True
     assert pattern_mining.hoeffding_bound(2, 0, 0.2, pathway_matrix, alphabet, states) == False
     assert pattern_mining.hoeffding_bound(5, 0, 0.2, pathway_matrix, alphabet, states) == False
@@ -236,6 +236,7 @@ def test_check_is_deterministic():
     obtained_nondeterministic_pairs = pattern_mining.check_is_deterministic(obtained_pathway_matrix, obtained_states, alphabet)
     expected_nondeterministic_pairs = [(1, 4), (5, 7)]
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
+
 
 def test_check_is_deterministic_with_multiple_pairs():
     wrong_pathway_matrix = np.array([
