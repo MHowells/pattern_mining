@@ -274,3 +274,42 @@ def test_check_is_deterministic_with_multiple_pairs():
     obtained_nondeterministic_pairs = pattern_mining.check_is_deterministic(wrong_pathway_matrix, states, alphabet)
     expected_nondeterministic_pairs = [(1, 6), (1, 4), (2, 4)]
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
+
+
+def test_recursive_merge_two_states():
+    # Test where states are merged recursively
+    obtained_matrix, obtained_states = pattern_mining.recursive_merge_two_states(1, 3, pathway_matrix, states, 0.2, alphabet)
+    expected_matrix = np.array([
+        [
+            [ 0, 30,  0,  0,  0,  0],
+            [ 0,  0,  0,  0, 15,  0],
+            [ 0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  0],
+            [ 0,  0,  5,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  0],
+        ],
+        [
+            [ 0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0, 15,  0],
+            [ 0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0, 12],
+            [ 0,  0,  0,  0,  0,  0],
+        ],
+        [
+            [ 0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  2,  0,  0],
+            [ 0,  0,  0,  0,  0,  0],
+        ]
+    ])
+    expected_states = ["S", 0, 4, 6, 7, 8]
+    assert np.allclose(obtained_matrix, expected_matrix)
+    assert obtained_states == expected_states
+
+    # Test where Hoeffding's Bound fails during recursive merge
+    obtained_matrix, obtained_states = pattern_mining.recursive_merge_two_states(0, 3, pathway_matrix, states, 0.2, alphabet)
+    assert np.allclose(obtained_matrix, pathway_matrix)
+    assert obtained_states == states
