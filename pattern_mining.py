@@ -124,3 +124,13 @@ def recursive_merge_two_states(q1, q2, pathway_matrix, states, alpha, alphabet):
         else:
             return initial_pathway_matrix, initial_states
     return new_matrix, new_states
+
+
+def get_pairs_to_check(states):
+    """
+    A function to get all pairs of states to check for merging.
+    """
+    state_numbers = states.copy()
+    state_numbers.remove("S")
+    to_check = [(state_numbers[j], state_numbers[i]) for j in range(len(state_numbers)) for i in range(0, j)]
+    return to_check
