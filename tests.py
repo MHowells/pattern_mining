@@ -313,3 +313,9 @@ def test_recursive_merge_two_states():
     obtained_matrix, obtained_states = pattern_mining.recursive_merge_two_states(0, 3, pathway_matrix, states, 0.2, alphabet)
     assert np.allclose(obtained_matrix, pathway_matrix)
     assert obtained_states == states
+
+
+def test_get_pairs_to_check():
+    obtained_pairs = pattern_mining.get_pairs_to_check(states)
+    expected_pairs = [(1, 0), (2, 0), (2, 1), (3, 0), (3, 1), (3, 2), (4, 0), (4, 1), (4, 2), (4, 3), (5, 0), (5, 1), (5, 2), (5, 3), (5, 4), (6, 0), (6, 1), (6, 2), (6, 3), (6, 4), (6, 5)]
+    assert obtained_pairs == expected_pairs
