@@ -134,3 +134,21 @@ def get_pairs_to_check(states):
     state_numbers.remove("S")
     to_check = [(state_numbers[j], state_numbers[i]) for j in range(len(state_numbers)) for i in range(0, j)]
     return to_check
+
+
+def alergia(transition_matrix, states, alphabet, alpha):
+    """
+    A function to implement the Alergia algorithm.
+    """
+    current_matrix = transition_matrix
+    current_states = states
+    to_check = get_pairs_to_check(states)
+    checked_states = []
+    while to_check:
+        checked_states.append(to_check[0])
+        if hoeffding_bound(to_check[0][0], to_check[0][1], alpha, current_matrix, alphabet, current_states):
+            current_matrix, current_states = recursive_merge_two_states(to_check[0][0], to_check[0][1], current_matrix, current_states, alpha, alphabet)
+            to_check = [x for x in get_pairs_to_check(current_states) if x not in checked_states]
+        else:
+            to_check.pop(0)
+    return current_matrix, current_states
