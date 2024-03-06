@@ -319,3 +319,28 @@ def test_get_pairs_to_check():
     obtained_pairs = pattern_mining.get_pairs_to_check(states)
     expected_pairs = [(1, 0), (2, 0), (2, 1), (3, 0), (3, 1), (3, 2), (4, 0), (4, 1), (4, 2), (4, 3), (5, 0), (5, 1), (5, 2), (5, 3), (5, 4), (6, 0), (6, 1), (6, 2), (6, 3), (6, 4), (6, 5)]
     assert obtained_pairs == expected_pairs
+
+
+def test_alergia():
+    obtained_matrix, obtained_states = pattern_mining.alergia(pathway_matrix, states, alphabet, 0.2)
+    expected_matrix = np.array([
+        [
+            [ 0, 30,  0,  0],
+            [ 0,  0,  0, 15],
+            [ 0,  0,  0,  5],
+            [ 0,  0,  0,  0],
+        ],
+        [
+            [ 0,  0,  0,  0],
+            [ 0,  0, 15,  0],
+            [ 0,  0,  0,  5],
+            [ 0,  0,  0,  7],
+        ],
+        [
+            [ 0,  0,  0,  0],
+            [ 0,  0,  0,  0],
+            [ 0,  0,  2,  0],
+            [ 0,  0,  0,  0],
+        ]
+    ])
+    expected_states = ["S", 0, 9, 10]
