@@ -17,11 +17,10 @@ def state_paths(sequences):
             all_nodes.append(j)
     return all_nodes
 
-def transition_matrix(sequences):
+def transition_matrix(sequences, alphabet):
     """
     A function that returns the transition matrix of a PPTA, given a list of sequences.
     """
-    alphabet = get_alphabet(sequences)
     all_nodes = state_paths(sequences)
     all_nodes.sort()
     all_nodes.insert(0, "")
