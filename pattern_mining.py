@@ -55,7 +55,7 @@ def get_pi_endpoint(q, pathway_matrix, alphabet, states):
     """
     Gets pi(q), the probability of terminating at state q.
     """
-    return 1 - sum(get_pi(q, z, pathway_matrix, states) for z in alphabet)
+    return 1 - sum(get_pi(q, z, pathway_matrix, states) for z in range(len(alphabet)))
 
 
 def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
@@ -64,7 +64,7 @@ def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
     """
     alpha_constant = (np.log(2 / alpha) / 2) ** 0.5
     rhs = alpha_constant * ((1/np.sqrt(get_n(q1, pathway_matrix, states))) + (1/np.sqrt(get_n(q2, pathway_matrix, states))))
-    for z in alphabet:
+    for z in range(len(alphabet)):
         lhs = abs(get_pi(q1, z, pathway_matrix, states) - get_pi(q2, z, pathway_matrix, states))
         if lhs > rhs:
             return False
@@ -100,7 +100,7 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
     Returns a list of non-deterministic state pairs.
     """ 
     nondeterministic_pairs = []
-    for a in alphabet:
+    for a in range(len(alphabet)):
         rows = np.where((pathway_matrix[a, :, :] > 0).sum(axis=1) > 1)[0]
         pathway_matrix[a, rows, :] > 0
         n_rows = rows.shape[0]
