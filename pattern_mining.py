@@ -6,22 +6,22 @@ def get_alphabet(sequences):
     """
     return sorted(list(set(''.join(sequences))))
 
-def state_paths(sequences):
+def get_state_paths(sequences):
     """
     A function that returns the state paths of a PPTA.
     """
-    all_nodes = []
+    all_paths = []
     for i in range(1, len(max(sequences, key=len)) + 1):
         this_iter = list(set([x[:i] for x in sequences if len(x) > i-1]))
         for j in this_iter:
-            all_nodes.append(j)
-    return all_nodes
+            all_paths.append(j)
+    return all_paths
 
 def transition_matrix(sequences, alphabet):
     """
     A function that returns the transition matrix of a PPTA, given a list of sequences.
     """
-    all_nodes = state_paths(sequences)
+    all_nodes = get_state_paths(sequences)
     all_nodes.sort()
     all_nodes.insert(0, "")
     all_nodes.insert(0, "S")
