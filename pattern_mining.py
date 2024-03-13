@@ -104,9 +104,14 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
         rows = np.where((pathway_matrix[a, :, :] > 0).sum(axis=1) > 1)[0]
         pathway_matrix[a, rows, :] > 0
         n_rows = rows.shape[0]
-        nond_pairs = np.reshape(np.where(pathway_matrix[a, rows, :] > 0)[1], (n_rows, 2))
+        where_non_det = np.where(pathway_matrix[a, rows, :] > 0)[1]
+        if len(where_non_det) > 2:
+            nond_pairs = np.reshape(where_non_det[:2], (n_rows, 2))
+        else: 
+            nond_pairs = np.reshape(where_non_det, (n_rows, 2))
         nondeterministic_pairs += [tuple(states[i] for i in r) for r in nond_pairs]
     return nondeterministic_pairs
+
 
 def recursive_merge_two_states(q1, q2, pathway_matrix, states, alpha, alphabet):
     """
