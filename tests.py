@@ -13,7 +13,7 @@ def test_get_alphabet():
     assert obtained_alphabet == expected_alphabet
 
 def test_get_state_paths():
-    obtained_state_paths = pattern_mining.state_paths(list_of_sequences)
+    obtained_state_paths = pattern_mining.get_state_paths(list_of_sequences)
     expected_state_paths = ['0', '1', '12', '01', '10', '11']
     assert obtained_state_paths.sort() == expected_state_paths.sort()
 
