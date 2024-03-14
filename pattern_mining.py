@@ -103,13 +103,13 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
     for a in range(len(alphabet)):
         rows = np.where((pathway_matrix[a, :, :] > 0).sum(axis=1) > 1)[0]
         pathway_matrix[a, rows, :] > 0
-        n_rows = rows.shape[0]
-        where_non_det = np.where(pathway_matrix[a, rows, :] > 0)[1]
-        if len(where_non_det) > 2:
-            nond_pairs = np.reshape(where_non_det[:2], (n_rows, 2))
-        else: 
-            nond_pairs = np.reshape(where_non_det, (n_rows, 2))
-        nondeterministic_pairs += [tuple(states[i] for i in r) for r in nond_pairs]
+        for row in rows:
+            where_non_det = np.where(pathway_matrix[a, row, :] > 0)[0]
+            if len(where_non_det) > 2:
+                nond_pairs = np.reshape(where_non_det[:2], (1, 2))
+            else: 
+                nond_pairs = np.reshape(where_non_det, (1, 2))
+            nondeterministic_pairs += [tuple(states[i] for i in r) for r in nond_pairs]
     return nondeterministic_pairs
 
 
