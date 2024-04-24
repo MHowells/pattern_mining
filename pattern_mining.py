@@ -195,3 +195,14 @@ def alergia(transition_matrix, states, alphabet, alpha):
         else:
             to_check.pop(0)
     return current_matrix, current_states, merge_counter
+
+def probability_transition_matrix(pathway_matrix, states, alphabet):
+    """
+    A function to return the probability transition matrix.
+    """
+    p_mat = pathway_matrix.copy().astype(float)
+    for j in range(len(alphabet)):
+        p_mat[j, 0, :] = pathway_matrix[j, 0, :] / pathway_matrix[0, 0, :].sum()
+        for i in range(1, len(states)):
+            p_mat[j, i, :] = pathway_matrix[j, i, :] / get_n(states[i], pathway_matrix, states)
+    return p_mat
