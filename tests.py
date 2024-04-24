@@ -361,3 +361,51 @@ def test_alergia():
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
     assert obtained_merges == expected_merges
+
+
+final_pathway_matrix = np.array([
+    [
+        [ 0, 30,  0,  0],
+        [ 0,  0,  15, 0],
+        [ 0,  0,  5,  0],
+        [ 0,  0,  0,  0],
+    ],
+    [
+        [ 0,  0,  0,  0],
+        [ 0,  0, 15,  0],
+        [ 0,  0,  0,  12],
+        [ 0,  0,  0,  0],
+    ],
+    [
+        [ 0,  0,  0,  0],
+        [ 0,  0,  0,  0],
+        [ 0,  0,  2,  0],
+        [ 0,  0,  0,  0],
+    ]
+])
+final_states = ["S", 0, 1, 3]
+
+
+def test_probability_transition_matrix():
+    obtained_matrix = pattern_mining.probability_transition_matrix(final_pathway_matrix, final_states, alphabet)
+    expected_matrix = np.array([
+        [
+            [ 0, 1,  0,  0],
+            [ 0, 0,  1/2, 0],
+            [ 0, 0,  5/37,  0],
+            [ 0, 0,  0,  0],
+        ],
+        [
+            [ 0,  0,  0,  0],
+            [ 0,  0,  1/2,  0],
+            [ 0,  0,  0,  12/37],
+            [ 0,  0,  0,  0],
+        ],
+        [
+            [ 0,  0,  0,  0],
+            [ 0,  0,  0,  0],
+            [ 0,  0,  2/37,  0],
+            [ 0,  0,  0,  0],
+        ]
+    ])
+    assert np.allclose(obtained_matrix, expected_matrix)
