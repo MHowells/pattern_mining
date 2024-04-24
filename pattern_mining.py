@@ -60,6 +60,14 @@ def transition_matrix(sequences, alphabet):
                 pathway_matrix[k, i, all_nodes.index(next_node)] = len([x for x in sequences if x.startswith(next_node)])
     return pathway_matrix
 
+def get_initial_states(sequences):
+    """
+    A function that returns the states of a PPTA.
+    """
+    states = list(range(len(get_state_paths(sequences))))
+    states.insert(0, "S")
+    return states
+
 def get_n(q, pathway_matrix, states):
     """
     Gets n(q), the number of pathways entering state q.

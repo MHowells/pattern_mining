@@ -56,6 +56,11 @@ def test_transition_matrix():
 ])
     assert np.allclose(obtained_transition_matrix, expected_pathway_matrix)
 
+def test_get_initial_states():
+    obtained_states = pattern_mining.get_initial_states(list_of_sequences)
+    expected_states = ['S', 0, 1, 2, 3, 4, 5, 6]
+    assert obtained_states == expected_states
+
 states = ["S", 0, 1, 2, 3, 4, 5, 6]
 states_alternate_names = ["S", 'A', 'B', 'C', 'D', 'E', 'F', 'G']
 pathway_matrix = np.array([
