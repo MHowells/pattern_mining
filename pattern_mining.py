@@ -153,13 +153,15 @@ def recursive_merge_two_states(q1, q2, pathway_matrix, states, alpha, alphabet):
     initial_states = states.copy()
     new_matrix, new_states = merge_two_states(q1, q2, pathway_matrix, states)
     non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
+    recursive_merge = True
     while non_det_pairs:
         if hoeffding_bound(non_det_pairs[0][0], non_det_pairs[0][1], alpha, new_matrix, alphabet, new_states):
             new_matrix, new_states = merge_two_states(non_det_pairs[0][0], non_det_pairs[0][1], new_matrix, new_states)
             non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
         else:
-            return initial_pathway_matrix, initial_states
-    return new_matrix, new_states
+            recursive_merge = False
+            return initial_pathway_matrix, initial_states, recursive_merge
+    return new_matrix, new_states, recursive_merge
 
 
 def get_pairs_to_check(states):
