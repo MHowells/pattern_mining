@@ -241,9 +241,9 @@ def test_check_is_deterministic():
     expected_nondeterministic_pairs = []
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
-    obtained_pathway_matrix, obtained_states = pattern_mining.merge_two_states(0, 3, pathway_matrix, states)
+    obtained_pathway_matrix, obtained_states = pattern_mining.merge_two_states(0, 2, pathway_matrix, states)
     obtained_nondeterministic_pairs = pattern_mining.check_is_deterministic(obtained_pathway_matrix, obtained_states, alphabet)
-    expected_nondeterministic_pairs = [(1, 4), (5, 7)]
+    expected_nondeterministic_pairs = [(1, 4), (0, 5)]
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
 
@@ -287,41 +287,45 @@ def test_check_is_deterministic_with_multiple_pairs():
 
 def test_recursive_merge_two_states():
     # Test where states are merged recursively
-    obtained_matrix, obtained_states = pattern_mining.recursive_merge_two_states(1, 3, pathway_matrix, states, 0.2, alphabet)
+    obtained_matrix, obtained_states, obtained_recursive_merge = pattern_mining.recursive_merge_two_states(1, 2, pathway_matrix, states, 0.2, alphabet)
     expected_matrix = np.array([
         [
             [ 0, 30,  0,  0,  0,  0],
-            [ 0,  0,  0,  0, 15,  0],
+            [ 0,  0,  15,  0, 0,  0],
+            [ 0,  0,  0,  0,  5,  0],
             [ 0,  0,  0,  0,  0,  0],
             [ 0,  0,  0,  0,  0,  0],
-            [ 0,  0,  5,  0,  0,  0],
             [ 0,  0,  0,  0,  0,  0],
         ],
         [
             [ 0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0, 15,  0],
+            [ 0,  0,  15,  0, 0,  0],
+            [ 0,  0,  0,  12,  0,  0],
             [ 0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0, 12],
+            [ 0,  0,  0,  0,  0, 0],
             [ 0,  0,  0,  0,  0,  0],
         ],
         [
             [ 0,  0,  0,  0,  0,  0],
             [ 0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  2],
             [ 0,  0,  0,  0,  0,  0],
             [ 0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  2,  0,  0],
             [ 0,  0,  0,  0,  0,  0],
         ]
     ])
-    expected_states = ["S", 0, 4, 6, 7, 8]
+    expected_states = ["S", 0, 1, 3, 4, 6]
+    expected_recursive_merge = True
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
+    assert obtained_recursive_merge == expected_recursive_merge
+
 
     # Test where Hoeffding's Bound fails during recursive merge
-    obtained_matrix, obtained_states = pattern_mining.recursive_merge_two_states(0, 3, pathway_matrix, states, 0.2, alphabet)
+    obtained_matrix, obtained_states, obtained_recursive_merge = pattern_mining.recursive_merge_two_states(0, 2, pathway_matrix, states, 0.2, alphabet)
     assert np.allclose(obtained_matrix, pathway_matrix)
     assert obtained_states == states
+    assert obtained_recursive_merge == False
 
 
 def test_get_pairs_to_check():
@@ -331,19 +335,19 @@ def test_get_pairs_to_check():
 
 
 def test_alergia():
-    obtained_matrix, obtained_states = pattern_mining.alergia(pathway_matrix, states, alphabet, 0.2)
+    obtained_matrix, obtained_states, obtained_merges = pattern_mining.alergia(pathway_matrix, states, alphabet, 0.2)
     expected_matrix = np.array([
         [
             [ 0, 30,  0,  0],
-            [ 0,  0,  0, 15],
-            [ 0,  0,  0,  5],
+            [ 0,  0,  15, 0],
+            [ 0,  0,  5,  0],
             [ 0,  0,  0,  0],
         ],
         [
             [ 0,  0,  0,  0],
             [ 0,  0, 15,  0],
-            [ 0,  0,  0,  5],
-            [ 0,  0,  0,  7],
+            [ 0,  0,  0,  12],
+            [ 0,  0,  0,  0],
         ],
         [
             [ 0,  0,  0,  0],
@@ -352,4 +356,8 @@ def test_alergia():
             [ 0,  0,  0,  0],
         ]
     ])
-    expected_states = ["S", 0, 9, 10]
+    expected_states = ["S", 0, 1, 3]
+    expected_merges = 3
+    assert np.allclose(obtained_matrix, expected_matrix)
+    assert obtained_states == expected_states
+    assert obtained_merges == expected_merges
