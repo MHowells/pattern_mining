@@ -13,9 +13,12 @@ def test_get_alphabet():
     assert obtained_alphabet == expected_alphabet
 
 def test_get_state_paths():
-    obtained_state_paths = pattern_mining.get_state_paths(list_of_sequences)
-    expected_state_paths = ['0', '1', '12', '01', '10', '11']
-    assert obtained_state_paths.sort() == expected_state_paths.sort()
+    obtained_state_paths_breadth = pattern_mining.get_state_paths(list_of_sequences, "breadth")
+    expected_state_paths_breadth = ['', '0', '1', '01', '10', '11', '12']
+    obtained_state_paths_depth = pattern_mining.get_state_paths(list_of_sequences, "depth")
+    expected_state_paths_depth = ['', '0', '1', '01', '10', '11', '12']
+    assert obtained_state_paths_breadth == expected_state_paths_breadth
+    assert obtained_state_paths_depth == expected_state_paths_depth
 
 def test_transition_matrix():
     obtained_transition_matrix = pattern_mining.transition_matrix(list_of_sequences, alphabet)

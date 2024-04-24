@@ -6,16 +6,43 @@ def get_alphabet(sequences):
     """
     return sorted(list(set(''.join(sequences))))
 
-def get_state_paths(sequences):
+def get_state_paths(sequences, build = "breadth"):
     """
-    A function that returns the state paths of a PPTA.
+    A function that returns the paths to a state within a PPTA.
+
+    Parameters:
+    build -- the type of build to use, either "breadth" or "depth"
     """
-    all_paths = []
-    for i in range(1, len(max(sequences, key=len)) + 1):
-        this_iter = list(set([x[:i] for x in sequences if len(x) > i-1]))
-        for j in this_iter:
-            all_paths.append(j)
-    return all_paths
+    if build == "breadth":
+        all_paths = ['']
+        all_ordered = ['']
+        current_node = all_paths[0]
+        tracker = 0
+        while tracker < len(all_paths):
+            this_iter = sorted(list(set([x[:len(current_node)+1] for x in sequences if len(x) > len(current_node) and x.startswith(current_node)])))
+            for j in range(len(this_iter)):
+                all_paths.append(this_iter[j])
+                all_ordered.insert(all_ordered.index(current_node)+1+j, this_iter[j])
+            tracker += 1
+            if tracker == len(all_paths):
+                break
+            current_node = all_ordered[all_ordered.index(current_node)+1]
+        return all_paths
+    elif build == "depth":
+        all_paths = ['']
+        current_node = all_paths[0]
+        tracker = 0
+        while tracker < len(all_paths):
+            this_iter = sorted(list(set([x[:len(current_node)+1] for x in sequences if len(x) > len(current_node) and x.startswith(current_node)])))
+            for j in range(len(this_iter)):
+                all_paths.append(this_iter[j])
+            tracker += 1
+            if tracker == len(all_paths):
+                break
+            current_node = all_paths[all_paths.index(current_node)+1]
+        return all_paths
+    else:
+        return "Invalid build type. Please use either 'breadth' or 'depth'."
 
 def transition_matrix(sequences, alphabet):
     """
