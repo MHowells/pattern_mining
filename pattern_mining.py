@@ -174,7 +174,7 @@ def get_pairs_to_check(states):
     return to_check
 
 
-def alergia(transition_matrix, states, alphabet, alpha):
+def alergia(transition_matrix, states, alphabet, alpha, print_output = False):
     """
     A function to implement the Alergia algorithm.
     """
@@ -184,17 +184,28 @@ def alergia(transition_matrix, states, alphabet, alpha):
     checked_states = []
     merge_counter = 0
     while to_check:
+        if print_output:
+            print("Current order of state merges to check:", to_check)
         checked_states.append(to_check[0])
         if hoeffding_bound(to_check[0][0], to_check[0][1], alpha, current_matrix, alphabet, current_states):
+            if print_output:
+                print("Hoeffding Bound satisfied for", to_check[0])
             current_matrix, current_states, recursive_merge = recursive_merge_two_states(to_check[0][0], to_check[0][1], current_matrix, current_states, alpha, alphabet)
             if recursive_merge:
                 merge_counter += 1
                 to_check = get_pairs_to_check(current_states)
+                if print_output:
+                    print("Recursively merged states. Successfully merged", to_check[0])
             else:
                 to_check.pop(0)
+                if print_output:
+                    print("Recursive merge process failed. Cannot merge", to_check[0])
         else:
+            if print_output:
+                print("Hoeffding Bound not satisfied for", to_check[0])
             to_check.pop(0)
     return current_matrix, current_states, merge_counter
+
 
 def probability_transition_matrix(pathway_matrix, states, alphabet):
     """
