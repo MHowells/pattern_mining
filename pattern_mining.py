@@ -49,8 +49,6 @@ def transition_matrix(sequences, alphabet):
     A function that returns the transition matrix of a PPTA, given a list of sequences.
     """
     all_nodes = get_state_paths(sequences)
-    all_nodes.sort()
-    all_nodes.insert(0, "")
     all_nodes.insert(0, "S")
     n = len(all_nodes)
     pathway_matrix = np.zeros((len(alphabet), n, n), dtype=int)
