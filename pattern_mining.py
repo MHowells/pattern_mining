@@ -109,21 +109,20 @@ def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
 
 def merge_two_states(q1, q2, pathway_matrix, states):
     """ 
-    Merges states q1 and q2 into a third state that is appeded to the end.
+    Merges states q1 and q2 into a new state that replaces the lowest numbered state.
     Returns the new pathway_matrix and state list as copies of the originals.
     """
     i1 = states.index(q1)
     i2 = states.index(q2)
+    which_min = min(i1, i2)
+    which_max = max(i1, i2)
     pathway_matrix_copy = np.copy(pathway_matrix)
     states_copy = states.copy()
-    new_column = pathway_matrix_copy[:, :, i1] + pathway_matrix_copy[:, :, i2]
-    pathway_matrix_copy = np.dstack((np.delete(pathway_matrix_copy, [i1, i2], 2), new_column))
-    new_row = pathway_matrix_copy[:, i1, :] + pathway_matrix_copy[:, i2, :]
-    pathway_matrix_copy = np.dstack((np.delete(pathway_matrix_copy, [i1, i2], 1).transpose(0, 2, 1), new_row)).transpose(0, 2, 1)
-    next_state = max(states_copy[1:]) + 1
-    states_copy.append(next_state)
-    states_copy.remove(q1)
-    states_copy.remove(q2)
+    pathway_matrix_copy[:, :, which_min] = pathway_matrix_copy[:, :, i1] + pathway_matrix_copy[:, :, i2]
+    pathway_matrix_copy = np.delete(pathway_matrix_copy, which_max, 2)
+    pathway_matrix_copy[:, which_min, :] = pathway_matrix_copy[:, i1, :] + pathway_matrix_copy[:, i2, :]
+    pathway_matrix_copy = np.delete(pathway_matrix_copy, which_max, 1)
+    states_copy.remove(states[which_max])
     return pathway_matrix_copy, states_copy
 
 
