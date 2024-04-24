@@ -182,11 +182,16 @@ def alergia(transition_matrix, states, alphabet, alpha):
     current_states = states
     to_check = get_pairs_to_check(states)
     checked_states = []
+    merge_counter = 0
     while to_check:
         checked_states.append(to_check[0])
         if hoeffding_bound(to_check[0][0], to_check[0][1], alpha, current_matrix, alphabet, current_states):
-            current_matrix, current_states = recursive_merge_two_states(to_check[0][0], to_check[0][1], current_matrix, current_states, alpha, alphabet)
-            to_check = [x for x in get_pairs_to_check(current_states) if x not in checked_states]
+            current_matrix, current_states, recursive_merge = recursive_merge_two_states(to_check[0][0], to_check[0][1], current_matrix, current_states, alpha, alphabet)
+            if recursive_merge:
+                merge_counter += 1
+                to_check = get_pairs_to_check(current_states)
+            else:
+                to_check.pop(0)
         else:
             to_check.pop(0)
-    return current_matrix, current_states
+    return current_matrix, current_states, merge_counter
