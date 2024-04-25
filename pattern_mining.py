@@ -6,6 +6,7 @@ def get_alphabet(sequences):
     """
     return sorted(list(set(''.join(sequences))))
 
+
 def get_state_paths(sequences, build = "breadth"):
     """
     A function that returns the paths to a state within a PPTA.
@@ -44,6 +45,7 @@ def get_state_paths(sequences, build = "breadth"):
     else:
         return "Invalid build type. Please use either 'breadth' or 'depth'."
 
+
 def transition_matrix(sequences, alphabet):
     """
     A function that returns the transition matrix of a PPTA, given a list of sequences.
@@ -59,6 +61,7 @@ def transition_matrix(sequences, alphabet):
             if next_node in all_nodes:
                 pathway_matrix[k, i, all_nodes.index(next_node)] = len([x for x in sequences if x.startswith(next_node)])
     return pathway_matrix
+
 
 def get_initial_states(sequences):
     """
@@ -145,19 +148,28 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
     return nondeterministic_pairs
 
 
-def recursive_merge_two_states(q1, q2, pathway_matrix, states, alpha, alphabet):
+def recursive_merge_two_states(q1, q2, pathway_matrix, states, alpha, alphabet, output = "Suppressed"):
     """
     A function to recursively merge two states until the PPTA is deterministic.
+    Set output to "Suppressed" to suppress output to just the final solution, "Truncated" to suppress non-deterministic merge information, or "Full" to show all output.
     """
+    if output not in ["Suppressed", "Truncated", "Full"]:
+        return "Invalid output type. Please use either 'Suppressed', 'Truncated', or 'Full'."
     initial_pathway_matrix = np.copy(pathway_matrix)
     initial_states = states.copy()
     new_matrix, new_states = merge_two_states(q1, q2, pathway_matrix, states)
     non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
+    if len(non_det_pairs) > 0 and output == "Full":
+        print("Merging of states", (q1, q2), "results in non-deterministic pairs:", non_det_pairs)
     recursive_merge = True
     while non_det_pairs:
         if hoeffding_bound(non_det_pairs[0][0], non_det_pairs[0][1], alpha, new_matrix, alphabet, new_states):
+            if output == "Full":
+                print("Successfully merged states", non_det_pairs[0], "into a deterministic state.")
             new_matrix, new_states = merge_two_states(non_det_pairs[0][0], non_det_pairs[0][1], new_matrix, new_states)
             non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
+            if len(non_det_pairs) > 0 and output == "Full":
+                print("Merging of previous non-deterministic pair results in non-deterministic pairs:", non_det_pairs)
         else:
             recursive_merge = False
             return initial_pathway_matrix, initial_states, recursive_merge
@@ -174,34 +186,37 @@ def get_pairs_to_check(states):
     return to_check
 
 
-def alergia(transition_matrix, states, alphabet, alpha, print_output = False):
+def alergia(transition_matrix, states, alphabet, alpha, output = "Suppressed"):
     """
     A function to implement the Alergia algorithm.
+    Set output to "Suppressed" to suppress output to just the final solution, "Truncated" to suppress non-deterministic merge information, or "Full" to show all output.
     """
+    if output not in ["Suppressed", "Truncated", "Full"]:
+        return "Invalid output type. Please use either 'Suppressed', 'Truncated', or 'Full'."
     current_matrix = transition_matrix
     current_states = states
     to_check = get_pairs_to_check(states)
     checked_states = []
     merge_counter = 0
     while to_check:
-        if print_output:
+        if output in ("Full", "Truncated"):
             print("Current order of state merges to check:", to_check)
         checked_states.append(to_check[0])
         if hoeffding_bound(to_check[0][0], to_check[0][1], alpha, current_matrix, alphabet, current_states):
-            if print_output:
+            if output in ("Full", "Truncated"):
                 print("Hoeffding Bound satisfied for", to_check[0])
-            current_matrix, current_states, recursive_merge = recursive_merge_two_states(to_check[0][0], to_check[0][1], current_matrix, current_states, alpha, alphabet)
+            current_matrix, current_states, recursive_merge = recursive_merge_two_states(to_check[0][0], to_check[0][1], current_matrix, current_states, alpha, alphabet, output = output)
             if recursive_merge:
                 merge_counter += 1
-                if print_output:
+                if output in ("Full", "Truncated"):
                     print("Recursively merged states. Successfully merged", to_check[0])
                 to_check = get_pairs_to_check(current_states)
             else:
-                if print_output:
+                if output in ("Full", "Truncated"):
                     print("Recursive merge process failed. Cannot merge", to_check[0])
                 to_check.pop(0)
         else:
-            if print_output:
+            if output in ("Full", "Truncated"):
                 print("Hoeffding Bound not satisfied for", to_check[0])
             to_check.pop(0)
     return current_matrix, current_states, merge_counter
