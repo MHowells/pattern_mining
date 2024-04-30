@@ -242,6 +242,17 @@ def probability_transition_matrix(pathway_matrix, states, alphabet):
     return p_mat
 
 
+def probability_estimate_of_symbol(p_mat, symbol, alphabet):
+    """
+    A function to estimate the probability squence starting from each state contains a symbol from the alphabet.
+    """
+    matrix_index = alphabet.index(symbol)
+    rho = np.sum(np.delete(p_mat, matrix_index, 0), axis=0)
+    inverse = np.linalg.inv(np.identity(p_mat.shape[1]) - rho)
+    p_symbol = np.sum(p_mat[matrix_index, :, :], axis = 1)
+    return np.matmul(inverse, p_symbol)
+
+
 def network_visualisation(pathway_matrix, states, alphabet, name = None, view = True, probabilities = False):
     """
     A function to visualise the PPTA as a network graph using graphviz.
