@@ -114,6 +114,24 @@ def test_get_n():
     assert pattern_mining.get_n("G", pathway_matrix, states_alternate_names) == 2
 
 
+def test_get_endpoint():
+    assert pattern_mining.get_endpoint(0, pathway_matrix, states) == 0
+    assert pattern_mining.get_endpoint(1, pathway_matrix, states) == 8
+    assert pattern_mining.get_endpoint(2, pathway_matrix, states) == 3
+    assert pattern_mining.get_endpoint(3, pathway_matrix, states) == 7
+    assert pattern_mining.get_endpoint(4, pathway_matrix, states) == 5
+    assert pattern_mining.get_endpoint(5, pathway_matrix, states) == 5
+    assert pattern_mining.get_endpoint(6, pathway_matrix, states) == 2
+
+    assert pattern_mining.get_endpoint("A", pathway_matrix, states_alternate_names) == 0
+    assert pattern_mining.get_endpoint("B", pathway_matrix, states_alternate_names) == 8
+    assert pattern_mining.get_endpoint("C", pathway_matrix, states_alternate_names) == 3
+    assert pattern_mining.get_endpoint("D", pathway_matrix, states_alternate_names) == 7
+    assert pattern_mining.get_endpoint("E", pathway_matrix, states_alternate_names) == 5
+    assert pattern_mining.get_endpoint("F", pathway_matrix, states_alternate_names) == 5
+    assert pattern_mining.get_endpoint("G", pathway_matrix, states_alternate_names) == 2
+
+
 def test_get_pi():
     assert pattern_mining.get_pi(0, 0, pathway_matrix, states) == 1/2
     assert pattern_mining.get_pi(0, 1, pathway_matrix, states) == 1/2

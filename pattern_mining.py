@@ -78,6 +78,13 @@ def get_n(q, pathway_matrix, states):
     i = states.index(q)
     return pathway_matrix[:, :, i].sum()
 
+def get_endpoint(q, pathway_matrix, states):
+    """
+    Gets the number of pathways that terminate at state q.
+    """
+    i = states.index(q)
+    return pathway_matrix[:, :, i].sum() - pathway_matrix[:, i, :].sum()
+
 
 def get_pi(q, z, pathway_matrix, states):
     """ 
