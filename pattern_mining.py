@@ -1,4 +1,5 @@
 import numpy as np
+import graphviz
 
 def get_alphabet(sequences):
     """
@@ -239,3 +240,51 @@ def probability_transition_matrix(pathway_matrix, states, alphabet):
         for i in range(1, len(states)):
             p_mat[j, i, :] = pathway_matrix[j, i, :] / get_n(states[i], pathway_matrix, states)
     return p_mat
+
+
+def network_visualisation(pathway_matrix, states, alphabet, name = None, view = True):
+    """
+    A function to visualise the PPTA as a network graph using graphviz.
+    """
+    if name == None:
+        identifier = "my_graph"
+        filename = "my_graph.gv"
+    else:
+        identifier = name
+        filename = name + ".gv"
+    
+    dot = graphviz.Digraph(identifier, filename = filename)
+
+    for node in states:
+        if node == "S":
+            dot.attr('node', shape='circle')
+        elif get_pi_endpoint(node, pathway_matrix, alphabet, states) > 0:
+            dot.attr('node', shape='doublecircle')
+        else:
+            dot.attr('node', shape='circle')
+        dot.node(str(node), str(node))
+
+    for n,i in enumerate(states):
+        if i == "S":
+            dot.attr('node', shape='circle')
+            dot.node(str(i), str(i), fontsize='14')
+        elif get_pi_endpoint(i, pathway_matrix, alphabet, states) > 0:
+            dot.attr('node', shape='doublecircle')
+            dot.node(str(i), "{} : {}".format(i, get_endpoint(i, pathway_matrix, states)), fontsize='12', fixedsize='true')
+        else:
+            dot.attr('node', shape='circle')
+            dot.node(str(i), "{} : 0".format(i), fontsize='12', fixedsize='true')
+        for m,j in enumerate(states):
+            if any(pathway_matrix[:, n, m] != 0):
+                for k in range(len(alphabet)):
+                    if pathway_matrix[k, n, m] != 0:
+                        dot.edge(str(i), 
+                                str(j), 
+                                label="{}:{}".format(alphabet[k], pathway_matrix[k, n, m]),
+                                arrowsize='0.35',
+                                fontsize='11')
+
+    dot.graph_attr['rankdir'] = 'LR'
+
+    if view:
+        dot.view()
