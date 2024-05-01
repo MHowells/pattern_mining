@@ -434,3 +434,10 @@ def test_probability_estimate_of_symbol():
     obtained_vector = pattern_mining.probability_estimate_of_symbol(p_mat, "0", alphabet)
     expected_vector = np.array([1.0, 0.57142857, 0.14285714, 0.0])
     assert np.allclose(obtained_vector, expected_vector)
+
+
+def test_probability_estimate_of_pattern():
+    p_mat = pattern_mining.probability_transition_matrix(final_pathway_matrix, final_states, alphabet)
+    obtained_vector = pattern_mining.probability_estimate_of_pattern(p_mat, "01", alphabet)
+    expected_vector = np.array([0.7, 0.22857143, 0.05714286, 0.0])
+    assert np.allclose(obtained_vector, expected_vector)
