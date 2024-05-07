@@ -572,23 +572,42 @@ def test_probability_transition_matrix():
     assert np.allclose(obtained_matrix, expected_matrix)
 
 
+jacquemont_p_matrix = np.array([
+    [
+        [0, 0.23, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 1.0],
+        [0, 0.21, 0, 0],
+    ],
+    [
+        [0, 0, 0.31, 0],
+        [1.0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0.16, 0],
+    ],
+    [
+        [0.23, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0.26],
+    ]
+])
+jacquemont_sequences = ["ab", "bac", "baba", "abbac", "abbaab", "ba", "abcc", "bacc", "abccc", "baabba", "abc", "baab", "ababc", "babac", "babaabc"]
+jacquemont_alphabet = ['a', 'b', 'c']
+jacquemont_states = ['S', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]
+
+
 def test_probability_estimate_of_symbol():
-    p_mat = pattern_mining.probability_transition_matrix(
-        final_pathway_matrix, final_states, alphabet
-    )
     obtained_vector = pattern_mining.probability_estimate_of_symbol(
-        p_mat, "0", alphabet
+        jacquemont_p_matrix, "c", jacquemont_alphabet
     )
-    expected_vector = np.array([1.0, 0.57142857, 0.14285714, 0.0])
+    expected_vector = np.array([0.47068936, 0.47068936, 0.42719615, 0.42719615])
     assert np.allclose(obtained_vector, expected_vector)
 
 
 def test_probability_estimate_of_pattern():
-    p_mat = pattern_mining.probability_transition_matrix(
-        final_pathway_matrix, final_states, alphabet
-    )
     obtained_vector = pattern_mining.probability_estimate_of_pattern(
-        p_mat, "01", alphabet
+        jacquemont_p_matrix, "cc", jacquemont_alphabet
     )
-    expected_vector = np.array([0.7, 0.22857143, 0.05714286, 0.0])
+    expected_vector = np.array([0.21552208, 0.21552208, 0.1861079 , 0.1861079 ])
     assert np.allclose(obtained_vector, expected_vector)

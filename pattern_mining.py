@@ -330,39 +330,6 @@ def probability_transition_matrix(pathway_matrix, states, alphabet):
     return p_mat
 
 
-def probability_estimate_of_symbol(p_mat, symbol, alphabet):
-    """
-    A function to estimate the probability squence starting from each state contains a symbol from the alphabet.
-    """
-    matrix_index = alphabet.index(symbol)
-    rho = np.sum(np.delete(p_mat, matrix_index, 0), axis=0)
-    inverse = np.linalg.inv(np.identity(p_mat.shape[1]) - rho)
-    p_symbol = np.sum(p_mat[matrix_index, :, :], axis=1)
-    return np.matmul(inverse, p_symbol)
-
-
-def probability_estimate_of_pattern(p_mat, pattern, alphabet):
-    """
-    A function to estimate the probability of a sequence starting from each state contains a pattern.
-    """
-    p_pattern = np.identity(p_mat.shape[1])
-    for i in range(len(pattern)):
-        if i != len(pattern) - 1:
-            symbol = pattern[i]
-            matrix_index = alphabet.index(symbol)
-            rho = np.sum(np.delete(p_mat, matrix_index, 0), axis=0)
-            inverse = np.linalg.inv(np.identity(p_mat.shape[1]) - rho)
-            gamma = p_mat[matrix_index, :, :]
-            p_pattern = np.matmul(p_pattern, inverse)
-            p_pattern = np.matmul(p_pattern, gamma)
-        else:
-            symbol = pattern[i]
-            p_pattern = np.matmul(
-                p_pattern, probability_estimate_of_symbol(p_mat, symbol, alphabet)
-            )
-    return p_pattern
-
-
 def network_visualisation(
     pathway_matrix, states, alphabet, name=None, view=True, probabilities=False
 ):
@@ -444,3 +411,36 @@ def network_visualisation(
 
     if view:
         dot.view()
+
+
+def probability_estimate_of_symbol(p_mat, symbol, alphabet):
+    """
+    A function to estimate the probability squence starting from each state contains a symbol from the alphabet.
+    """
+    matrix_index = alphabet.index(symbol)
+    rho = np.sum(np.delete(p_mat, matrix_index, 0), axis=0)
+    inverse = np.linalg.inv(np.identity(p_mat.shape[1]) - rho)
+    p_symbol = np.sum(p_mat[matrix_index, :, :], axis=1)
+    return np.matmul(inverse, p_symbol)
+
+
+def probability_estimate_of_pattern(p_mat, pattern, alphabet):
+    """
+    A function to estimate the probability of a sequence starting from each state contains a pattern.
+    """
+    p_pattern = np.identity(p_mat.shape[1])
+    for i in range(len(pattern)):
+        if i != len(pattern) - 1:
+            symbol = pattern[i]
+            matrix_index = alphabet.index(symbol)
+            rho = np.sum(np.delete(p_mat, matrix_index, 0), axis=0)
+            inverse = np.linalg.inv(np.identity(p_mat.shape[1]) - rho)
+            gamma = p_mat[matrix_index, :, :]
+            p_pattern = np.matmul(p_pattern, inverse)
+            p_pattern = np.matmul(p_pattern, gamma)
+        else:
+            symbol = pattern[i]
+            p_pattern = np.matmul(
+                p_pattern, probability_estimate_of_symbol(p_mat, symbol, alphabet)
+            )
+    return p_pattern
