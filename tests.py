@@ -648,3 +648,11 @@ def test_proportion_constraint():
             jacquemont_p_matrix, "bcc", jacquemont_alphabet, jacquemont_sequences, 0.05
         ) == False
     )
+
+
+def test_probability_sequence_contains_digram():
+    obtained_vector = pattern_mining.probability_sequence_contains_digram(
+        jacquemont_p_matrix, "ab", jacquemont_alphabet
+    )
+    expected_vector = np.array([0.2987013, 0, 0.29800281, 0.28378378])
+    assert np.allclose(obtained_vector, expected_vector)

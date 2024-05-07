@@ -485,3 +485,32 @@ def proportion_constraint(p_mat, pattern, alphabet, sequences, alpha):
     if prob_value < k:
         return False
     return True
+
+
+def probability_sequence_contains_digram(p_mat, digram, alphabet):
+    """
+    A function to return the probability that a sequence contains a digram xy, for each starting state.
+    """
+    if len(digram) != 2:
+        return "Please use a digram of length 2."
+    symbol_1 = digram[0]
+    symbol_2 = digram[1]
+    matrix_index_1 = alphabet.index(symbol_1)
+    matrix_index_2 = alphabet.index(symbol_2)
+
+    rho = np.sum(np.delete(p_mat, matrix_index_1, 0), axis=0)
+    inverse = np.linalg.inv(np.identity(p_mat.shape[1]) - rho)
+
+    p_symbol_1 = np.sum(p_mat[matrix_index_1, :, :], axis = 1)
+    nonzero = []
+    for i in range(p_mat.shape[1]):
+        if any(p_mat[matrix_index_1, i, :] > 0):
+            nonzero.append(np.where(p_mat[matrix_index_1, i, :] > 0)[0][0])
+        else:
+            nonzero.append(0)
+    p_symbol_2 = np.zeros((1, p_mat.shape[1]))
+    for i, emitted in enumerate(nonzero):
+        p_symbol_2[0, i] = np.sum(p_mat[matrix_index_2, emitted, :], axis = 0)
+    tau = np.multiply(p_symbol_1, p_symbol_2)
+
+    return np.matmul(tau, inverse)
