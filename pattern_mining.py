@@ -444,3 +444,13 @@ def probability_estimate_of_pattern(p_mat, pattern, alphabet):
                 p_pattern, probability_estimate_of_symbol(p_mat, symbol, alphabet)
             )
     return p_pattern
+
+
+def probability_sequence_contains_letter_at_distance_theta(p_mat, letter, theta, alphabet):
+    """
+    A function to estimate the probability that a sequence starting from each state contains a letter at a distance theta from the state.
+    """
+    matrix_index = alphabet.index(letter)
+    tau_theta = np.linalg.matrix_power(np.sum(p_mat, axis=0), theta)
+    pi_symbol = np.sum(p_mat[matrix_index, :, :], axis = 1)
+    return np.matmul(tau_theta, pi_symbol)

@@ -611,3 +611,11 @@ def test_probability_estimate_of_pattern():
     )
     expected_vector = np.array([0.21552208, 0.21552208, 0.1861079 , 0.1861079 ])
     assert np.allclose(obtained_vector, expected_vector)
+
+
+def test_probability_sequence_contains_letter_at_distance_theta():
+    obtained_vector = pattern_mining.probability_sequence_contains_letter_at_distance_theta(
+        jacquemont_p_matrix, "a", 2, jacquemont_alphabet
+    )
+    expected_vector = np.array([0.201467, 0.3629, 0.2146, 0.137696])
+    assert np.allclose(obtained_vector, expected_vector)
