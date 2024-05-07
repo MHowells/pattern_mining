@@ -1,5 +1,6 @@
 import numpy as np
 import graphviz
+from scipy.stats import norm
 
 
 def get_alphabet(sequences):
@@ -473,3 +474,14 @@ def probability_to_encounter_a_pattern_at_a_distance_theta(p_mat, pattern, theta
     else:
         est_of_pattern = probability_estimate_of_symbol(p_mat, x2_to_xl, alphabet)
     return np.matmul(f_x_theta, est_of_pattern)
+
+
+def proportion_constraint(p_mat, pattern, alphabet, sequences, alpha):
+    """
+    Returns a Boolean indicating whether a pattern covers a significant part of the probability density of all sequences.
+    """
+    prob_value = probability_estimate_of_pattern(p_mat, pattern, alphabet)[0]
+    k = abs(norm.ppf(1 - alpha)) * ((prob_value * (1 - prob_value) / len(sequences)) ** 0.5)
+    if prob_value < k:
+        return False
+    return True

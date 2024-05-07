@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import norm
 import pattern_mining
 
 list_of_sequences = [
@@ -633,3 +634,17 @@ def test_probability_to_encounter_a_pattern_at_a_distance_theta():
     )
     expected_vector = np.array([0.0773778, 0.0949411, 0.06185016, 0.0546305])
     assert np.allclose(obtained_vector, expected_vector)
+
+
+def test_proportion_constraint():
+    assert (
+        pattern_mining.proportion_constraint(
+            jacquemont_p_matrix, "cc", jacquemont_alphabet, jacquemont_sequences, 0.05
+        ) == True
+    )
+
+    assert (
+        pattern_mining.proportion_constraint(
+            jacquemont_p_matrix, "bcc", jacquemont_alphabet, jacquemont_sequences, 0.05
+        ) == False
+    )
