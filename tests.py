@@ -573,29 +573,77 @@ def test_probability_transition_matrix():
     assert np.allclose(obtained_matrix, expected_matrix)
 
 
-jacquemont_p_matrix = np.array([
+jacquemont_p_matrix = np.array(
     [
-        [0, 0.23, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 1.0],
-        [0, 0.21, 0, 0],
-    ],
-    [
-        [0, 0, 0.31, 0],
-        [1.0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0.16, 0],
-    ],
-    [
-        [0.23, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0.26],
+        [
+            [0, 0.23, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 1.0],
+            [0, 0.21, 0, 0],
+        ],
+        [
+            [0, 0, 0.31, 0],
+            [1.0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0.16, 0],
+        ],
+        [
+            [0.23, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0.26],
+        ],
     ]
-])
-jacquemont_sequences = ["ab", "bac", "baba", "abbac", "abbaab", "ba", "abcc", "bacc", "abccc", "baabba", "abc", "baab", "ababc", "babac", "babaabc"]
-jacquemont_alphabet = ['a', 'b', 'c']
-jacquemont_states = ['S', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]
+)
+jacquemont_sequences = [
+    "ab",
+    "bac",
+    "baba",
+    "abbac",
+    "abbaab",
+    "ba",
+    "abcc",
+    "bacc",
+    "abccc",
+    "baabba",
+    "abc",
+    "baab",
+    "ababc",
+    "babac",
+    "babaabc",
+]
+jacquemont_alphabet = ["a", "b", "c"]
+jacquemont_states = [
+    "S",
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+]
 
 
 def test_probability_estimate_of_symbol():
@@ -610,27 +658,33 @@ def test_probability_estimate_of_pattern():
     obtained_vector = pattern_mining.probability_estimate_of_pattern(
         jacquemont_p_matrix, "cc", jacquemont_alphabet
     )
-    expected_vector = np.array([0.21552208, 0.21552208, 0.1861079 , 0.1861079 ])
+    expected_vector = np.array([0.21552208, 0.21552208, 0.1861079, 0.1861079])
     assert np.allclose(obtained_vector, expected_vector)
 
 
 def test_probability_sequence_contains_letter_at_distance_theta():
-    obtained_vector = pattern_mining.probability_sequence_contains_letter_at_distance_theta(
-        jacquemont_p_matrix, "a", 2, jacquemont_alphabet
+    obtained_vector = (
+        pattern_mining.probability_sequence_contains_letter_at_distance_theta(
+            jacquemont_p_matrix, "a", 2, jacquemont_alphabet
+        )
     )
     expected_vector = np.array([0.201467, 0.3629, 0.2146, 0.137696])
     assert np.allclose(obtained_vector, expected_vector)
 
 
 def test_probability_to_encounter_a_pattern_at_a_distance_theta():
-    obtained_vector = pattern_mining.probability_to_encounter_a_pattern_at_a_distance_theta(
-        jacquemont_p_matrix, "ab", 2, jacquemont_alphabet
+    obtained_vector = (
+        pattern_mining.probability_to_encounter_a_pattern_at_a_distance_theta(
+            jacquemont_p_matrix, "ab", 2, jacquemont_alphabet
+        )
     )
-    expected_vector = np.array([0.165817, 0.2079  , 0.1346  , 0.116896])
+    expected_vector = np.array([0.165817, 0.2079, 0.1346, 0.116896])
     assert np.allclose(obtained_vector, expected_vector)
 
-    obtained_vector = pattern_mining.probability_to_encounter_a_pattern_at_a_distance_theta(
-        jacquemont_p_matrix, "abc", 2, jacquemont_alphabet
+    obtained_vector = (
+        pattern_mining.probability_to_encounter_a_pattern_at_a_distance_theta(
+            jacquemont_p_matrix, "abc", 2, jacquemont_alphabet
+        )
     )
     expected_vector = np.array([0.0773778, 0.0949411, 0.06185016, 0.0546305])
     assert np.allclose(obtained_vector, expected_vector)
@@ -640,13 +694,15 @@ def test_proportion_constraint():
     assert (
         pattern_mining.proportion_constraint(
             jacquemont_p_matrix, "cc", jacquemont_alphabet, jacquemont_sequences, 0.05
-        ) == True
+        )
+        == True
     )
 
     assert (
         pattern_mining.proportion_constraint(
             jacquemont_p_matrix, "bcc", jacquemont_alphabet, jacquemont_sequences, 0.05
-        ) == False
+        )
+        == False
     )
 
 
