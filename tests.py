@@ -619,3 +619,17 @@ def test_probability_sequence_contains_letter_at_distance_theta():
     )
     expected_vector = np.array([0.201467, 0.3629, 0.2146, 0.137696])
     assert np.allclose(obtained_vector, expected_vector)
+
+
+def test_probability_to_encounter_a_pattern_at_a_distance_theta():
+    obtained_vector = pattern_mining.probability_to_encounter_a_pattern_at_a_distance_theta(
+        jacquemont_p_matrix, "ab", 2, jacquemont_alphabet
+    )
+    expected_vector = np.array([0.165817, 0.2079  , 0.1346  , 0.116896])
+    assert np.allclose(obtained_vector, expected_vector)
+
+    obtained_vector = pattern_mining.probability_to_encounter_a_pattern_at_a_distance_theta(
+        jacquemont_p_matrix, "abc", 2, jacquemont_alphabet
+    )
+    expected_vector = np.array([0.0773778, 0.0949411, 0.06185016, 0.0546305])
+    assert np.allclose(obtained_vector, expected_vector)
