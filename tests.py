@@ -37,10 +37,18 @@ list_of_sequences = [
 
 alphabet = ["0", "1", "2"]
 
+arnolds_sequences = ["AB", "ABA", "ABB", "ABCA", "AC", "ACC", "BA", "BAA", "BC", "BCA"]
+
+arnolds_alphabet = ["A", "B", "C"]
+
 
 def test_get_alphabet():
     obtained_alphabet = pattern_mining.get_alphabet(list_of_sequences)
     expected_alphabet = ["0", "1", "2"]
+    assert obtained_alphabet == expected_alphabet
+
+    obtained_alphabet = pattern_mining.get_alphabet(arnolds_sequences)
+    expected_alphabet = ["A", "B", "C"]
     assert obtained_alphabet == expected_alphabet
 
 
@@ -53,6 +61,17 @@ def test_get_state_paths():
         list_of_sequences, "depth"
     )
     expected_state_paths_depth = ["", "0", "1", "01", "10", "11", "12"]
+    assert obtained_state_paths_breadth == expected_state_paths_breadth
+    assert obtained_state_paths_depth == expected_state_paths_depth
+
+    obtained_state_paths_breadth = pattern_mining.get_state_paths(
+        arnolds_sequences, "breadth"
+    )
+    expected_state_paths_breadth = ['', 'A', 'B', 'AB', 'AC', 'ABA', 'ABB', 'ABC', 'ABCA', 'ACC', 'BA', 'BC', 'BAA', 'BCA']
+    obtained_state_paths_depth = pattern_mining.get_state_paths(
+        arnolds_sequences, "depth"
+    )
+    expected_state_paths_depth = ['', 'A', 'B', 'AB', 'AC', 'BA', 'BC', 'ABA', 'ABB', 'ABC', 'ACC', 'BAA', 'BCA', 'ABCA']
     assert obtained_state_paths_breadth == expected_state_paths_breadth
     assert obtained_state_paths_depth == expected_state_paths_depth
 
@@ -97,10 +116,74 @@ def test_transition_matrix():
     )
     assert np.allclose(obtained_transition_matrix, expected_pathway_matrix)
 
+    obtained_transition_matrix = pattern_mining.transition_matrix(
+        arnolds_sequences, arnolds_alphabet
+    )
+    expected_pathway_matrix = np.array(
+        [
+            [
+                [0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+            [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+            [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+        ]
+    )
+    assert np.allclose(obtained_transition_matrix, expected_pathway_matrix)
+
 
 def test_get_initial_states():
     obtained_states = pattern_mining.get_initial_states(list_of_sequences)
     expected_states = ["S", 0, 1, 2, 3, 4, 5, 6]
+    assert obtained_states == expected_states
+
+    obtained_states = pattern_mining.get_initial_states(arnolds_sequences)
+    expected_states = ["S", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     assert obtained_states == expected_states
 
 
@@ -141,6 +224,62 @@ pathway_matrix = np.array(
     ]
 )
 
+arnolds_states = ["S", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+arnolds_pathway_matrix = np.array(
+        [
+            [
+                [0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+            [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+            [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+        ]
+    )
 
 def test_get_n():
     assert pattern_mining.get_n(0, pathway_matrix, states) == 30
@@ -158,6 +297,21 @@ def test_get_n():
     assert pattern_mining.get_n("E", pathway_matrix, states_alternate_names) == 5
     assert pattern_mining.get_n("F", pathway_matrix, states_alternate_names) == 5
     assert pattern_mining.get_n("G", pathway_matrix, states_alternate_names) == 2
+
+    assert pattern_mining.get_n(0, arnolds_pathway_matrix, arnolds_states) == 10
+    assert pattern_mining.get_n(1, arnolds_pathway_matrix, arnolds_states) == 6
+    assert pattern_mining.get_n(2, arnolds_pathway_matrix, arnolds_states) == 4
+    assert pattern_mining.get_n(3, arnolds_pathway_matrix, arnolds_states) == 4
+    assert pattern_mining.get_n(4, arnolds_pathway_matrix, arnolds_states) == 2
+    assert pattern_mining.get_n(5, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_n(6, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_n(7, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_n(8, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_n(9, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_n(10, arnolds_pathway_matrix, arnolds_states) == 2
+    assert pattern_mining.get_n(11, arnolds_pathway_matrix, arnolds_states) == 2
+    assert pattern_mining.get_n(12, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_n(13, arnolds_pathway_matrix, arnolds_states) == 1
 
 
 def test_get_endpoint():
@@ -177,33 +331,61 @@ def test_get_endpoint():
     assert pattern_mining.get_endpoint("F", pathway_matrix, states_alternate_names) == 5
     assert pattern_mining.get_endpoint("G", pathway_matrix, states_alternate_names) == 2
 
+    assert pattern_mining.get_endpoint(0, arnolds_pathway_matrix, arnolds_states) == 0
+    assert pattern_mining.get_endpoint(1, arnolds_pathway_matrix, arnolds_states) == 0
+    assert pattern_mining.get_endpoint(2, arnolds_pathway_matrix, arnolds_states) == 0
+    assert pattern_mining.get_endpoint(3, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_endpoint(4, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_endpoint(5, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_endpoint(6, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_endpoint(7, arnolds_pathway_matrix, arnolds_states) == 0
+    assert pattern_mining.get_endpoint(8, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_endpoint(9, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_endpoint(10, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_endpoint(11, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_endpoint(12, arnolds_pathway_matrix, arnolds_states) == 1
+    assert pattern_mining.get_endpoint(13, arnolds_pathway_matrix, arnolds_states) == 1
+
 
 def test_get_pi():
-    assert pattern_mining.get_pi(0, 0, pathway_matrix, states) == 1 / 2
-    assert pattern_mining.get_pi(0, 1, pathway_matrix, states) == 1 / 2
-    assert pattern_mining.get_pi(0, 2, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(1, 0, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(1, 1, pathway_matrix, states) == 7 / 15
-    assert pattern_mining.get_pi(1, 2, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(2, 0, pathway_matrix, states) == 1 / 3
-    assert pattern_mining.get_pi(2, 1, pathway_matrix, states) == 1 / 3
-    assert pattern_mining.get_pi(2, 2, pathway_matrix, states) == 2 / 15
-    assert pattern_mining.get_pi(3, 0, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(3, 1, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(3, 2, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(4, 0, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(4, 1, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(4, 2, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(5, 0, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(5, 1, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(5, 2, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(6, 0, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(6, 1, pathway_matrix, states) == 0
-    assert pattern_mining.get_pi(6, 2, pathway_matrix, states) == 0
+    obtained_pi = [
+        pattern_mining.get_pi(i, 0, pathway_matrix, states) for i in range(7)
+    ]
+    expected_pi = [1 / 2, 0, 1 / 3, 0, 0, 0, 0]
+    assert np.allclose(obtained_pi, expected_pi)
+    obtained_pi = [
+        pattern_mining.get_pi(i, 1, pathway_matrix, states) for i in range(7)
+    ]
+    expected_pi = [1 / 2, 7 / 15, 1 / 3, 0, 0, 0, 0]
+    assert np.allclose(obtained_pi, expected_pi)
+    obtained_pi = [
+        pattern_mining.get_pi(i, 2, pathway_matrix, states) for i in range(7)
+    ]
+    expected_pi = [0, 0, 2 / 15, 0, 0, 0, 0]
+    assert np.allclose(obtained_pi, expected_pi)
 
     assert (
         pattern_mining.get_pi("C", 2, pathway_matrix, states_alternate_names) == 2 / 15
     )
+
+    obtained_pi = [
+        pattern_mining.get_pi(i, 0, arnolds_pathway_matrix, arnolds_states)
+        for i in range(14)
+    ]
+    expected_pi = [3 / 5, 0, 1 / 2, 1 / 4, 0, 0, 0, 1, 0, 0, 1 / 2, 1 / 2, 0, 0]
+    assert np.allclose(obtained_pi, expected_pi)
+    obtained_pi = [
+        pattern_mining.get_pi(i, 1, arnolds_pathway_matrix, arnolds_states)
+        for i in range(14)
+    ]
+    expected_pi = [2 / 5, 2 / 3, 0, 1 / 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    assert np.allclose(obtained_pi, expected_pi)
+    obtained_pi = [
+        pattern_mining.get_pi(i, 2, arnolds_pathway_matrix, arnolds_states)
+        for i in range(14)
+    ]
+    expected_pi = [0, 1 / 3, 1 / 2, 1 / 4, 1 / 2, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    assert np.allclose(obtained_pi, expected_pi)
 
 
 def test_get_pi_endpoint():
@@ -212,6 +394,13 @@ def test_get_pi_endpoint():
         for i in range(7)
     ]
     expected_endpoints = [0, 8 / 15, 1 / 5, 1, 1, 1, 1]
+    assert np.allclose(obtained_endpoints, expected_endpoints)
+
+    obtained_endpoints = [
+        pattern_mining.get_pi_endpoint(i, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states)
+        for i in range(14)
+    ]
+    expected_endpoints = [0, 0, 0, 1 / 4, 1 / 2, 1, 1, 0, 1, 1, 1 / 2, 1 / 2, 1, 1]
     assert np.allclose(obtained_endpoints, expected_endpoints)
 
 
@@ -244,6 +433,23 @@ def test_hoeffding_bound():
             "D", "A", 0.2, pathway_matrix, alphabet, states_alternate_names
         )
         == False
+    )
+
+    assert (
+        pattern_mining.hoeffding_bound(0, 1, 0.2, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states)
+        == True
+    )
+    assert (
+        pattern_mining.hoeffding_bound(1, 2, 0.2, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states)
+        == True
+    )
+    assert (
+        pattern_mining.hoeffding_bound(0, 1, 0.9, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states)
+        == False
+    )
+    assert (
+        pattern_mining.hoeffding_bound(1, 3, 0.9, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states)
+        == True
     )
 
 
@@ -324,6 +530,64 @@ def test_merge_two_states():
     assert np.allclose(obtained_pathway_matrix, expected_pathway_matrix)
     assert obtained_states == expected_states
 
+    obtained_pathway_matrix, obtained_states = pattern_mining.merge_two_states(
+        0, 1, arnolds_pathway_matrix, arnolds_states
+    )
+    expected_pathway_matrix = np.array(
+        [
+            [
+                [ 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0],
+                [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+            [   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+            [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+        ]
+    )
+    expected_states = ["S", 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    assert np.allclose(obtained_pathway_matrix, expected_pathway_matrix)
+    assert obtained_states == expected_states
+
 
 def test_check_is_deterministic():
     obtained_nondeterministic_pairs = pattern_mining.check_is_deterministic(
@@ -357,6 +621,30 @@ def test_check_is_deterministic():
         obtained_pathway_matrix, obtained_states, alphabet
     )
     expected_nondeterministic_pairs = [(1, 4), (0, 5)]
+    assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
+
+    obtained_nondeterministic_pairs = pattern_mining.check_is_deterministic(
+        arnolds_pathway_matrix, arnolds_states, arnolds_alphabet
+    )
+    expected_nondeterministic_pairs = []
+    assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
+
+    obtained_pathway_matrix, obtained_states = pattern_mining.merge_two_states(
+        0, 1, arnolds_pathway_matrix, arnolds_states
+    )
+    obtained_nondeterministic_pairs = pattern_mining.check_is_deterministic(
+        obtained_pathway_matrix, obtained_states, arnolds_alphabet
+    )
+    expected_nondeterministic_pairs = [(2, 3)]
+    assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
+
+    obtained_pathway_matrix, obtained_states = pattern_mining.merge_two_states(
+        0, 3, arnolds_pathway_matrix, arnolds_states
+    )
+    obtained_nondeterministic_pairs = pattern_mining.check_is_deterministic(
+        obtained_pathway_matrix, obtained_states, arnolds_alphabet
+    )
+    expected_nondeterministic_pairs = [(1, 5), (2, 6)]
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
 
@@ -445,16 +733,69 @@ def test_recursive_merge_two_states():
     assert obtained_states == expected_states
     assert obtained_recursive_merge == expected_recursive_merge
 
+    (
+        obtained_matrix,
+        obtained_states,
+        obtained_recursive_merge,
+    ) = pattern_mining.recursive_merge_two_states(
+        0, 1, arnolds_pathway_matrix, arnolds_states, 0.2, alphabet
+    )
+    expected_matrix = np.array(
+        [
+            [
+                [0, 10, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 6, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 3, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+            [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 8, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+            [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 2, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 3, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ],
+        ]
+    )
+    expected_states = ["S", 0, 2, 4, 5, 6, 7, 8, 9, 12]
+    expected_recursive_merge = True
+    assert np.allclose(obtained_matrix, expected_matrix)
+    assert obtained_states == expected_states
+    assert obtained_recursive_merge == expected_recursive_merge
+
     # Test where Hoeffding's Bound fails during recursive merge
     (
         obtained_matrix,
         obtained_states,
         obtained_recursive_merge,
     ) = pattern_mining.recursive_merge_two_states(
-        0, 2, pathway_matrix, states, 0.2, alphabet
+        0, 3, arnolds_pathway_matrix, arnolds_states, 0.9, arnolds_alphabet
     )
-    assert np.allclose(obtained_matrix, pathway_matrix)
-    assert obtained_states == states
+    assert np.allclose(obtained_matrix, arnolds_pathway_matrix)
+    assert obtained_states == arnolds_states
     assert obtained_recursive_merge == False
 
 
@@ -482,6 +823,102 @@ def test_get_pairs_to_check():
         (6, 3),
         (6, 4),
         (6, 5),
+    ]
+    assert obtained_pairs == expected_pairs
+
+    obtained_pairs = pattern_mining.get_pairs_to_check(arnolds_states)
+    expected_pairs = [
+        (1, 0),
+        (2, 0),
+        (2, 1),
+        (3, 0),
+        (3, 1),
+        (3, 2),
+        (4, 0),
+        (4, 1),
+        (4, 2),
+        (4, 3),
+        (5, 0),
+        (5, 1),
+        (5, 2),
+        (5, 3),
+        (5, 4),
+        (6, 0),
+        (6, 1),
+        (6, 2),
+        (6, 3),
+        (6, 4),
+        (6, 5),
+        (7, 0),
+        (7, 1),
+        (7, 2),
+        (7, 3),
+        (7, 4),
+        (7, 5),
+        (7, 6),
+        (8, 0),
+        (8, 1),
+        (8, 2),
+        (8, 3),
+        (8, 4),
+        (8, 5),
+        (8, 6),
+        (8, 7),
+        (9, 0),
+        (9, 1),
+        (9, 2),
+        (9, 3),
+        (9, 4),
+        (9, 5),
+        (9, 6),
+        (9, 7),
+        (9, 8),
+        (10, 0),
+        (10, 1),
+        (10, 2),
+        (10, 3),
+        (10, 4),
+        (10, 5),
+        (10, 6),
+        (10, 7),
+        (10, 8),
+        (10, 9),
+        (11, 0),
+        (11, 1),
+        (11, 2),
+        (11, 3),
+        (11, 4),
+        (11, 5),
+        (11, 6),
+        (11, 7),
+        (11, 8),
+        (11, 9),
+        (11, 10),
+        (12, 0),
+        (12, 1),
+        (12, 2),
+        (12, 3),
+        (12, 4),
+        (12, 5),
+        (12, 6),
+        (12, 7),
+        (12, 8),
+        (12, 9),
+        (12, 10),
+        (12, 11),
+        (13, 0),
+        (13, 1),
+        (13, 2),
+        (13, 3),
+        (13, 4),
+        (13, 5),
+        (13, 6),
+        (13, 7),
+        (13, 8),
+        (13, 9),
+        (13, 10),
+        (13, 11),
+        (13, 12),
     ]
     assert obtained_pairs == expected_pairs
 
@@ -518,6 +955,59 @@ def test_alergia():
     assert obtained_states == expected_states
     assert obtained_merges == expected_merges
 
+    obtained_matrix, obtained_states, obtained_merges = pattern_mining.alergia(
+        arnolds_pathway_matrix, arnolds_states, arnolds_alphabet, 0.2
+    )
+    expected_matrix = np.array(
+        [
+            [
+                [0, 10],
+                [0, 12],
+            ],
+            [
+                [0, 0],
+                [0, 9],
+            ],
+            [
+                [0, 0],
+                [0, 6],
+            ],
+        ]
+    )
+    expected_states = ["S", 0]
+    expected_merges = 3
+    assert np.allclose(obtained_matrix, expected_matrix)
+    assert obtained_states == expected_states
+    assert obtained_merges == expected_merges
+
+    obtained_matrix, obtained_states, obtained_merges = pattern_mining.alergia(
+        arnolds_pathway_matrix, arnolds_states, arnolds_alphabet, 0.9
+    )
+    expected_matrix = np.array(
+        [
+            [
+                [ 0, 10,  0],
+                [ 0,  0,  9],
+                [ 0,  0,  3],
+            ],
+            [
+                [ 0,  0,  0],
+                [ 0,  4,  0],
+                [ 0,  0,  5],
+            ],
+            [
+                [ 0,  0,  0],
+                [ 0,  0,  3],
+                [ 0,  3,  0],
+            ],
+        ]
+    )
+    expected_states = ["S", 0, 1]
+    expected_merges = 5
+    assert np.allclose(obtained_matrix, expected_matrix)
+    assert obtained_states == expected_states
+    assert obtained_merges == expected_merges
+
 
 final_pathway_matrix = np.array(
     [
@@ -543,6 +1033,26 @@ final_pathway_matrix = np.array(
 )
 final_states = ["S", 0, 1, 3]
 
+final_arnolds_pathway_matrix = np.array(
+    [
+        [
+            [ 0, 10,  0],
+            [ 0,  0,  9],
+            [ 0,  0,  3],
+        ],
+        [
+            [ 0,  0,  0],
+            [ 0,  4,  0],
+            [ 0,  0,  5],
+        ],
+        [
+            [ 0,  0,  0],
+            [ 0,  0,  3],
+            [ 0,  3,  0],
+        ],
+    ]
+)
+final_arnolds_states = ["S", 0, 1]
 
 def test_probability_transition_matrix():
     obtained_matrix = pattern_mining.probability_transition_matrix(
@@ -567,6 +1077,30 @@ def test_probability_transition_matrix():
                 [0, 0, 0, 0],
                 [0, 0, 2 / 37, 0],
                 [0, 0, 0, 0],
+            ],
+        ]
+    )
+    assert np.allclose(obtained_matrix, expected_matrix)
+
+    obtained_matrix = pattern_mining.probability_transition_matrix(
+        final_arnolds_pathway_matrix, final_arnolds_states, arnolds_alphabet
+    )
+    expected_matrix = np.array(
+        [
+            [
+                [0, 1, 0],
+                [0, 0, 9 / 17],
+                [0, 0, 3 / 20],
+            ],
+            [
+                [0, 0, 0],
+                [0, 4 / 17, 0],
+                [0, 0, 5 / 20],
+            ],
+            [
+                [0, 0, 0],
+                [0, 0, 3 / 17],
+                [0, 3 / 20, 0],
             ],
         ]
     )
