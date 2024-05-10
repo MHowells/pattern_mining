@@ -71,11 +71,11 @@ def get_state_paths(sequences, build="breadth"):
         return "Invalid build type. Please use either 'breadth' or 'depth'."
 
 
-def transition_matrix(sequences, alphabet):
+def transition_matrix(sequences, alphabet, build = "breadth"):
     """
     A function that returns the transition matrix of a PPTA, given a list of sequences.
     """
-    all_nodes = get_state_paths(sequences)
+    all_nodes = get_state_paths(sequences, build=build)
     all_nodes.insert(0, "S")
     n = len(all_nodes)
     pathway_matrix = np.zeros((len(alphabet), n, n), dtype=int)
@@ -388,25 +388,44 @@ def network_visualisation(
                 for k in range(len(alphabet)):
                     if pathway_matrix[k, n, m] != 0:
                         if probabilities:
-                            dot.edge(
-                                str(i),
-                                str(j),
-                                label="{}: {}".format(
-                                    alphabet[k], round(p_mat[k, n, m], 2)
-                                ),
-                                arrowsize="0.35",
-                                fontsize="11",
-                            )
+                            if i == "S":
+                                dot.edge(
+                                    str(i),
+                                    str(j),
+                                    label="{}".format(round(p_mat[k, n, m], 2)
+                                    ),
+                                    arrowsize="0.35",
+                                    fontsize="11",
+                                )
+                            else:
+                                dot.edge(
+                                    str(i),
+                                    str(j),
+                                    label="{}: {}".format(
+                                        alphabet[k], round(p_mat[k, n, m], 2)
+                                    ),
+                                    arrowsize="0.35",
+                                    fontsize="11",
+                                )
                         else:
-                            dot.edge(
-                                str(i),
-                                str(j),
-                                label="{}: {}".format(
-                                    alphabet[k], pathway_matrix[k, n, m]
-                                ),
-                                arrowsize="0.35",
-                                fontsize="11",
-                            )
+                            if i == "S":
+                                dot.edge(
+                                    str(i),
+                                    str(j),
+                                    label="{}".format(pathway_matrix[k, n, m]),
+                                    arrowsize="0.35",
+                                    fontsize="11",
+                                )
+                            else:
+                                dot.edge(
+                                    str(i),
+                                    str(j),
+                                    label="{}: {}".format(
+                                        alphabet[k], pathway_matrix[k, n, m]
+                                    ),
+                                    arrowsize="0.35",
+                                    fontsize="11",
+                                )
 
     dot.graph_attr["rankdir"] = "LR"
 
