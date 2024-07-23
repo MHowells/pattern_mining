@@ -1054,6 +1054,30 @@ final_arnolds_pathway_matrix = np.array(
 )
 final_arnolds_states = ["S", 0, 1]
 
+final_arnolds_p_matrix_point9 = np.array(
+    [
+        [
+            [0., 1., 0., 0.],
+            [0., 0., 9/17, 0.],
+            [0., 0., 0., 3/17],
+            [0., 0., 0., 0.],
+        ],
+        [   
+            [0., 0., 0., 0.],
+            [0., 4/17, 0., 0.],
+            [0., 0., 5/17, 0.],
+            [0., 0., 0., 0.],
+        ],
+        [
+            [0., 0., 0., 0.],
+            [0., 0., 3/17, 0.],
+            [0., 3/17, 0., 0.],
+            [0., 0., 0., 0.],
+        ],
+    ]
+)
+
+
 def test_probability_transition_matrix():
     obtained_matrix = pattern_mining.probability_transition_matrix(
         final_pathway_matrix, final_states, alphabet
@@ -1194,6 +1218,14 @@ def test_probability_estimate_of_pattern():
     )
     expected_vector = np.array([0.21552208, 0.21552208, 0.1861079, 0.1861079])
     assert np.allclose(obtained_vector, expected_vector)
+
+
+def test_probability_estimate_of_exact_sequence():
+    obtained_probability = pattern_mining.probability_estimate_of_exact_sequence(
+        final_arnolds_p_matrix_point9, "ABC", arnolds_alphabet
+    )
+    expected_probability = 0.0016163599573759896
+    assert np.allclose(obtained_probability, expected_probability)
 
 
 def test_probability_sequence_contains_letter_at_distance_theta():
