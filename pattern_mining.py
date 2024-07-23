@@ -530,14 +530,20 @@ def probability_to_encounter_a_pattern_at_a_distance_theta(
     return np.matmul(f_x_theta, est_of_pattern)
 
 
-def proportion_constraint(p_mat, pattern, alphabet, sequences, alpha):
+def proportion_constraint(p_mat, pattern, alphabet, sequences, alpha, p_value = "pattern"):
     """
-    Returns a Boolean indicating whether a pattern covers a significant part of the probability density of all sequences.
+    Returns a Boolean indicating whether a pattern or sequence covers a significant part of the probability density 
+    of all sequences.
     """
-    prob_value = probability_estimate_of_pattern(p_mat, pattern, alphabet)[0]
-    k = abs(norm.ppf(1 - alpha)) * (
-        (prob_value * (1 - prob_value) / len(sequences)) ** 0.5
-    )
+    if p_value == "pattern":
+        prob_value = probability_estimate_of_pattern(p_mat, pattern, alphabet)[0]
+    if p_value == "sequence":
+        prob_value = probability_estimate_of_exact_sequence(p_mat, pattern, alphabet)
+    elif p_value not in ["pattern", "sequence"]:
+        return "Invalid p_value type. Please use either 'pattern' or 'sequence'."
+    print(prob_value)
+    k = abs(norm.ppf(1 - alpha)) * ((prob_value * (1 - prob_value) / len(sequences)) ** 0.5)
+    print(k)
     if prob_value < k:
         return False
     return True

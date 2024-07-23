@@ -1271,6 +1271,20 @@ def test_proportion_constraint():
         == False
     )
 
+    assert (
+        pattern_mining.proportion_constraint(
+            final_arnolds_p_matrix_point9, "AAC", arnolds_alphabet, arnolds_sequences, 0.33, p_value="sequence"
+        )
+        == True
+    )
+
+    assert (
+        pattern_mining.proportion_constraint(
+            final_arnolds_p_matrix_point9, "ABC", arnolds_alphabet, arnolds_sequences, 0.33, p_value="sequence"
+        )
+        == False
+    )
+
 
 def test_probability_sequence_contains_digram():
     obtained_vector = pattern_mining.probability_sequence_contains_digram(
