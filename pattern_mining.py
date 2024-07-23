@@ -466,6 +466,37 @@ def probability_estimate_of_pattern(p_mat, pattern, alphabet):
     return p_pattern
 
 
+def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
+    """
+    A function to estimate the probability of an exact sequence.
+    """
+    symbols = [sequence[i] for i in range(len(sequence))]
+    indices = [alphabet.index(symbol) for symbol in symbols]
+
+    p_mat = np.delete(p_mat, 0, axis=1)
+    p_mat = np.delete(p_mat, 0, axis=2)
+
+    p_est = np.sum(p_mat[indices[0], 0, :])
+    next_state = np.where(p_mat[indices[0], 0, :] > 0)[0][0]
+
+    for i in range(1, len(sequence)):
+        if i != len(sequence) - 1:
+            p_est *= np.sum(p_mat[indices[i], next_state, :])
+            if np.where(p_mat[indices[i], next_state, :] > 0)[0].size > 0:
+                next_state = np.where(p_mat[indices[i], next_state, :] > 0)[0][0]
+            else:
+                print("Sequence is not possible in this PDFA.")
+        else:
+            p_est *= np.sum(p_mat[indices[i], next_state, :])
+            if np.where(p_mat[indices[i], next_state, :] > 0)[0].size > 0:
+                next_state = np.where(p_mat[indices[i], next_state, :] > 0)[0][0]
+            else:
+                print("Sequence is not possible in this PDFA.")
+            p_est *= 1 - np.sum(p_mat[:, next_state, :])
+    
+    return p_est
+
+
 def probability_sequence_contains_letter_at_distance_theta(
     p_mat, letter, theta, alphabet
 ):
