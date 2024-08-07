@@ -179,16 +179,16 @@ def test_transition_matrix():
 
 def test_get_initial_states():
     obtained_states = pattern_mining.get_initial_states(list_of_sequences)
-    expected_states = ["S", 0, 1, 2, 3, 4, 5, 6]
+    expected_states = ["*", 0, 1, 2, 3, 4, 5, 6]
     assert obtained_states == expected_states
 
     obtained_states = pattern_mining.get_initial_states(arnolds_sequences)
-    expected_states = ["S", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    expected_states = ["*", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     assert obtained_states == expected_states
 
 
-states = ["S", 0, 1, 2, 3, 4, 5, 6]
-states_alternate_names = ["S", "A", "B", "C", "D", "E", "F", "G"]
+states = ["*", 0, 1, 2, 3, 4, 5, 6]
+states_alternate_names = ["*", "A", "B", "C", "D", "E", "F", "G"]
 pathway_matrix = np.array(
     [
         [
@@ -224,7 +224,7 @@ pathway_matrix = np.array(
     ]
 )
 
-arnolds_states = ["S", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+arnolds_states = ["*", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 arnolds_pathway_matrix = np.array(
         [
             [
@@ -488,7 +488,7 @@ def test_merge_two_states():
             ],
         ]
     )
-    expected_states = ["S", 0, 2, 3, 4, 5, 6]
+    expected_states = ["*", 0, 2, 3, 4, 5, 6]
     assert np.allclose(obtained_pathway_matrix, expected_pathway_matrix)
     assert obtained_states == expected_states
 
@@ -526,7 +526,7 @@ def test_merge_two_states():
             ],
         ]
     )
-    expected_states = ["S", 0, 1, 2, 3, 4, 5]
+    expected_states = ["*", 0, 1, 2, 3, 4, 5]
     assert np.allclose(obtained_pathway_matrix, expected_pathway_matrix)
     assert obtained_states == expected_states
 
@@ -584,7 +584,7 @@ def test_merge_two_states():
             ],
         ]
     )
-    expected_states = ["S", 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    expected_states = ["*", 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     assert np.allclose(obtained_pathway_matrix, expected_pathway_matrix)
     assert obtained_states == expected_states
 
@@ -727,7 +727,7 @@ def test_recursive_merge_two_states():
             ],
         ]
     )
-    expected_states = ["S", 0, 1, 3, 4, 6]
+    expected_states = ["*", 0, 1, 3, 4, 6]
     expected_recursive_merge = True
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
@@ -780,7 +780,7 @@ def test_recursive_merge_two_states():
             ],
         ]
     )
-    expected_states = ["S", 0, 2, 4, 5, 6, 7, 8, 9, 12]
+    expected_states = ["*", 0, 2, 4, 5, 6, 7, 8, 9, 12]
     expected_recursive_merge = True
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
@@ -949,7 +949,7 @@ def test_alergia():
             ],
         ]
     )
-    expected_states = ["S", 0, 1, 3]
+    expected_states = ["*", 0, 1, 3]
     expected_merges = 3
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
@@ -974,7 +974,7 @@ def test_alergia():
             ],
         ]
     )
-    expected_states = ["S", 0]
+    expected_states = ["*", 0]
     expected_merges = 3
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
@@ -1002,7 +1002,7 @@ def test_alergia():
             ],
         ]
     )
-    expected_states = ["S", 0, 1]
+    expected_states = ["*", 0, 1]
     expected_merges = 5
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
@@ -1031,7 +1031,7 @@ final_pathway_matrix = np.array(
         ],
     ]
 )
-final_states = ["S", 0, 1, 3]
+final_states = ["*", 0, 1, 3]
 
 final_arnolds_pathway_matrix = np.array(
     [
@@ -1052,7 +1052,7 @@ final_arnolds_pathway_matrix = np.array(
         ],
     ]
 )
-final_arnolds_states = ["S", 0, 1]
+final_arnolds_states = ["*", 0, 1]
 
 final_arnolds_p_matrix_point9 = np.array(
     [
@@ -1172,7 +1172,7 @@ jacquemont_sequences = [
 ]
 jacquemont_alphabet = ["a", "b", "c"]
 jacquemont_states = [
-    "S",
+    "*",
     0,
     1,
     2,

@@ -76,7 +76,7 @@ def transition_matrix(sequences, alphabet, build = "breadth"):
     A function that returns the transition matrix of a PPTA, given a list of sequences.
     """
     all_nodes = get_state_paths(sequences, build=build)
-    all_nodes.insert(0, "S")
+    all_nodes.insert(0, "*")
     n = len(all_nodes)
     pathway_matrix = np.zeros((len(alphabet), n, n), dtype=int)
     pathway_matrix[0, 0, 1] = len(sequences)
@@ -95,7 +95,7 @@ def get_initial_states(sequences):
     A function that returns the states of a PPTA.
     """
     states = list(range(len(get_state_paths(sequences))))
-    states.insert(0, "S")
+    states.insert(0, "*")
     return states
 
 
@@ -253,7 +253,7 @@ def get_pairs_to_check(states):
     A function to get all pairs of states to check for merging.
     """
     state_numbers = states.copy()
-    state_numbers.remove("S")
+    state_numbers.remove("*")
     to_check = [
         (state_numbers[j], state_numbers[i])
         for j in range(len(state_numbers))
@@ -349,7 +349,7 @@ def network_visualisation(
     dot = graphviz.Digraph(identifier, filename=filename)
 
     for node in states:
-        if node == "S":
+        if node == "*":
             dot.attr("node", shape="circle")
         elif get_pi_endpoint(node, pathway_matrix, alphabet, states) > 0:
             dot.attr("node", shape="doublecircle")
@@ -358,7 +358,7 @@ def network_visualisation(
         dot.node(str(node), str(node))
 
     for n, i in enumerate(states):
-        if i == "S":
+        if i == "*":
             dot.attr("node", shape="circle")
             dot.node(str(i), str(i), fontsize="14")
         elif get_pi_endpoint(i, pathway_matrix, alphabet, states) > 0:
@@ -388,7 +388,7 @@ def network_visualisation(
                 for k in range(len(alphabet)):
                     if pathway_matrix[k, n, m] != 0:
                         if probabilities:
-                            if i == "S":
+                            if i == "*":
                                 dot.edge(
                                     str(i),
                                     str(j),
@@ -408,7 +408,7 @@ def network_visualisation(
                                     fontsize="11",
                                 )
                         else:
-                            if i == "S":
+                            if i == "*":
                                 dot.edge(
                                     str(i),
                                     str(j),
