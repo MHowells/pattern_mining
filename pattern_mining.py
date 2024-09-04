@@ -1,6 +1,7 @@
 import numpy as np
 import graphviz
 from scipy.stats import norm
+import itertools as it
 
 
 def get_alphabet(sequences):
@@ -584,3 +585,24 @@ def probability_sequence_contains_digram(p_mat, digram, alphabet):
     tau = np.multiply(p_symbol_1, p_symbol_2)
 
     return np.matmul(tau, inverse)
+
+
+def string_enumerator(alphabet, n):
+    """
+    A function to enumerate all strings up to length n from an alphabet.
+    """
+    if n < 1:
+        return "Please use a value of n greater than 0."
+    strings = []
+    for i in range(1, n + 1):
+        strings += ["".join(x) for x in it.product(alphabet, repeat=i)]
+    return strings
+
+
+def string_probabilities(p_mat, alphabet, n):
+    """
+    A function to estimate the probability of all strings up to length n from an alphabet.
+    """
+    strings = string_enumerator(alphabet, n)
+    probs = [(x, probability_estimate_of_exact_sequence(p_mat, x, alphabet)) for x in strings]
+    return probs
