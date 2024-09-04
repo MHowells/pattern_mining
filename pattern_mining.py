@@ -477,6 +477,10 @@ def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
     p_mat = np.delete(p_mat, 0, axis=2)
 
     p_est = np.sum(p_mat[indices[0], 0, :])
+
+    if p_est == 0:
+        return 0
+
     next_state = np.where(p_mat[indices[0], 0, :] > 0)[0][0]
 
     for i in range(1, len(sequence)):
