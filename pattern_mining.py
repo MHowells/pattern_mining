@@ -489,13 +489,13 @@ def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
             if np.where(p_mat[indices[i], next_state, :] > 0)[0].size > 0:
                 next_state = np.where(p_mat[indices[i], next_state, :] > 0)[0][0]
             else:
-                print("Sequence is not possible in this PDFA.")
+                return 0
         else:
             p_est *= np.sum(p_mat[indices[i], next_state, :])
             if np.where(p_mat[indices[i], next_state, :] > 0)[0].size > 0:
                 next_state = np.where(p_mat[indices[i], next_state, :] > 0)[0][0]
             else:
-                print("Sequence is not possible in this PDFA.")
+                return 0
             p_est *= 1 - np.sum(p_mat[:, next_state, :])
     
     return p_est
