@@ -76,8 +76,8 @@ def test_get_state_paths():
     assert obtained_state_paths_depth == expected_state_paths_depth
 
 
-def test_transition_matrix():
-    obtained_transition_matrix = pattern_mining.transition_matrix(
+def test_get_transition_matrix():
+    obtained_transition_matrix = pattern_mining.get_transition_matrix(
         list_of_sequences, alphabet
     )
     expected_pathway_matrix = np.array(
@@ -116,7 +116,7 @@ def test_transition_matrix():
     )
     assert np.allclose(obtained_transition_matrix, expected_pathway_matrix)
 
-    obtained_transition_matrix = pattern_mining.transition_matrix(
+    obtained_transition_matrix = pattern_mining.get_transition_matrix(
         arnolds_sequences, arnolds_alphabet
     )
     expected_pathway_matrix = np.array(

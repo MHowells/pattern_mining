@@ -72,7 +72,7 @@ def get_state_paths(sequences, build="breadth"):
         return "Invalid build type. Please use either 'breadth' or 'depth'."
 
 
-def transition_matrix(sequences, alphabet, build = "breadth"):
+def get_transition_matrix(sequences, alphabet, build = "breadth"):
     """
     A function that returns the transition matrix of a PPTA, given a list of sequences.
     """
