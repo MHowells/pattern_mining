@@ -72,7 +72,7 @@ def get_state_paths(sequences, build="breadth"):
         return "Invalid build type. Please use either 'breadth' or 'depth'."
 
 
-def get_transition_matrix(sequences, alphabet, build = "breadth"):
+def get_transition_matrix(sequences, alphabet, build="breadth"):
     """
     A function that returns the transition matrix of a PPTA, given a list of sequences.
     """
@@ -393,8 +393,7 @@ def network_visualisation(
                                 dot.edge(
                                     str(i),
                                     str(j),
-                                    label="{}".format(round(p_mat[k, n, m], 2)
-                                    ),
+                                    label="{}".format(round(p_mat[k, n, m], 2)),
                                     arrowsize="0.35",
                                     fontsize="11",
                                 )
@@ -482,9 +481,9 @@ def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
     if p_est == 0:
         return 0
 
-    if len(sequence) == 1: 
-        p_est *= 1 - np.sum(p_mat[:, 0, :]) 
-        return p_est 
+    if len(sequence) == 1:
+        p_est *= 1 - np.sum(p_mat[:, 0, :])
+        return p_est
 
     next_state = np.where(p_mat[indices[0], 0, :] > 0)[0][0]
 
@@ -502,7 +501,7 @@ def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
             else:
                 return 0
             p_est *= 1 - np.sum(p_mat[:, next_state, :])
-    
+
     return p_est
 
 
@@ -539,9 +538,11 @@ def probability_to_encounter_a_pattern_at_a_distance_theta(
     return np.matmul(f_x_theta, est_of_pattern)
 
 
-def proportion_constraint(p_mat, pattern, alphabet, sequences, alpha, p_value = "pattern"):
+def proportion_constraint(
+    p_mat, pattern, alphabet, sequences, alpha, p_value="pattern"
+):
     """
-    Returns a Boolean indicating whether a pattern or sequence covers a significant part of the probability density 
+    Returns a Boolean indicating whether a pattern or sequence covers a significant part of the probability density
     of all sequences.
     """
     if p_value == "pattern":
@@ -551,7 +552,9 @@ def proportion_constraint(p_mat, pattern, alphabet, sequences, alpha, p_value = 
     elif p_value not in ["pattern", "sequence"]:
         return "Invalid p_value type. Please use either 'pattern' or 'sequence'."
     print(prob_value)
-    k = abs(norm.ppf(1 - alpha)) * ((prob_value * (1 - prob_value) / len(sequences)) ** 0.5)
+    k = abs(norm.ppf(1 - alpha)) * (
+        (prob_value * (1 - prob_value) / len(sequences)) ** 0.5
+    )
     print(k)
     if prob_value < k:
         return False
@@ -599,10 +602,11 @@ def string_enumerator(alphabet, n):
     return strings
 
 
-def string_probabilities(p_mat, alphabet, n):
+def string_probabilities(p_mat, alphabet, strings):
     """
-    A function to estimate the probability of all strings up to length n from an alphabet.
+    A function to estimate the probability of all strings in a given list.
     """
-    strings = string_enumerator(alphabet, n)
-    probs = [(x, probability_estimate_of_exact_sequence(p_mat, x, alphabet)) for x in strings]
+    probs = [
+        (x, probability_estimate_of_exact_sequence(p_mat, x, alphabet)) for x in strings
+    ]
     return probs
