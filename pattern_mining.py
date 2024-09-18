@@ -333,16 +333,22 @@ def probability_transition_matrix(pathway_matrix, states, alphabet):
 
 
 def network_visualisation(
-    pathway_matrix, states, alphabet, name=None, view=True, probabilities=False
+    pathway_matrix,
+    states,
+    alphabet,
+    name=None,
+    view=True,
+    probabilities=False,
+    graph_format="pdf",
 ):
     """
     A function to visualise the PPTA as a network graph using graphviz.
     """
     if name == None:
-        filename = "my_graph.gv"
+        filename = "my_graph"
     else:
         identifier = name
-        filename = name + ".gv"
+        filename = name
 
     if probabilities:
         p_mat = probability_transition_matrix(pathway_matrix, states, alphabet)
@@ -428,6 +434,7 @@ def network_visualisation(
                                 )
 
     dot.graph_attr["rankdir"] = "LR"
+    dot.render(filename, format=graph_format, cleanup=True)
 
     if view:
         dot.view()
@@ -476,13 +483,13 @@ def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
     p_mat = np.delete(p_mat, 0, axis=1)
     p_mat = np.delete(p_mat, 0, axis=2)
 
-    p_est = np.sum(p_mat[indices[0], 0, :]) 
+    p_est = np.sum(p_mat[indices[0], 0, :])
 
     if p_est == 0:
-        return 0 
-    
+        return 0
+
     next_state = np.where(p_mat[indices[0], 0, :] > 0)[0][0]
-    
+
     if len(sequence) == 1:
         p_est *= 1 - np.sum(p_mat[:, next_state, :])
         return p_est
@@ -493,7 +500,7 @@ def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
             if np.where(p_mat[indices[i], next_state, :] > 0)[0].size > 0:
                 next_state = np.where(p_mat[indices[i], next_state, :] > 0)[0][0]
             else:
-                return 0 
+                return 0
         else:
             p_est *= np.sum(p_mat[indices[i], next_state, :])
             if np.where(p_mat[indices[i], next_state, :] > 0)[0].size > 0:
@@ -501,7 +508,7 @@ def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
             else:
                 return 0
             p_est *= 1 - np.sum(p_mat[:, next_state, :])
-    
+
     return p_est
 
 
