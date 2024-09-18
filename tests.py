@@ -67,11 +67,41 @@ def test_get_state_paths():
     obtained_state_paths_breadth = pattern_mining.get_state_paths(
         arnolds_sequences, "breadth"
     )
-    expected_state_paths_breadth = ['', 'A', 'B', 'AB', 'AC', 'ABA', 'ABB', 'ABC', 'ABCA', 'ACC', 'BA', 'BC', 'BAA', 'BCA']
+    expected_state_paths_breadth = [
+        "",
+        "A",
+        "B",
+        "AB",
+        "AC",
+        "ABA",
+        "ABB",
+        "ABC",
+        "ABCA",
+        "ACC",
+        "BA",
+        "BC",
+        "BAA",
+        "BCA",
+    ]
     obtained_state_paths_depth = pattern_mining.get_state_paths(
         arnolds_sequences, "depth"
     )
-    expected_state_paths_depth = ['', 'A', 'B', 'AB', 'AC', 'BA', 'BC', 'ABA', 'ABB', 'ABC', 'ACC', 'BAA', 'BCA', 'ABCA']
+    expected_state_paths_depth = [
+        "",
+        "A",
+        "B",
+        "AB",
+        "AC",
+        "BA",
+        "BC",
+        "ABA",
+        "ABB",
+        "ABC",
+        "ACC",
+        "BAA",
+        "BCA",
+        "ABCA",
+    ]
     assert obtained_state_paths_breadth == expected_state_paths_breadth
     assert obtained_state_paths_depth == expected_state_paths_depth
 
@@ -226,60 +256,61 @@ pathway_matrix = np.array(
 
 arnolds_states = ["*", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 arnolds_pathway_matrix = np.array(
+    [
         [
-            [
-                [0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            ],
-            [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            ],
-            [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            ],
-        ]
-    )
+            [0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+    ]
+)
+
 
 def test_get_n():
     assert pattern_mining.get_n(0, pathway_matrix, states) == 30
@@ -397,7 +428,9 @@ def test_get_pi_endpoint():
     assert np.allclose(obtained_endpoints, expected_endpoints)
 
     obtained_endpoints = [
-        pattern_mining.get_pi_endpoint(i, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states)
+        pattern_mining.get_pi_endpoint(
+            i, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states
+        )
         for i in range(14)
     ]
     expected_endpoints = [0, 0, 0, 1 / 4, 1 / 2, 1, 1, 0, 1, 1, 1 / 2, 1 / 2, 1, 1]
@@ -436,19 +469,27 @@ def test_hoeffding_bound():
     )
 
     assert (
-        pattern_mining.hoeffding_bound(0, 1, 0.2, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states)
+        pattern_mining.hoeffding_bound(
+            0, 1, 0.2, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states
+        )
         == True
     )
     assert (
-        pattern_mining.hoeffding_bound(1, 2, 0.2, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states)
+        pattern_mining.hoeffding_bound(
+            1, 2, 0.2, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states
+        )
         == True
     )
     assert (
-        pattern_mining.hoeffding_bound(0, 1, 0.9, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states)
+        pattern_mining.hoeffding_bound(
+            0, 1, 0.9, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states
+        )
         == False
     )
     assert (
-        pattern_mining.hoeffding_bound(1, 3, 0.9, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states)
+        pattern_mining.hoeffding_bound(
+            1, 3, 0.9, arnolds_pathway_matrix, arnolds_alphabet, arnolds_states
+        )
         == True
     )
 
@@ -536,7 +577,7 @@ def test_merge_two_states():
     expected_pathway_matrix = np.array(
         [
             [
-                [ 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0],
                 [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -551,7 +592,8 @@ def test_merge_two_states():
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             ],
-            [   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
@@ -986,19 +1028,19 @@ def test_alergia():
     expected_matrix = np.array(
         [
             [
-                [ 0, 10,  0],
-                [ 0,  0,  9],
-                [ 0,  0,  3],
+                [0, 10, 0],
+                [0, 0, 9],
+                [0, 0, 3],
             ],
             [
-                [ 0,  0,  0],
-                [ 0,  4,  0],
-                [ 0,  0,  5],
+                [0, 0, 0],
+                [0, 4, 0],
+                [0, 0, 5],
             ],
             [
-                [ 0,  0,  0],
-                [ 0,  0,  3],
-                [ 0,  3,  0],
+                [0, 0, 0],
+                [0, 0, 3],
+                [0, 3, 0],
             ],
         ]
     )
@@ -1036,19 +1078,19 @@ final_states = ["*", 0, 1, 3]
 final_arnolds_pathway_matrix = np.array(
     [
         [
-            [ 0, 10,  0],
-            [ 0,  0,  9],
-            [ 0,  0,  3],
+            [0, 10, 0],
+            [0, 0, 9],
+            [0, 0, 3],
         ],
         [
-            [ 0,  0,  0],
-            [ 0,  4,  0],
-            [ 0,  0,  5],
+            [0, 0, 0],
+            [0, 4, 0],
+            [0, 0, 5],
         ],
         [
-            [ 0,  0,  0],
-            [ 0,  0,  3],
-            [ 0,  3,  0],
+            [0, 0, 0],
+            [0, 0, 3],
+            [0, 3, 0],
         ],
     ]
 )
@@ -1057,22 +1099,22 @@ final_arnolds_states = ["*", 0, 1]
 final_arnolds_p_matrix_point9 = np.array(
     [
         [
-            [0., 1., 0., 0.],
-            [0., 0., 9/17, 0.],
-            [0., 0., 0., 3/17],
-            [0., 0., 0., 0.],
-        ],
-        [   
-            [0., 0., 0., 0.],
-            [0., 4/17, 0., 0.],
-            [0., 0., 5/17, 0.],
-            [0., 0., 0., 0.],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 9 / 17, 0.0],
+            [0.0, 0.0, 0.0, 3 / 17],
+            [0.0, 0.0, 0.0, 0.0],
         ],
         [
-            [0., 0., 0., 0.],
-            [0., 0., 3/17, 0.],
-            [0., 3/17, 0., 0.],
-            [0., 0., 0., 0.],
+            [0.0, 0.0, 0.0, 0.0],
+            [0.0, 4 / 17, 0.0, 0.0],
+            [0.0, 0.0, 5 / 17, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 3 / 17, 0.0],
+            [0.0, 3 / 17, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
         ],
     ]
 )
@@ -1273,14 +1315,24 @@ def test_proportion_constraint():
 
     assert (
         pattern_mining.proportion_constraint(
-            final_arnolds_p_matrix_point9, "AAC", arnolds_alphabet, arnolds_sequences, 0.33, p_value="sequence"
+            final_arnolds_p_matrix_point9,
+            "AAC",
+            arnolds_alphabet,
+            arnolds_sequences,
+            0.33,
+            p_value="sequence",
         )
         == True
     )
 
     assert (
         pattern_mining.proportion_constraint(
-            final_arnolds_p_matrix_point9, "ABC", arnolds_alphabet, arnolds_sequences, 0.33, p_value="sequence"
+            final_arnolds_p_matrix_point9,
+            "ABC",
+            arnolds_alphabet,
+            arnolds_sequences,
+            0.33,
+            p_value="sequence",
         )
         == False
     )
@@ -1292,3 +1344,34 @@ def test_probability_sequence_contains_digram():
     )
     expected_vector = np.array([0.2987013, 0, 0.29800281, 0.28378378])
     assert np.allclose(obtained_vector, expected_vector)
+
+
+def test_string_enumerator():
+    obtained_strings = pattern_mining.string_enumerator(jacquemont_alphabet, 2)
+    expected_strings = [
+        "a",
+        "b",
+        "c",
+        "aa",
+        "ab",
+        "ac",
+        "ba",
+        "bb",
+        "bc",
+        "ca",
+        "cb",
+        "cc",
+    ]
+    assert obtained_strings == expected_strings
+
+
+def test_string_probabilities():
+    obtained_probabilities = pattern_mining.string_probabilities(
+        final_arnolds_p_matrix_point9, arnolds_alphabet, ["A", "B", "C"]
+    )
+    expected_probabilities = [
+        ("A", 0.18685121107266434),
+        ("B", 0.013840830449826992),
+        ("C", 0.06228373702422145),
+    ]
+    assert obtained_probabilities[0][1] == expected_probabilities[0][1]
