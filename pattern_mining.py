@@ -476,16 +476,16 @@ def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
     p_mat = np.delete(p_mat, 0, axis=1)
     p_mat = np.delete(p_mat, 0, axis=2)
 
-    p_est = np.sum(p_mat[indices[0], 0, :])
+    p_est = np.sum(p_mat[indices[0], 0, :]) 
 
     if p_est == 0:
-        return 0
-
-    if len(sequence) == 1:
-        p_est *= 1 - np.sum(p_mat[:, 0, :])
-        return p_est
-
+        return 0 
+    
     next_state = np.where(p_mat[indices[0], 0, :] > 0)[0][0]
+    
+    if len(sequence) == 1:
+        p_est *= 1 - np.sum(p_mat[:, next_state, :])
+        return p_est
 
     for i in range(1, len(sequence)):
         if i != len(sequence) - 1:
@@ -493,7 +493,7 @@ def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
             if np.where(p_mat[indices[i], next_state, :] > 0)[0].size > 0:
                 next_state = np.where(p_mat[indices[i], next_state, :] > 0)[0][0]
             else:
-                return 0
+                return 0 
         else:
             p_est *= np.sum(p_mat[indices[i], next_state, :])
             if np.where(p_mat[indices[i], next_state, :] > 0)[0].size > 0:
@@ -501,7 +501,7 @@ def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
             else:
                 return 0
             p_est *= 1 - np.sum(p_mat[:, next_state, :])
-
+    
     return p_est
 
 
