@@ -409,13 +409,15 @@ def alergia(transition_matrix, states, alphabet, alpha, output="Suppressed", met
                         current_matrix,
                         current_states,
                         recursive_merge,
-                    ) = recursive_merge_two_states(
+                        red_states,
+                    ) = recursive_merge_two_states_higuera(
                         q1,
                         q2,
                         current_matrix,
                         current_states,
                         alpha,
                         alphabet,
+                        red_states,
                         output=output,
                     )
                     if recursive_merge:

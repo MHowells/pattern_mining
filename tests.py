@@ -1270,6 +1270,37 @@ def test_alergia():
     assert obtained_states == expected_states
     assert obtained_merges == expected_merges
 
+    obtained_matrix, obtained_states, obtained_merges = pattern_mining.alergia(
+        arnolds_pathway_matrix, arnolds_states, arnolds_alphabet, 0.9, method="Higuera"
+    )
+    expected_matrix = np.array(
+        [
+            [
+                [ 0, 10,  0,  0],
+                [ 0,  0,  9,  0],
+                [ 0,  0,  0,  3],
+                [ 0,  0,  0,  0]
+            ],
+            [
+                [ 0,  0,  0,  0],
+                [ 0,  4,  0,  0],
+                [ 0,  0,  5,  0],
+                [ 0,  0,  0,  0]
+            ],
+            [
+                [ 0,  0,  0,  0],
+                [ 0,  0,  3,  0],
+                [ 0,  3,  0,  0],
+                [ 0,  0,  0,  0]
+            ]
+        ]
+    )
+    expected_states = ["*", 0, 1, 5]
+    expected_merges = 4
+    assert np.allclose(obtained_matrix, expected_matrix)
+    assert obtained_states == expected_states
+    assert obtained_merges == expected_merges
+
 
 final_pathway_matrix = np.array(
     [
