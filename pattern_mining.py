@@ -274,6 +274,63 @@ def get_pairs_to_check(states):
     return to_check
 
 
+def recursive_merge_two_states_higuera(
+    q1, q2, pathway_matrix, states, alpha, alphabet, red_states, output="Suppressed"
+):
+    """
+    A function to recursively merge two states until the PPTA is deterministic.
+    Uses the red/blue state approach of Higuera (2010).
+    Set output to "Suppressed" to suppress output to just the final solution, "Truncated" to suppress non-deterministic merge information, or "Full" to show all output.
+    """
+    if output not in ["Suppressed", "Truncated", "Full"]:
+        return "Invalid output type. Please use either 'Suppressed', 'Truncated', or 'Full'."
+    initial_pathway_matrix = np.copy(pathway_matrix)
+    initial_states = states.copy()
+    new_matrix, new_states = merge_two_states(q1, q2, pathway_matrix, states)
+    non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
+    if len(non_det_pairs) > 0 and output == "Full":
+        print(
+            "Merging of states",
+            (q1, q2),
+            "results in non-deterministic pairs:",
+            non_det_pairs,
+        )
+    recursive_merge = True
+    while non_det_pairs:
+        if hoeffding_bound(
+            non_det_pairs[0][0],
+            non_det_pairs[0][1],
+            alpha,
+            new_matrix,
+            alphabet,
+            new_states,
+        ):
+            if output == "Full":
+                print(
+                    "Successfully merged states",
+                    non_det_pairs[0],
+                    "into a deterministic state.",
+                )
+            if any(x in red_states for x in non_det_pairs[0]):
+                if set(non_det_pairs[0]).issubset(set(red_states)):
+                    red_states = [min(non_det_pairs[0]) if x == max(non_det_pairs[0]) else x for x in red_states]
+                else:
+                    red_states = [min(non_det_pairs[0]) if x in non_det_pairs[0] else x for x in red_states]
+            new_matrix, new_states = merge_two_states(
+                non_det_pairs[0][0], non_det_pairs[0][1], new_matrix, new_states
+            )
+            non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
+            if len(non_det_pairs) > 0 and output == "Full":
+                print(
+                    "Merging of previous non-deterministic pair results in non-deterministic pairs:",
+                    non_det_pairs,
+                )
+        else:
+            recursive_merge = False
+            return initial_pathway_matrix, initial_states, recursive_merge, red_states
+    return new_matrix, new_states, recursive_merge, red_states
+
+
 def alergia(transition_matrix, states, alphabet, alpha, output="Suppressed"):
     """
     A function to implement the Alergia algorithm.
