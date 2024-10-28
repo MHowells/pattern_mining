@@ -218,6 +218,7 @@ def test_get_initial_states():
 
 
 states = ["*", 0, 1, 2, 3, 4, 5, 6]
+red_states = [0]
 states_alternate_names = ["*", "A", "B", "C", "D", "E", "F", "G"]
 pathway_matrix = np.array(
     [
@@ -839,6 +840,17 @@ def test_recursive_merge_two_states():
     assert np.allclose(obtained_matrix, arnolds_pathway_matrix)
     assert obtained_states == arnolds_states
     assert obtained_recursive_merge == False
+
+
+def test_get_blue_states():
+    obtained_blue_states = pattern_mining.get_blue_states(pathway_matrix, red_states, states)
+    expected_blue_states = [1, 2]
+    assert obtained_blue_states == expected_blue_states
+
+    obtained_blue_states = pattern_mining.get_blue_states(arnolds_pathway_matrix, red_states, arnolds_states)
+    expected_blue_states = [1, 2]
+    assert obtained_blue_states == expected_blue_states
+    
 
 
 def test_get_pairs_to_check():
