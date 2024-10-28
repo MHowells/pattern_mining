@@ -249,6 +249,17 @@ def recursive_merge_two_states(
     return new_matrix, new_states, recursive_merge
 
 
+def get_blue_states(pathway_matrix, red_states, states):
+    """
+    Returns the blue states of a PPTA given a list of red states.
+    """
+    blue_states = []
+    for q in red_states:
+        blue_states += [states[x] for x in list(np.where(pathway_matrix[:, states.index(q), :] > 0)[1])]
+    blue_states = [x for x in blue_states if x not in red_states]
+    return blue_states
+
+
 def get_pairs_to_check(states):
     """
     A function to get all pairs of states to check for merging.
