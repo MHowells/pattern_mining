@@ -843,11 +843,15 @@ def test_recursive_merge_two_states():
 
 
 def test_get_blue_states():
-    obtained_blue_states = pattern_mining.get_blue_states(pathway_matrix, example_red_states, states)
+    obtained_blue_states = pattern_mining.get_blue_states(
+        pathway_matrix, example_red_states, states
+    )
     expected_blue_states = [1, 2]
     assert obtained_blue_states == expected_blue_states
 
-    obtained_blue_states = pattern_mining.get_blue_states(arnolds_pathway_matrix, example_red_states, arnolds_states)
+    obtained_blue_states = pattern_mining.get_blue_states(
+        arnolds_pathway_matrix, example_red_states, arnolds_states
+    )
     expected_blue_states = [1, 2]
     assert obtained_blue_states == expected_blue_states
 
@@ -855,48 +859,49 @@ def test_get_blue_states():
 arnolds_pathway_matrix_after_merges = np.array(
     [
         [
-            [ 0, 10,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  8,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  2],
-            [ 0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0]
-        ],
-       [
-           [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  4,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  4,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0]
+            [0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+            [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ],
         [
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  2,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  2,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-            [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0]
-        ]
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ],
     ]
 )
-arnolds_states_after_merges = ['*', 0, 1, 3, 4, 5, 6, 7, 8, 9, 12]
+arnolds_states_after_merges = ["*", 0, 1, 3, 4, 5, 6, 7, 8, 9, 12]
 arnolds_red_states_after_merges = [0, 1, 12]
+
 
 def test_recursive_merge_two_states_higuera():
     # Test where states are merged recursively
@@ -1005,7 +1010,13 @@ def test_recursive_merge_two_states_higuera():
         obtained_recursive_merge,
         red_states,
     ) = pattern_mining.recursive_merge_two_states_higuera(
-        0, 3, arnolds_pathway_matrix, arnolds_states, 0.9, arnolds_alphabet, example_red_states
+        0,
+        3,
+        arnolds_pathway_matrix,
+        arnolds_states,
+        0.9,
+        arnolds_alphabet,
+        example_red_states,
     )
     assert np.allclose(obtained_matrix, arnolds_pathway_matrix)
     assert obtained_states == arnolds_states
@@ -1016,35 +1027,35 @@ def test_recursive_merge_two_states_higuera():
     expected_matrix = np.array(
         [
             [
-                [ 0, 10,  0,  0,  0,  0,  0],
-                [ 0,  0,  8,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  3,  0,  0],
-                [ 0,  0,  0,  0,  0,  1,  0],
-                [ 0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0]
+                [0, 10, 0, 0, 0, 0, 0],
+                [0, 0, 8, 0, 0, 0, 0],
+                [0, 0, 0, 0, 3, 0, 0],
+                [0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
             ],
             [
-                [ 0,  0,  0,  0,  0,  0,  0],
-                [ 0,  4,  0,  0,  0,  0,  0],
-                [ 0,  0,  5,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0]
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 4, 0, 0, 0, 0, 0],
+                [0, 0, 5, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
             ],
             [
-                [ 0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  2,  0,  0,  0,  0],
-                [ 0,  0,  0,  3,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  1],
-                [ 0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0]
-            ]
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 2, 0, 0, 0, 0],
+                [0, 0, 0, 3, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+            ],
         ]
     )
-    expected_states = ['*', 0, 1, 4, 5, 8, 9]
+    expected_states = ["*", 0, 1, 4, 5, 8, 9]
     expected_recursive_merge = True
     expected_red_states = [0, 1, 5]
     (
@@ -1053,7 +1064,13 @@ def test_recursive_merge_two_states_higuera():
         obtained_recursive_merge,
         red_states,
     ) = pattern_mining.recursive_merge_two_states_higuera(
-        1, 3, arnolds_pathway_matrix_after_merges, arnolds_states_after_merges, 0.9, arnolds_alphabet, arnolds_red_states_after_merges
+        1,
+        3,
+        arnolds_pathway_matrix_after_merges,
+        arnolds_states_after_merges,
+        0.9,
+        arnolds_alphabet,
+        arnolds_red_states_after_merges,
     )
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
@@ -1275,24 +1292,9 @@ def test_alergia():
     )
     expected_matrix = np.array(
         [
-            [
-                [ 0, 10,  0,  0],
-                [ 0,  0,  9,  0],
-                [ 0,  0,  0,  3],
-                [ 0,  0,  0,  0]
-            ],
-            [
-                [ 0,  0,  0,  0],
-                [ 0,  4,  0,  0],
-                [ 0,  0,  5,  0],
-                [ 0,  0,  0,  0]
-            ],
-            [
-                [ 0,  0,  0,  0],
-                [ 0,  0,  3,  0],
-                [ 0,  3,  0,  0],
-                [ 0,  0,  0,  0]
-            ]
+            [[0, 10, 0, 0], [0, 0, 9, 0], [0, 0, 0, 3], [0, 0, 0, 0]],
+            [[0, 0, 0, 0], [0, 4, 0, 0], [0, 0, 5, 0], [0, 0, 0, 0]],
+            [[0, 0, 0, 0], [0, 0, 3, 0], [0, 3, 0, 0], [0, 0, 0, 0]],
         ]
     )
     expected_states = ["*", 0, 1, 5]

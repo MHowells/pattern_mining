@@ -255,7 +255,10 @@ def get_blue_states(pathway_matrix, red_states, states):
     """
     blue_states = []
     for q in red_states:
-        blue_states += [states[x] for x in list(np.where(pathway_matrix[:, states.index(q), :] > 0)[1])]
+        blue_states += [
+            states[x]
+            for x in list(np.where(pathway_matrix[:, states.index(q), :] > 0)[1])
+        ]
     blue_states = [x for x in blue_states if x not in red_states]
     return blue_states
 
@@ -313,9 +316,15 @@ def recursive_merge_two_states_higuera(
                 )
             if any(x in red_states for x in non_det_pairs[0]):
                 if set(non_det_pairs[0]).issubset(set(red_states)):
-                    red_states = [min(non_det_pairs[0]) if x == max(non_det_pairs[0]) else x for x in red_states]
+                    red_states = [
+                        min(non_det_pairs[0]) if x == max(non_det_pairs[0]) else x
+                        for x in red_states
+                    ]
                 else:
-                    red_states = [min(non_det_pairs[0]) if x in non_det_pairs[0] else x for x in red_states]
+                    red_states = [
+                        min(non_det_pairs[0]) if x in non_det_pairs[0] else x
+                        for x in red_states
+                    ]
             new_matrix, new_states = merge_two_states(
                 non_det_pairs[0][0], non_det_pairs[0][1], new_matrix, new_states
             )
@@ -331,7 +340,9 @@ def recursive_merge_two_states_higuera(
     return new_matrix, new_states, recursive_merge, red_states
 
 
-def alergia(transition_matrix, states, alphabet, alpha, output="Suppressed", method="Carrasco"):
+def alergia(
+    transition_matrix, states, alphabet, alpha, output="Suppressed", method="Carrasco"
+):
     """
     A function to implement the Alergia algorithm.
     Set output to "Suppressed" to suppress output to just the final solution, "Truncated" to suppress non-deterministic merge information, or "Full" to show all output.
@@ -374,11 +385,16 @@ def alergia(transition_matrix, states, alphabet, alpha, output="Suppressed", met
                 if recursive_merge:
                     merge_counter += 1
                     if output in ("Full", "Truncated"):
-                        print("Recursively merged states. Successfully merged", to_check[0])
+                        print(
+                            "Recursively merged states. Successfully merged",
+                            to_check[0],
+                        )
                     to_check = get_pairs_to_check(current_states)
                 else:
                     if output in ("Full", "Truncated"):
-                        print("Recursive merge process failed. Cannot merge", to_check[0])
+                        print(
+                            "Recursive merge process failed. Cannot merge", to_check[0]
+                        )
                     to_check.pop(0)
             else:
                 if output in ("Full", "Truncated"):
@@ -423,7 +439,10 @@ def alergia(transition_matrix, states, alphabet, alpha, output="Suppressed", met
                     if recursive_merge:
                         merge_counter += 1
                         if output in ("Full", "Truncated"):
-                            print("Recursively merged states. Successfully merged", (q1, q2))
+                            print(
+                                "Recursively merged states. Successfully merged",
+                                (q1, q2),
+                            )
                         merged = True
                         break
             if merged == False:
