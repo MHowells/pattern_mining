@@ -331,59 +331,107 @@ def recursive_merge_two_states_higuera(
     return new_matrix, new_states, recursive_merge, red_states
 
 
-def alergia(transition_matrix, states, alphabet, alpha, output="Suppressed"):
+def alergia(transition_matrix, states, alphabet, alpha, output="Suppressed", method="Carrasco"):
     """
     A function to implement the Alergia algorithm.
     Set output to "Suppressed" to suppress output to just the final solution, "Truncated" to suppress non-deterministic merge information, or "Full" to show all output.
     """
     if output not in ["Suppressed", "Truncated", "Full"]:
         return "Invalid output type. Please use either 'Suppressed', 'Truncated', or 'Full'."
-    current_matrix = transition_matrix
-    current_states = states
-    to_check = get_pairs_to_check(states)
-    checked_states = []
-    merge_counter = 0
-    while to_check:
-        if output in ("Full", "Truncated"):
-            print("Current order of state merges to check:", to_check)
-        checked_states.append(to_check[0])
-        if hoeffding_bound(
-            to_check[0][0],
-            to_check[0][1],
-            alpha,
-            current_matrix,
-            alphabet,
-            current_states,
-        ):
+    if method == "Carrasco":
+        current_matrix = transition_matrix
+        current_states = states
+        to_check = get_pairs_to_check(states)
+        checked_states = []
+        merge_counter = 0
+        while to_check:
             if output in ("Full", "Truncated"):
-                print("Hoeffding Bound satisfied for", to_check[0])
-            (
-                current_matrix,
-                current_states,
-                recursive_merge,
-            ) = recursive_merge_two_states(
+                print("The next pair of states to check is:", to_check[0])
+            checked_states.append(to_check[0])
+            if hoeffding_bound(
                 to_check[0][0],
                 to_check[0][1],
-                current_matrix,
-                current_states,
                 alpha,
+                current_matrix,
                 alphabet,
-                output=output,
-            )
-            if recursive_merge:
-                merge_counter += 1
+                current_states,
+            ):
                 if output in ("Full", "Truncated"):
-                    print("Recursively merged states. Successfully merged", to_check[0])
-                to_check = get_pairs_to_check(current_states)
+                    print("Hoeffding Bound satisfied for", to_check[0])
+                (
+                    current_matrix,
+                    current_states,
+                    recursive_merge,
+                ) = recursive_merge_two_states(
+                    to_check[0][0],
+                    to_check[0][1],
+                    current_matrix,
+                    current_states,
+                    alpha,
+                    alphabet,
+                    output=output,
+                )
+                if recursive_merge:
+                    merge_counter += 1
+                    if output in ("Full", "Truncated"):
+                        print("Recursively merged states. Successfully merged", to_check[0])
+                    to_check = get_pairs_to_check(current_states)
+                else:
+                    if output in ("Full", "Truncated"):
+                        print("Recursive merge process failed. Cannot merge", to_check[0])
+                    to_check.pop(0)
             else:
                 if output in ("Full", "Truncated"):
-                    print("Recursive merge process failed. Cannot merge", to_check[0])
+                    print("Hoeffding Bound not satisfied for", to_check[0])
                 to_check.pop(0)
-        else:
-            if output in ("Full", "Truncated"):
-                print("Hoeffding Bound not satisfied for", to_check[0])
-            to_check.pop(0)
-    return current_matrix, current_states, merge_counter
+        return current_matrix, current_states, merge_counter
+    elif method == "Higuera":
+        current_matrix = transition_matrix
+        current_states = states
+        red_states = [0]
+        blue_states = get_blue_states(current_matrix, red_states, current_states)
+        merge_counter = 0
+        while len(blue_states) > 0:
+            q2 = blue_states[0]
+            merged = False
+            for q1 in red_states:
+                if hoeffding_bound(
+                    q1,
+                    q2,
+                    alpha,
+                    current_matrix,
+                    alphabet,
+                    current_states,
+                ):
+                    if output in ("Full", "Truncated"):
+                        print("Hoeffding Bound satisfied for", (q1, q2))
+                    (
+                        current_matrix,
+                        current_states,
+                        recursive_merge,
+                    ) = recursive_merge_two_states(
+                        q1,
+                        q2,
+                        current_matrix,
+                        current_states,
+                        alpha,
+                        alphabet,
+                        output=output,
+                    )
+                    if recursive_merge:
+                        merge_counter += 1
+                        if output in ("Full", "Truncated"):
+                            print("Recursively merged states. Successfully merged", (q1, q2))
+                        merged = True
+                        break
+            if merged == False:
+                red_states.append(q2)
+                if output in ("Full", "Truncated"):
+                    print("Hoeffding Bound not satisfied for", (q1, q2))
+            blue_states = get_blue_states(current_matrix, red_states, current_states)
+        return current_matrix, current_states, merge_counter
+    else:
+        return "Invalid method. This function supports only the methodologies from 'Carrasco and Oncina (1994)' or 'Higuera (2010)'."
 
 
 def probability_transition_matrix(pathway_matrix, states, alphabet):
