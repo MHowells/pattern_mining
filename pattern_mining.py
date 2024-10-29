@@ -156,7 +156,7 @@ def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
     return True
 
 
-def merge_two_states(q1, q2, pathway_matrix, states):
+def merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
     """
     Merges states q1 and q2 into a new state that replaces the lowest numbered state.
     Returns the new pathway_matrix and state list as copies of the originals.
@@ -176,7 +176,15 @@ def merge_two_states(q1, q2, pathway_matrix, states):
     )
     pathway_matrix_copy = np.delete(pathway_matrix_copy, which_max, 1)
     states_copy.remove(states[which_max])
-    return pathway_matrix_copy, states_copy
+    if red_states:
+        if max([q1, q2]) in red_states:
+            red_states = [
+                min([q1, q2]) if x == max([q1, q2]) else x for x in red_states
+            ]
+    if red_states:
+        return pathway_matrix_copy, states_copy, red_states
+    else:
+        return pathway_matrix_copy, states_copy
 
 
 def check_is_deterministic(pathway_matrix, states, alphabet):
@@ -289,7 +297,9 @@ def recursive_merge_two_states_higuera(
         return "Invalid output type. Please use either 'Suppressed', 'Truncated', or 'Full'."
     initial_pathway_matrix = np.copy(pathway_matrix)
     initial_states = states.copy()
-    new_matrix, new_states = merge_two_states(q1, q2, pathway_matrix, states)
+    new_matrix, new_states, red_states = merge_two_states(
+        q1, q2, pathway_matrix, states, red_states
+    )
     non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
     if len(non_det_pairs) > 0 and output == "Full":
         print(
