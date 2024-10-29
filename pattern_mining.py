@@ -370,9 +370,13 @@ def alergia(
         to_check = get_pairs_to_check(states)
         checked_states = []
         merge_counter = 0
+        iter_counter = 0
         while to_check:
             if output in ("Full", "Truncated"):
                 print("The next pair of states to check is:", to_check[0])
+            if output == "Full":
+                iter_counter += 1
+                print("Iteration", iter_counter)
             checked_states.append(to_check[0])
             if hoeffding_bound(
                 to_check[0][0],
@@ -421,7 +425,11 @@ def alergia(
         red_states = [0]
         blue_states = get_blue_states(current_matrix, red_states, current_states)
         merge_counter = 0
+        iter_counter = 0
         while len(blue_states) > 0:
+            if output == "Full":
+                iter_counter += 1
+                print("Iteration", iter_counter)
             q2 = blue_states[0]
             merged = False
             for q1 in red_states:
