@@ -338,7 +338,7 @@ def get_blue_states(pathway_matrix, red_states, states):
             for x in list(np.where(pathway_matrix[:, states.index(q), :] > 0)[1])
         ]
     blue_states = [x for x in blue_states if x not in red_states]
-    return blue_states
+    return sorted(blue_states)
 
 
 def get_pairs_to_check(states):
@@ -470,6 +470,7 @@ def alergia(
                         break
             if merged == False:
                 red_states.append(q2)
+                red_states = sorted(red_states)
                 if output in ("Full", "Truncated"):
                     print("Hoeffding Bound not satisfied for", (q1, q2))
             blue_states = get_blue_states(current_matrix, red_states, current_states)

@@ -1306,13 +1306,13 @@ def test_alergia():
     )
     expected_matrix = np.array(
         [
-            [[0, 10, 0, 0], [0, 0, 9, 0], [0, 0, 0, 3], [0, 0, 0, 0]],
-            [[0, 0, 0, 0], [0, 4, 0, 0], [0, 0, 5, 0], [0, 0, 0, 0]],
-            [[0, 0, 0, 0], [0, 0, 3, 0], [0, 3, 0, 0], [0, 0, 0, 0]],
+            [[0, 10, 0, 0], [0, 0, 8, 0], [0, 0, 0, 2], [0, 0, 0, 2]],
+            [[0, 0, 0, 0], [0, 4, 0, 0], [0, 0, 0, 4], [0, 0, 0, 1]],
+            [[0, 0, 0, 0], [0, 0, 3, 0], [0, 2, 0, 0], [0, 0, 0, 1]],
         ]
     )
-    expected_states = ["*", 0, 1, 5]
-    expected_merges = 4
+    expected_states = ["*", 0, 1, 3]
+    expected_merges = 7
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
     assert obtained_merges == expected_merges
