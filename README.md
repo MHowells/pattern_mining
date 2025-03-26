@@ -6,7 +6,7 @@ This is code for running the sequential pattern mining algorithm ALERGIA, as wel
 
 Given an initial list of sequences  [ "0", "0", "0", "0", "0", "0", "0", "0", "01", "01", "01", "01", "01", "01", "01", "10", "10", "10", "10", "10", "11", "11", "11", "11", "11", "12", "12", "1", "1", "1"], we can derive the following PPTA from this data:
 
-![example_ppta](https://github.com/MHowells/pattern_mining/blob/main/figs/example_ppta.svg)
+![example_ppta](https://github.com/MHowells/pattern_mining/blob/main/figs/example_pta.svg)
 
 For this initial PPTA, with three actions or an alphabet ['0', '1', '2'] and 7 states, [0, 1, 2, 3, 4, 5, 6], the example input would be:
 
