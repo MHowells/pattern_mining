@@ -1,5 +1,6 @@
 import numpy as np
 import pattern_mining as pm
+import pytest
 
 
 def test_get_blue_states_simple_example(simple_pta):
@@ -144,8 +145,36 @@ def test_get_pairs_to_check_arnolds_example(arnolds_example):
     assert obtained_pairs == expected_pairs
 
 
+def test_alergia_raises_for_invalid_output(simple_pta):
+    with pytest.raises(
+        ValueError,
+        match="output must be",
+    ):
+        pm.alergia(
+            simple_pta.pathway_matrix,
+            simple_pta.states,
+            simple_pta.alphabet,
+            alpha=0.2,
+            output="Invalid",
+        )
+
+
+def test_alergia_raises_for_invalid_method(simple_pta):
+    with pytest.raises(
+        ValueError,
+        match="method must be",
+    ):
+        pm.alergia(
+            simple_pta.pathway_matrix,
+            simple_pta.states,
+            simple_pta.alphabet,
+            alpha=0.2,
+            method="Invalid",
+        )
+
+
 def test_alergia_simple_example(simple_pta):
-    obtained_matrix, obtained_states, obtained_merges = pm.alergia(
+    obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
         simple_pta.pathway_matrix, simple_pta.states, simple_pta.alphabet, 0.2
     )
     expected_matrix = np.array(
@@ -170,15 +199,33 @@ def test_alergia_simple_example(simple_pta):
             ],
         ]
     )
+
     expected_states = ["*", 0, 1, 3]
     expected_merges = 3
+
+    expected_initial_states = len(simple_pta.states)
+    expected_final_states = len(expected_states)
+    expected_attempted_merges = 16
+    expected_recursive_merge_attempts = 5
+    expected_recursive_merge_failures = 2
+
+    expected_tracking = {
+        "initial_states": expected_initial_states,
+        "final_states": expected_final_states,
+        "attempted_merges": expected_attempted_merges,
+        "successful_merges": expected_merges,
+        "recursive_merge_attempts": expected_recursive_merge_attempts,
+        "recursive_merge_failures": expected_recursive_merge_failures,
+    }
+
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
-    assert obtained_merges == expected_merges
+    assert obtained_tracking == expected_tracking
+
 
 
 def test_alergia_arnolds_example_alpha_point_two(arnolds_example):
-    obtained_matrix, obtained_states, obtained_merges = pm.alergia(
+    obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
         arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet, 0.2
     )
     expected_matrix = np.array(
@@ -197,15 +244,32 @@ def test_alergia_arnolds_example_alpha_point_two(arnolds_example):
             ],
         ]
     )
+
     expected_states = ["*", 0]
     expected_merges = 3
+
+    expected_initial_states = len(arnolds_example.states)
+    expected_final_states = len(expected_states)
+    expected_attempted_merges = 3
+    expected_recursive_merge_attempts = 3
+    expected_recursive_merge_failures = 0
+
+    expected_tracking = {
+        "initial_states": expected_initial_states,
+        "final_states": expected_final_states,
+        "attempted_merges": expected_attempted_merges,
+        "successful_merges": expected_merges,
+        "recursive_merge_attempts": expected_recursive_merge_attempts,
+        "recursive_merge_failures": expected_recursive_merge_failures,
+    }
+
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
-    assert obtained_merges == expected_merges
+    assert obtained_tracking == expected_tracking
 
 
-def test_alergia_arnolds_example_alpha_point_nine(arnolds_example):
-    obtained_matrix, obtained_states, obtained_merges = pm.alergia(
+def test_alergia_arnolds_example_alpha_point_nine_carrasco(arnolds_example):
+    obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
         arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet, 0.9
     )
     expected_matrix = np.array(
@@ -227,13 +291,32 @@ def test_alergia_arnolds_example_alpha_point_nine(arnolds_example):
             ],
         ]
     )
+
     expected_states = ["*", 0, 1]
     expected_merges = 5
+
+    expected_initial_states = len(arnolds_example.states)
+    expected_final_states = len(expected_states)
+    expected_attempted_merges = 19
+    expected_recursive_merge_attempts = 12
+    expected_recursive_merge_failures = 7
+
+    expected_tracking = {
+        "initial_states": expected_initial_states,
+        "final_states": expected_final_states,
+        "attempted_merges": expected_attempted_merges,
+        "successful_merges": expected_merges,
+        "recursive_merge_attempts": expected_recursive_merge_attempts,
+        "recursive_merge_failures": expected_recursive_merge_failures,
+    }
+
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
-    assert obtained_merges == expected_merges
+    assert obtained_tracking == expected_tracking
 
-    obtained_matrix, obtained_states, obtained_merges = pm.alergia(
+
+def test_alergia_arnolds_example_alpha_point_nine_higuera(arnolds_example):
+    obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
         arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet, 0.9, method="Higuera"
     )
     expected_matrix = np.array(
@@ -243,8 +326,27 @@ def test_alergia_arnolds_example_alpha_point_nine(arnolds_example):
             [[0, 0, 0, 0], [0, 0, 3, 0], [0, 2, 0, 0], [0, 0, 0, 1]],
         ]
     )
+
     expected_states = ["*", 0, 1, 3]
     expected_merges = 7
+
+    expected_initial_states = len(arnolds_example.states)
+    expected_final_states = len(expected_states)
+    expected_attempted_merges = 19
+    expected_recursive_merge_attempts = 10
+    expected_recursive_merge_failures = 3
+
+    expected_tracking = {
+        "initial_states": expected_initial_states,
+        "final_states": expected_final_states,
+        "attempted_merges": expected_attempted_merges,
+        "successful_merges": expected_merges,
+        "recursive_merge_attempts": expected_recursive_merge_attempts,
+        "recursive_merge_failures": expected_recursive_merge_failures,
+    }
+
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states
-    assert obtained_merges == expected_merges
+    print(obtained_tracking)
+    print(expected_tracking)
+    assert obtained_tracking == expected_tracking

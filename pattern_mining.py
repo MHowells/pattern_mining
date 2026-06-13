@@ -492,118 +492,268 @@ def get_pairs_to_check(states):
     return to_check
 
 
-def alergia(transition_matrix, states, alphabet, alpha, output="Suppressed", method="Carrasco"):
+def alergia(
+    transition_matrix, 
+    states, 
+    alphabet, 
+    alpha, 
+    output="Suppressed", 
+    method="Carrasco",
+):
     """
-    A function to implement the Alergia algorithm.
-    Set output to "Suppressed" to suppress output to just the final solution, "Truncated" to suppress non-deterministic merge information, or "Full" to show all output.
+    Implement the ALERGIA algorithm.
+
+    Parameters
+    ----------
+    transition_matrix : np.ndarray
+        Transition count matrix.
+    states : list
+        State identifiers corresponding to the transition matrix.
+    alphabet : list of str
+        Alphabet used by the automaton.
+    alpha : float
+        Significance level used by the Hoeffding compatibility test.
+    output : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
+        Amount of progress information printed.
+    method : {"Carrasco", "Higuera"}, default="Carrasco"
+        State-merging methodology.
+
+    Returns
+    -------
+    current_matrix : np.ndarray
+        Final transition count matrix.
+    current_states : list
+        Final states after ALERGIA terminates.
+    tracking : dict
+        Summary statistics for the ALERGIA run.
+
+    Raises
+    ------
+    ValueError
+        If output or method is invalid.
     """
-    if output not in ["Suppressed", "Truncated", "Full"]:
-        return "Invalid output type. Please use either 'Suppressed', 'Truncated', or 'Full'."
+
+    valid_outputs = {"Suppressed", "Truncated", "Full"}
+
+    if output not in valid_outputs:
+        raise ValueError(
+            "output must be 'Suppressed', 'Truncated', or 'Full'."
+        )
+
+    valid_methods = {"Carrasco", "Higuera"}
+
+    if method not in valid_methods:
+        raise ValueError(
+            "method must be either 'Carrasco' or 'Higuera'."
+        )
+    
     if method == "Carrasco":
         current_matrix = transition_matrix
         current_states = states
+
+        initial_state_count = len(current_states)
+
         to_check = get_pairs_to_check(states)
-        checked_states = []
+
         merge_counter = 0
         iter_counter = 0
+        attempted_merge_counter = 0
+        recursive_attempt_counter = 0
+        recursive_failure_counter = 0
+
         while to_check:
+            pair = to_check[0]
+
             if output in ("Full", "Truncated"):
-                print("The next pair of states to check is:", to_check[0])
+                print(
+                    "The next pair of states to check is:", 
+                    to_check[0],
+                )
+
             if output == "Full":
                 iter_counter += 1
                 print("Iteration", iter_counter)
-            checked_states.append(to_check[0])
+
+            attempted_merge_counter += 1
+
             if hoeffding_bound(
-                to_check[0][0],
-                to_check[0][1],
+                pair[0],
+                pair[1],
                 alpha,
                 current_matrix,
                 alphabet,
                 current_states,
             ):
                 if output in ("Full", "Truncated"):
-                    print("Hoeffding Bound satisfied for", to_check[0])
+                    print(
+                        "Hoeffding Bound satisfied for", 
+                        to_check[0],
+                    )
+
+                recursive_attempt_counter += 1
+
                 (
                     current_matrix,
                     current_states,
                     recursive_merge,
                 ) = recursive_merge_two_states(
-                    to_check[0][0],
-                    to_check[0][1],
+                    pair[0],
+                    pair[1],
                     current_matrix,
                     current_states,
                     alpha,
                     alphabet,
+                    output=output,
+                    method="Carrasco",
                 )
+
                 if recursive_merge:
                     merge_counter += 1
+
                     if output in ("Full", "Truncated"):
-                        print("Recursively merged states. Successfully merged", to_check[0])
+                        print(
+                            "Recursively merged states. "
+                            "Successfully merged", 
+                            to_check[0],
+                        )
+
                     to_check = get_pairs_to_check(current_states)
+
                 else:
+                    recursive_failure_counter += 1
+
                     if output in ("Full", "Truncated"):
-                        print("Recursive merge process failed. Cannot merge", to_check[0])
+                        print(
+                            "Recursive merge process failed. "
+                            "Cannot merge", 
+                            pair,
+                        )
+
                     to_check.pop(0)
+                    
             else:
                 if output in ("Full", "Truncated"):
-                    print("Hoeffding Bound not satisfied for", to_check[0])
+                    print(
+                        "Hoeffding Bound not satisfied for", 
+                        pair,
+                    )
+
                 to_check.pop(0)
-        return current_matrix, current_states, merge_counter
-    elif method == "Higuera":
-        current_matrix = transition_matrix
-        current_states = states
-        red_states = [0]
-        blue_states = get_blue_states(current_matrix, red_states, current_states)
-        merge_counter = 0
-        iter_counter = 0
-        while len(blue_states) > 0:
-            if output == "Full":
-                iter_counter += 1
-                print("Iteration", iter_counter)
-            q2 = blue_states[0]
-            merged = False
-            for q1 in red_states:
-                if hoeffding_bound(
+
+        tracking = {
+            "initial_states": initial_state_count,
+            "final_states": len(current_states),
+            "attempted_merges": attempted_merge_counter,
+            "successful_merges": merge_counter,
+            "recursive_merge_attempts": recursive_attempt_counter,
+            "recursive_merge_failures": recursive_failure_counter,
+        }
+
+        return current_matrix, current_states, tracking
+    
+    # Higuera method using red and blue states
+    current_matrix = transition_matrix
+    current_states = states
+
+    initial_state_count = len(current_states)
+
+    red_states = [0]
+    blue_states = get_blue_states(
+        current_matrix, 
+        red_states, 
+        current_states,
+    )
+
+    merge_counter = 0
+    iter_counter = 0
+    attempted_merge_counter = 0
+    recursive_attempt_counter = 0
+    recursive_failure_counter = 0
+
+    while len(blue_states) > 0:
+        if output == "Full":
+            iter_counter += 1
+            print("Iteration", iter_counter)
+
+        q2 = blue_states[0]
+        merged = False
+
+        for q1 in red_states:
+            attempted_merge_counter += 1
+
+            if hoeffding_bound(
+                q1,
+                q2,
+                alpha,
+                current_matrix,
+                alphabet,
+                current_states,
+            ):
+                if output in ("Full", "Truncated"):
+                    print(
+                        "Hoeffding Bound satisfied for", 
+                        (q1, q2),
+                    )
+
+                recursive_attempt_counter += 1
+
+                (
+                    current_matrix,
+                    current_states,
+                    recursive_merge,
+                    red_states,
+                ) = recursive_merge_two_states(
                     q1,
                     q2,
-                    alpha,
                     current_matrix,
-                    alphabet,
                     current_states,
-                ):
+                    alpha,
+                    alphabet,
+                    red_states,
+                    output=output,
+                    method="Higuera",
+                )
+
+                if recursive_merge:
+                    merge_counter += 1
+
                     if output in ("Full", "Truncated"):
-                        print("Hoeffding Bound satisfied for", (q1, q2))
-                    (
-                        current_matrix,
-                        current_states,
-                        recursive_merge,
-                        red_states,
-                    ) = recursive_merge_two_states(
-                        q1,
-                        q2,
-                        current_matrix,
-                        current_states,
-                        alpha,
-                        alphabet,
-                        red_states,
-                        output=output,
-                        method="Higuera",
-                    )
-                    if recursive_merge:
-                        merge_counter += 1
-                        if output in ("Full", "Truncated"):
-                            print("Recursively merged states. Successfully merged", (q1, q2))
-                        merged = True
-                        break
-            if merged == False:
-                red_states.append(q2)
-                red_states = sorted(red_states)
-                if output in ("Full", "Truncated"):
-                    print("Hoeffding Bound not satisfied for", (q1, q2))
-            blue_states = get_blue_states(current_matrix, red_states, current_states)
-        return current_matrix, current_states, merge_counter
-    else:
-        return "Invalid method. This function supports only the methodologies from 'Carrasco and Oncina (1994)' or 'Higuera (2010)'."
+                        print("Recursively merged states. "
+                              "Successfully merged", 
+                              (q1, q2),
+                            )
+                        
+                    merged = True
+                    break
+
+                recursive_failure_counter += 1
+
+        if merged == False:
+            red_states.append(q2)
+            red_states = sorted(red_states)
+
+            if output in ("Full", "Truncated"):
+                print(
+                    "Hoeffding Bound not satisfied for", 
+                    (q1, q2),
+                )
+
+        blue_states = get_blue_states(
+            current_matrix, 
+            red_states, 
+            current_states,
+        )
+
+    tracking = {
+        "initial_states": initial_state_count,
+        "final_states": len(current_states),
+        "attempted_merges": attempted_merge_counter,
+        "successful_merges": merge_counter,
+        "recursive_merge_attempts": recursive_attempt_counter,
+        "recursive_merge_failures": recursive_failure_counter,
+    }
+
+    return current_matrix, current_states, tracking
 
 
 def probability_transition_matrix(pathway_matrix, states, alphabet):
