@@ -647,8 +647,6 @@ def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
             for state in red_states
         ]
 
-        red_states_copy = sorted(set(red_states_copy))
-
         return (
             pathway_matrix_copy,
             states_copy,
