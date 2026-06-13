@@ -297,6 +297,29 @@ def test_proportion_constraint_arnolds_example(arnolds_example):
     )
 
 
+@pytest.mark.parametrize(
+    "invalid_digram",
+    [
+        "",
+        "A",
+        "ABC",
+    ],
+)
+def test_probability_sequence_contains_digram_raises_for_invalid_length(
+    jacquemont_model,
+    invalid_digram,
+):
+    with pytest.raises(
+        ValueError,
+        match="digram must contain exactly two symbols",
+    ):
+        pm.probability_sequence_contains_digram(
+            jacquemont_model.probability_matrix,
+            invalid_digram,
+            jacquemont_model.alphabet,
+        )
+
+
 def test_probability_sequence_contains_digram(jacquemont_example):
     obtained_vector = pm.probability_sequence_contains_digram(
         jacquemont_example.probability_matrix, "ab", jacquemont_example.alphabet

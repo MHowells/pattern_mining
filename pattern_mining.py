@@ -1131,31 +1131,84 @@ def proportion_constraint(
     return bool(prob_value >= k)
 
 
-def probability_sequence_contains_digram(p_mat, digram, alphabet):
+def probability_sequence_contains_digram(
+    p_mat, 
+    digram, 
+    alphabet,
+):
     """
-    A function to return the probability that a sequence contains a digram xy, for each starting state.
+    Return the probability that a sequence contains a digram for each
+    possible starting state.
+
+    Parameters
+    ----------
+    p_mat : np.ndarray
+        Probability transition matrix.
+    digram : str
+        Sequence containing exactly two symbols.
+    alphabet : list of str
+        Alphabet associated with the probability transition matrix.
+
+    Returns
+    -------
+    np.ndarray
+        Probability of encountering the digram from each starting state.
+
+    Raises
+    ------
+    ValueError
+        If digram does not contain exactly two symbols.
     """
     if len(digram) != 2:
-        return "Please use a digram of length 2."
+        raise ValueError(
+            "digram must contain exactly two symbols."
+        )
+    
     symbol_1 = digram[0]
     symbol_2 = digram[1]
+
     matrix_index_1 = alphabet.index(symbol_1)
     matrix_index_2 = alphabet.index(symbol_2)
 
-    rho = np.sum(np.delete(p_mat, matrix_index_1, 0), axis=0)
-    inverse = np.linalg.inv(np.identity(p_mat.shape[1]) - rho)
+    rho = np.sum(
+        np.delete(p_mat, matrix_index_1, 0), 
+        axis=0,
+    )
 
-    p_symbol_1 = np.sum(p_mat[matrix_index_1, :, :], axis=1)
+    inverse = np.linalg.inv(
+        np.identity(p_mat.shape[1]) - rho
+    )
+
+    p_symbol_1 = np.sum(
+        p_mat[matrix_index_1, :, :], 
+        axis=1,
+    )
+
     nonzero = []
-    for i in range(p_mat.shape[1]):
-        if any(p_mat[matrix_index_1, i, :] > 0):
-            nonzero.append(np.where(p_mat[matrix_index_1, i, :] > 0)[0][0])
+
+    for state_index in range(p_mat.shape[1]):
+        destinations = np.where(
+            p_mat[matrix_index_1, state_index, :] > 0
+        )[0]
+
+        if np.any(
+            p_mat[matrix_index_1, state_index, :] > 0
+        ):
+            nonzero.append(destinations[0])
         else:
             nonzero.append(0)
+
     p_symbol_2 = np.zeros((1, p_mat.shape[1]))
+
     for i, emitted in enumerate(nonzero):
-        p_symbol_2[0, i] = np.sum(p_mat[matrix_index_2, emitted, :], axis=0)
-    tau = np.multiply(p_symbol_1, p_symbol_2)
+        p_symbol_2[0, i] = np.sum(
+            p_mat[matrix_index_2, emitted, :], axis=0,
+        )
+
+    tau = np.multiply(
+        p_symbol_1, 
+        p_symbol_2,
+    )
 
     return np.matmul(tau, inverse)
 
