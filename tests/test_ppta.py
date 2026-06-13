@@ -1,5 +1,6 @@
 import numpy as np
 import pattern_mining as pm
+import pytest
 
 
 def test_get_alphabet_simple_example(simple_pta):
@@ -12,6 +13,17 @@ def test_get_alphabet_arnolds_example(arnolds_example):
     obtained_alphabet = pm.get_alphabet(arnolds_example.sequences)
     expected_alphabet = arnolds_example.alphabet
     assert obtained_alphabet == expected_alphabet
+
+
+def test_get_state_paths_raises_for_invalid_build(simple_pta):
+    with pytest.raises(
+        ValueError,
+        match="Invalid build type, build must be 'breadth' or 'depth'.",
+    ):
+        pm.get_state_paths(
+            simple_pta.sequences,
+            build="invalid",
+        )
 
 
 def test_get_state_paths_simple_example(simple_pta):

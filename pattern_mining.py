@@ -13,16 +13,36 @@ def get_alphabet(sequences):
 
 def get_state_paths(sequences, build="breadth"):
     """
-    A function that returns the paths to a state within a PPTA.
+    Return the state paths within a PPTA.
 
-    Parameters:
-    build -- the type of build to use, either "breadth" or "depth"
+    Parameters
+    ----------
+    sequences : iterable of str
+        Sequences used to construct the PPTA.
+    build : {"breadth", "depth"}, default="breadth"
+        Order in which the state paths are constructed.
+
+    Returns
+    -------
+    list of str
+        State paths in the requested construction order.
+
+    Raises
+    ------
+    ValueError
+        If build is not "breadth" or "depth".
     """
+    if build not in {"breadth", "depth"}:
+        raise ValueError(
+            "Invalid build type, build must be 'breadth' or 'depth'."
+        )
+
     if build == "breadth":
         all_paths = [""]
         all_ordered = [""]
         current_node = all_paths[0]
         tracker = 0
+
         while tracker < len(all_paths):
             this_iter = sorted(
                 list(
@@ -35,20 +55,27 @@ def get_state_paths(sequences, build="breadth"):
                     )
                 )
             )
+
             for j in range(len(this_iter)):
                 all_paths.append(this_iter[j])
                 all_ordered.insert(
                     all_ordered.index(current_node) + 1 + j, this_iter[j]
                 )
+
             tracker += 1
+
             if tracker == len(all_paths):
                 break
+
             current_node = all_ordered[all_ordered.index(current_node) + 1]
+
         return all_paths
-    elif build == "depth":
+    
+    else:
         all_paths = [""]
         current_node = all_paths[0]
         tracker = 0
+
         while tracker < len(all_paths):
             this_iter = sorted(
                 list(
@@ -61,15 +88,18 @@ def get_state_paths(sequences, build="breadth"):
                     )
                 )
             )
+
             for j in range(len(this_iter)):
                 all_paths.append(this_iter[j])
+
             tracker += 1
+
             if tracker == len(all_paths):
                 break
+
             current_node = all_paths[all_paths.index(current_node) + 1]
+            
         return all_paths
-    else:
-        return "Invalid build type. Please use either 'breadth' or 'depth'."
 
 
 def get_transition_matrix(sequences, alphabet, build="breadth"):
