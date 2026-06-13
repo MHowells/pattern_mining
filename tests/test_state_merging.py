@@ -79,6 +79,45 @@ def test_validate_states_for_merging_raises_for_initial_state(
         )
 
 
+@pytest.mark.parametrize(
+    "invalid_alpha",
+    [
+        "0.2",
+        None,
+        [0.2],
+        1 + 2j,
+    ],
+)
+def test_validate_alpha_raises_for_non_numeric_values(
+    invalid_alpha,
+):
+    with pytest.raises(
+        TypeError,
+        match="alpha must be numeric",
+    ):
+        pm._validate_alpha(invalid_alpha)
+
+
+@pytest.mark.parametrize(
+    "invalid_alpha",
+    [
+        -1.0,
+        -0.1,
+        0.0,
+        2.1,
+        3.0,
+    ],
+)
+def test_validate_alpha_raises_for_values_outside_range(
+    invalid_alpha,
+):
+    with pytest.raises(
+        ValueError,
+        match=r"alpha must be in the range \(0, 2\]",
+    ):
+        pm._validate_alpha(invalid_alpha)
+
+
 def test_hoeffding_bound_simple_example(simple_pta):
     assert (
         pm.hoeffding_bound(0, 3, 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.states)

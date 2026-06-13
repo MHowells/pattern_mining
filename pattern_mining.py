@@ -182,6 +182,31 @@ def _validate_transition_matrix(transition_matrix, alphabet, states):
         )
 
 
+def _validate_alpha(alpha):
+    """
+    Validate the alpha parameter for Hoeffding bound calculations.
+
+    Parameters
+    ----------
+    alpha : float
+        Significance level for the Hoeffding bound.
+
+    Raises
+    ------
+    TypeError
+        If alpha is not a numeric type.
+    ValueError
+        If alpha is not in the range (0,2].
+    """
+    if not isinstance(alpha, (int, float, np.number)):
+        raise TypeError("alpha must be numeric.")
+
+    if alpha <= 0 or alpha > 2:
+        raise ValueError(
+            "alpha must be in the range (0, 2]."
+        )
+
+
 def _validate_states_for_merging(q1, q2, states):
     """
     Validate two states before performing a state merge.
