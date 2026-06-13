@@ -451,17 +451,7 @@ def get_initial_states(sequences):
     -------
     list
         State identifiers, including the artificial initial state "*".
-
-    Raises
-    ------
-    TypeError
-        If sequences is None, is a single string, or contains
-        non-string elements.
-    ValueError
-        If sequences is empty.
     """
-    sequences = _validate_sequences(sequences)
-
     states = list(range(len(get_state_paths(sequences))))
     states.insert(0, "*")
     
@@ -584,57 +574,13 @@ def merge_two_states(
         states,
     )
 
-    i1 = states.index(q1)
-    i2 = states.index(q2)
-
-    which_min = min(i1, i2)
-    which_max = max(i1, i2)
-
-    surviving_state = states[which_min]
-    removed_state = states[which_max]
-
-    pathway_matrix_copy = np.copy(pathway_matrix)
-    states_copy = states.copy()
-
-    pathway_matrix_copy[:, :, which_min] = (
-        pathway_matrix_copy[:, :, i1]
-        + pathway_matrix_copy[:, :, i2]
+    return _merge_two_states(
+        q1,
+        q2,
+        pathway_matrix,
+        states,
+        red_states=red_states,
     )
-
-    pathway_matrix_copy = np.delete(
-        pathway_matrix_copy,
-        which_max,
-        axis=2,
-    )
-
-    pathway_matrix_copy[:, which_min, :] = (
-        pathway_matrix_copy[:, i1, :]
-        + pathway_matrix_copy[:, i2, :]
-    )
-
-    pathway_matrix_copy = np.delete(
-        pathway_matrix_copy,
-        which_max,
-        axis=1,
-    )
-
-    states_copy.remove(removed_state)
-
-    if red_states is not None:
-        red_states_copy = [
-            surviving_state if state == removed_state else state
-            for state in red_states
-        ]
-
-        red_states_copy = sorted(set(red_states_copy))
-
-        return (
-            pathway_matrix_copy,
-            states_copy,
-            red_states_copy,
-        )
-
-    return pathway_matrix_copy, states_copy
 
 
 def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
@@ -657,8 +603,6 @@ def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
     states : list
         State identifiers corresponding to the final two dimensions of
         pathway_matrix.
-    alphabet : iterable of str
-        Alphabet corresponding to the first dimension of pathway_matrix.
     red_states : list, optional
         Red states to update after the merge.
 
@@ -811,6 +755,8 @@ def recursive_merge_two_states(
         raise ValueError(
             "red_states must be provided when method='Higuera'."
         )
+
+    _validate_alpha(alpha)
     
     alphabet = _validate_alphabet(alphabet)
 
@@ -826,167 +772,17 @@ def recursive_merge_two_states(
         states,
     )
     
-    if method == "Carrasco":
-        initial_pathway_matrix = np.copy(pathway_matrix)
-        initial_states = states.copy()
-
-        new_matrix, new_states = _merge_two_states(
-            q1, 
-            q2, 
-            pathway_matrix, 
-            states,
-        )
-
-        non_det_pairs = check_is_deterministic(
-            new_matrix, 
-            new_states, 
-            alphabet,
-        )
-
-        if len(non_det_pairs) > 0 and output == "Full":
-            print(
-                "Merging of states",
-                (q1, q2),
-                "results in non-deterministic pairs:",
-                non_det_pairs,
-            )
-
-        recursive_merge = True
-
-        while non_det_pairs:
-            if hoeffding_bound(
-                non_det_pairs[0][0],
-                non_det_pairs[0][1],
-                alpha,
-                new_matrix,
-                alphabet,
-                new_states,
-            ):
-                if output == "Full":
-                    print(
-                        "Successfully merged states",
-                        non_det_pairs[0],
-                        "into a deterministic state.",
-                    )
-
-                new_matrix, new_states = _merge_two_states(
-                    non_det_pairs[0][0], 
-                    non_det_pairs[0][1], 
-                    new_matrix, 
-                    new_states,
-                )
-
-                non_det_pairs = check_is_deterministic(
-                    new_matrix, 
-                    new_states, 
-                    alphabet,
-                )
-
-                if len(non_det_pairs) > 0 and output == "Full":
-                    print(
-                        "Merging of previous non-deterministic pair "
-                        "results in non-deterministic pairs:",
-                        non_det_pairs,
-                    )
-
-            else:
-                recursive_merge = False
-                return (
-                    initial_pathway_matrix, 
-                    initial_states, 
-                    recursive_merge,
-                )
-            
-        return new_matrix, new_states, recursive_merge
-    
-    initial_pathway_matrix = np.copy(pathway_matrix)
-    initial_states = states.copy()
-    initial_red_states = red_states.copy()
-
-    new_matrix, new_states, red_states = _merge_two_states(
-        q1, 
-        q2, 
-        pathway_matrix, 
-        states, 
-        red_states,
-    )
-
-    non_det_pairs = check_is_deterministic(
-        new_matrix, 
-        new_states, 
+    return _recursive_merge_two_states(
+        q1,
+        q2,
+        pathway_matrix,
+        states,
+        alpha,
         alphabet,
+        red_states=red_states,
+        output=output,
+        method=method,
     )
-
-    if len(non_det_pairs) > 0 and output == "Full":
-        print(
-            "Merging of states",
-            (q1, q2),
-            "results in non-deterministic pairs:",
-            non_det_pairs,
-        )
-
-    recursive_merge = True
-
-    while non_det_pairs:
-        pair = non_det_pairs[0]
-
-        if hoeffding_bound(
-            pair[0],
-            pair[1],
-            alpha,
-            new_matrix,
-            alphabet,
-            new_states,
-        ):
-            if output == "Full":
-                print(
-                    "Successfully merged states",
-                    pair,
-                    "into a deterministic state.",
-                )
-
-            if any(x in red_states for x in pair):
-                if set(pair).issubset(set(red_states)):
-                    red_states = [
-                        min(pair) if x == max(pair) else x 
-                        for x in red_states
-                    ]
-                else:
-                    red_states = [
-                        min(pair) if x in pair else x 
-                        for x in red_states
-                    ]
-
-            new_matrix, new_states = _merge_two_states(
-                pair[0], 
-                pair[1], 
-                new_matrix, 
-                new_states,
-            )
-
-            non_det_pairs = check_is_deterministic(
-                new_matrix, 
-                new_states, 
-                alphabet,
-            )
-
-            if len(non_det_pairs) > 0 and output == "Full":
-                print(
-                    "Merging of previous non-deterministic pair "
-                    "results in non-deterministic pairs:",
-                    non_det_pairs,
-                )
-
-        else:
-            recursive_merge = False
-            return (
-                initial_pathway_matrix, 
-                initial_states, 
-                recursive_merge, 
-                red_states,
-            )
-        
-    return new_matrix, new_states, recursive_merge, red_states
 
 
 def _recursive_merge_two_states(
@@ -1853,15 +1649,21 @@ def proportion_constraint(
     TypeError
         If alpha is not numeric.
     ValueError
-        If p_value is invalid, alpha is outside (0, 2), sequences is
+        If p_value is invalid, alpha is outside (0, 1), sequences is
         empty, or the estimated probability is invalid.
     """
     if p_value not in {"pattern", "sequence"}:
         raise ValueError(
             "p_value must be either 'pattern' or 'sequence'."
         )
+    
+    if not isinstance(alpha, (int, float, np.number)):
+        raise TypeError("alpha must be numeric.")
 
-    _validate_alpha(alpha)
+    if alpha <= 0 or alpha >= 1:
+        raise ValueError(
+            "alpha must be in the range (0, 1) for proportion_constraint()"
+        )
     
     if len(sequences) == 0:
         raise ValueError(
