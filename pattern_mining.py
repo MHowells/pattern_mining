@@ -4,11 +4,146 @@ from scipy.stats import norm
 import itertools as it
 
 
+def validate_sequences(sequences):
+    """
+    Validates the input sequences for a PPTA.
+
+    Parameters
+    ----------
+    sequences : iterable of str
+        Sequences from which the alphabet is obtained.
+
+    Returns
+    -------
+    list of str
+        The validated list of sequences.
+
+    Raises
+    ------
+    TypeError
+        If sequences is None, is a single string, or contains
+        non-string elements.
+    ValueError
+        If sequences is empty.
+    """
+    if sequences is None:
+        raise TypeError(
+            "sequences must be an iterable of strings."
+        )
+
+    if isinstance(sequences, str):
+        raise TypeError(
+            "sequences must be an iterable of strings, "
+            "not a single string."
+        )
+
+    sequences = list(sequences)
+
+    if len(sequences) == 0:
+        raise ValueError(
+            "sequences must contain at least one sequence."
+        )
+
+    if not all(
+        isinstance(sequence, str)
+        for sequence in sequences
+    ):
+        raise TypeError(
+            "every sequence must be a string."
+        )
+
+    return sequences
+
+
+def validate_alphabet(alphabet):
+    """
+    Validates the input alphabet for a PPTA.
+
+    Parameters
+    ----------
+    alphabet : iterable of str
+        Alphabet to validate.
+
+    Returns
+    -------
+    list of str
+        The validated list of alphabet symbols.
+
+    Raises
+    ------
+    TypeError
+        If alphabet is None, is a single string, or contains
+        non-string elements.
+    ValueError
+        If alphabet is empty, contains non-single-character strings,
+        or contains duplicate symbols.
+    """
+    if alphabet is None:
+        raise TypeError(
+            "alphabet must be an iterable of strings."
+        )
+
+    if isinstance(alphabet, str):
+        raise TypeError(
+            "alphabet must be an iterable of strings, "
+            "not a single string."
+        )
+
+    alphabet = list(alphabet)
+
+    if len(alphabet) == 0:
+        raise ValueError(
+            "alphabet must contain at least one symbol."
+        )
+
+    if not all(
+        isinstance(symbol, str)
+        for symbol in alphabet
+    ):
+        raise TypeError(
+            "every alphabet symbol must be a string."
+        )
+
+    if not all(
+        len(symbol) == 1
+        for symbol in alphabet
+    ):
+        raise ValueError(
+            "every alphabet symbol must contain exactly one character."
+        )
+
+    if len(alphabet) != len(set(alphabet)):
+        raise ValueError(
+            "alphabet must not contain duplicate symbols."
+        )
+
+    return alphabet
+
+
 def get_alphabet(sequences):
     """
-    A function that returns the alphabet of a PPTA.
+    Returns the sorted alphabet across all sequences of a PPTA.
+
+    Parameters
+    ----------
+    sequences : iterable of str
+        Sequences from which the alphabet is obtained.
+
+    Returns
+    -------
+    list of str
+        Sorted unique symbols appearing in the sequences.
+
+    Raises
+    ------
+    TypeError
+        If sequences is None, is a single string, or contains
+        non-string elements.
+    ValueError
+        If sequences is empty.
     """
-    return sorted(list(set("".join(sequences))))
+    sequences = validate_sequences(sequences)
+    return sorted(set("".join(sequences)))
 
 
 def get_state_paths(sequences, build="breadth"):
@@ -29,12 +164,17 @@ def get_state_paths(sequences, build="breadth"):
 
     Raises
     ------
+    TypeError
+        If sequences is None, is a single string, or contains
+        non-string elements.
     ValueError
-        If build is not "breadth" or "depth".
+        If sequences is empty or build is not "breadth" or "depth".
     """
+    sequences = validate_sequences(sequences)
+
     if build not in {"breadth", "depth"}:
         raise ValueError(
-            "Invalid build type, build must be 'breadth' or 'depth'."
+            "build must be either 'breadth' or 'depth'."
         )
 
     if build == "breadth":
@@ -50,7 +190,8 @@ def get_state_paths(sequences, build="breadth"):
                         [
                             x[: len(current_node) + 1]
                             for x in sequences
-                            if len(x) > len(current_node) and x.startswith(current_node)
+                            if len(x) > len(current_node) 
+                            and x.startswith(current_node)
                         ]
                     )
                 )
@@ -59,7 +200,8 @@ def get_state_paths(sequences, build="breadth"):
             for j in range(len(this_iter)):
                 all_paths.append(this_iter[j])
                 all_ordered.insert(
-                    all_ordered.index(current_node) + 1 + j, this_iter[j]
+                    all_ordered.index(current_node) + 1 + j, 
+                    this_iter[j],
                 )
 
             tracker += 1
@@ -67,7 +209,9 @@ def get_state_paths(sequences, build="breadth"):
             if tracker == len(all_paths):
                 break
 
-            current_node = all_ordered[all_ordered.index(current_node) + 1]
+            current_node = all_ordered[
+                all_ordered.index(current_node) + 1
+            ]
 
         return all_paths
     
@@ -83,7 +227,10 @@ def get_state_paths(sequences, build="breadth"):
                         [
                             x[: len(current_node) + 1]
                             for x in sequences
-                            if len(x) > len(current_node) and x.startswith(current_node)
+                            if (
+                                len(x) > len(current_node) 
+                                and x.startswith(current_node)
+                            )
                         ]
                     )
                 )
@@ -97,36 +244,99 @@ def get_state_paths(sequences, build="breadth"):
             if tracker == len(all_paths):
                 break
 
-            current_node = all_paths[all_paths.index(current_node) + 1]
+            current_node = all_paths[
+                all_paths.index(current_node) + 1
+            ]
 
         return all_paths
 
 
 def get_transition_matrix(sequences, alphabet, build="breadth"):
     """
-    A function that returns the transition matrix of a PPTA, given a list of sequences.
+    Return the transition-count matrix of a PPTA.
+
+    Parameters
+    ----------
+    sequences : iterable of str
+        Sequences used to construct the PPTA.
+    alphabet : iterable of str
+        Symbols represented in the transition matrix.
+    build : {"breadth", "depth"}, default="breadth"
+        Order in which the PPTA states are constructed.
+
+    Returns
+    -------
+    np.ndarray
+        Three-dimensional transition-count matrix with shape
+        (number of symbols, number of states, number of states).
+
+    Raises
+    ------
+    TypeError
+        If sequences or alphabet has an invalid type.
+    ValueError
+        If sequences or alphabet is empty, build is invalid, alphabet
+        contains duplicate symbols, or alphabet omits observed symbols.
     """
+    sequences = validate_sequences(sequences)
+    alphabet = validate_alphabet(alphabet)
+
+    observed_symbols = set("".join(sequences))
+    missing_symbols = observed_symbols - set(alphabet)
+
+    if missing_symbols:
+        raise ValueError(
+            "alphabet is missing symbols found in sequences: "
+            f"{sorted(missing_symbols)}."
+        )
+
     all_nodes = get_state_paths(sequences, build=build)
     all_nodes.insert(0, "*")
+
     n = len(all_nodes)
+
     pathway_matrix = np.zeros((len(alphabet), n, n), dtype=int)
     pathway_matrix[0, 0, 1] = len(sequences)
+
     for i in range(1, n):
         for k in range(len(alphabet)):
             next_node = all_nodes[i] + alphabet[k]
+
             if next_node in all_nodes:
                 pathway_matrix[k, i, all_nodes.index(next_node)] = len(
                     [x for x in sequences if x.startswith(next_node)]
                 )
+
     return pathway_matrix
 
 
 def get_initial_states(sequences):
     """
-    A function that returns the states of a PPTA.
+    Return the initial state identifiers of a PPTA.
+
+    Parameters
+    ----------
+    sequences : iterable of str
+        Sequences used to construct the PPTA.
+
+    Returns
+    -------
+    list
+        State identifiers, including the artificial initial state "*".
+
+    Raises
+    ------
+    TypeError
+        If sequences is None, is a single string, or contains
+        non-string elements.
+    ValueError
+        If sequences is empty.
     """
+    sequences = validate_sequences(sequences)
+
     states = list(range(len(get_state_paths(sequences))))
     states.insert(0, "*")
+    
     return states
 
 

@@ -3,6 +3,110 @@ import pattern_mining as pm
 import pytest
 
 
+def test_validate_sequences_raises_for_none():
+    with pytest.raises(
+        TypeError,
+        match="sequences must be an iterable of strings",
+    ):
+        pm.validate_sequences(None)
+
+
+def test_validate_sequences_raises_for_single_string():
+    with pytest.raises(
+        TypeError,
+        match="sequences must be an iterable of strings",
+    ):
+        pm.validate_sequences("ABC")
+
+
+def test_validate_sequences_raises_for_empty_sequences():
+    with pytest.raises(
+        ValueError,
+        match="sequences must contain at least one sequence",
+    ):
+        pm.validate_sequences([])
+
+
+@pytest.mark.parametrize(
+    "invalid_sequences",
+    [
+        ["AB", 1],
+        ["AB", None],
+        [1, 2, 3],
+    ],
+)
+def test_validate_sequences_raises_for_non_string_sequences(
+    invalid_sequences,
+):
+    with pytest.raises(
+        TypeError,
+        match="every sequence must be a string",
+    ):
+        pm.validate_sequences(invalid_sequences)
+
+
+def test_validate_alphabet_raises_for_none():
+    with pytest.raises(
+        TypeError,
+        match="alphabet must be an iterable of strings",
+    ):
+        pm.validate_alphabet(None)
+
+
+def test_validate_alphabet_raises_for_single_string():
+    with pytest.raises(
+        TypeError,
+        match="alphabet must be an iterable of strings",
+    ):
+        pm.validate_alphabet("ABC")
+
+
+def test_validate_alphabet_raises_for_empty_alphabet():
+    with pytest.raises(
+        ValueError,
+        match="alphabet must contain at least one symbol",
+    ):
+        pm.validate_alphabet([])
+
+
+@pytest.mark.parametrize(
+    "invalid_alphabet",
+    [
+        ["A", 1],
+        ["A", None],
+        [1, 2, 3],
+    ],
+)
+def test_validate_alphabet_raises_for_non_string_symbols(
+    invalid_alphabet,
+):
+    with pytest.raises(
+        TypeError,
+        match="every alphabet symbol must be a string",
+    ):
+        pm.validate_alphabet(invalid_alphabet)
+
+
+def test_validate_alphabet_raises_for_duplicate_symbols():
+    with pytest.raises(
+        ValueError,
+        match="alphabet must not contain duplicate symbols",
+    ):
+        pm.validate_alphabet(
+            ["A", "B", "A"]
+        )
+
+
+def test_validate_alphabet_returns_validated_alphabet():
+    obtained = pm.validate_alphabet(
+        ("A", "B", "C")
+    )
+
+    expected = ["A", "B", "C"]
+
+    assert obtained == expected
+
+
 def test_get_alphabet_simple_example(simple_pta):
     obtained_alphabet = pm.get_alphabet(simple_pta.sequences)
     expected_alphabet = simple_pta.alphabet
@@ -18,7 +122,7 @@ def test_get_alphabet_arnolds_example(arnolds_example):
 def test_get_state_paths_raises_for_invalid_build(simple_pta):
     with pytest.raises(
         ValueError,
-        match="Invalid build type, build must be 'breadth' or 'depth'.",
+        match="build must be either 'breadth' or 'depth'.",
     ):
         pm.get_state_paths(
             simple_pta.sequences,
@@ -80,6 +184,20 @@ def test_get_state_paths_arnolds_example(arnolds_example):
     ]
     assert obtained_state_paths_breadth == expected_state_paths_breadth
     assert obtained_state_paths_depth == expected_state_paths_depth
+
+
+def test_get_transition_matrix_raises_when_alphabet_is_missing_symbols():
+    sequences = ["AB", "AC"]
+    alphabet = ["A", "B"]
+
+    with pytest.raises(
+        ValueError,
+        match="alphabet is missing symbols found in sequences",
+    ):
+        pm.get_transition_matrix(
+            sequences,
+            alphabet,
+        )
 
 
 def test_get_transition_matrix_simple_example(simple_pta):
