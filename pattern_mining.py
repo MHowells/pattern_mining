@@ -98,7 +98,7 @@ def get_state_paths(sequences, build="breadth"):
                 break
 
             current_node = all_paths[all_paths.index(current_node) + 1]
-            
+
         return all_paths
 
 
@@ -237,62 +237,87 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
 
 
 def recursive_merge_two_states(
-    q1, q2, pathway_matrix, states, alpha, alphabet, red_states=None, output="Suppressed", method="Carrasco"
+    q1, 
+    q2, 
+    pathway_matrix, 
+    states, 
+    alpha, 
+    alphabet, 
+    red_states=None, 
+    output="Suppressed", 
+    method="Carrasco",
 ):
     """
-    A function to recursively merge two states until the PPTA is deterministic.
-    Set output to "Suppressed" to suppress output to just the final solution, "Truncated" to suppress non-deterministic merge information, or "Full" to show all output.
+    Recursively merge two states until the PPTA is deterministic.
+
+    Parameters
+    ----------
+    output : {"Suppressed", "Truncated", "Full"}
+        Controls the amount of information printed.
+    method : {"Carrasco", "Higuera"}
+        State-merging methodology to use.
+
+    Returns
+    -------
+    If method is "Carrasco":
+        new_matrix : np.ndarray
+            The new transition matrix after merging.
+        new_states : list
+            The new list of states after merging.
+        recursive_merge : bool
+            True if the merge was successful, False if the merge was unsuccessful.
+    If method is "Higuera":
+        new_matrix : np.ndarray
+            The new transition matrix after merging.
+        new_states : list
+            The new list of states after merging.
+        recursive_merge : bool
+            True if the merge was successful, False if the merge was unsuccessful.
+        red_states : list
+            The updated list of red states after merging.
+
+    Raises
+    ------
+    ValueError
+        If output or method is invalid, or if red_states is not supplied
+        for the Higuera method.
     """
-    if output not in ["Suppressed", "Truncated", "Full"]:
-        return "Invalid output type. Please use either 'Suppressed', 'Truncated', or 'Full'."
+    valid_outputs = {"Suppressed", "Truncated", "Full"}
+
+    if output not in valid_outputs:
+        raise ValueError(
+            "output must be 'Suppressed', 'Truncated', or 'Full'."
+        )
+
+    valid_methods = {"Carrasco", "Higuera"}
+
+    if method not in valid_methods:
+        raise ValueError(
+            "method must be either 'Carrasco' or 'Higuera'."
+        )
+
+    if method == "Higuera" and red_states is None:
+        raise ValueError(
+            "red_states must be provided when method='Higuera'."
+        )
+    
     if method == "Carrasco":
         initial_pathway_matrix = np.copy(pathway_matrix)
         initial_states = states.copy()
-        new_matrix, new_states = merge_two_states(q1, q2, pathway_matrix, states)
-        non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
-        if len(non_det_pairs) > 0 and output == "Full":
-            print(
-                "Merging of states",
-                (q1, q2),
-                "results in non-deterministic pairs:",
-                non_det_pairs,
-            )
-        recursive_merge = True
-        while non_det_pairs:
-            if hoeffding_bound(
-                non_det_pairs[0][0],
-                non_det_pairs[0][1],
-                alpha,
-                new_matrix,
-                alphabet,
-                new_states,
-            ):
-                if output == "Full":
-                    print(
-                        "Successfully merged states",
-                        non_det_pairs[0],
-                        "into a deterministic state.",
-                    )
-                new_matrix, new_states = merge_two_states(
-                    non_det_pairs[0][0], non_det_pairs[0][1], new_matrix, new_states
-                )
-                non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
-                if len(non_det_pairs) > 0 and output == "Full":
-                    print(
-                        "Merging of previous non-deterministic pair results in non-deterministic pairs:",
-                        non_det_pairs,
-                    )
-            else:
-                recursive_merge = False
-                return initial_pathway_matrix, initial_states, recursive_merge
-        return new_matrix, new_states, recursive_merge
-    elif method == "Higuera":
-        initial_pathway_matrix = np.copy(pathway_matrix)
-        initial_states = states.copy()
-        new_matrix, new_states, red_states = merge_two_states(
-            q1, q2, pathway_matrix, states, red_states
+
+        new_matrix, new_states = merge_two_states(
+            q1, 
+            q2, 
+            pathway_matrix, 
+            states,
         )
-        non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
+
+        non_det_pairs = check_is_deterministic(
+            new_matrix, 
+            new_states, 
+            alphabet,
+        )
+
         if len(non_det_pairs) > 0 and output == "Full":
             print(
                 "Merging of states",
@@ -300,7 +325,9 @@ def recursive_merge_two_states(
                 "results in non-deterministic pairs:",
                 non_det_pairs,
             )
+
         recursive_merge = True
+
         while non_det_pairs:
             if hoeffding_bound(
                 non_det_pairs[0][0],
@@ -316,32 +343,125 @@ def recursive_merge_two_states(
                         non_det_pairs[0],
                         "into a deterministic state.",
                     )
-                if any(x in red_states for x in non_det_pairs[0]):
-                    if set(non_det_pairs[0]).issubset(set(red_states)):
-                        red_states = [
-                            min(non_det_pairs[0]) if x == max(non_det_pairs[0]) else x 
-                            for x in red_states
-                        ]
-                    else:
-                        red_states = [
-                            min(non_det_pairs[0]) if x in non_det_pairs[0] else x 
-                            for x in red_states
-                        ]
+
                 new_matrix, new_states = merge_two_states(
-                    non_det_pairs[0][0], non_det_pairs[0][1], new_matrix, new_states
+                    non_det_pairs[0][0], 
+                    non_det_pairs[0][1], 
+                    new_matrix, 
+                    new_states,
                 )
-                non_det_pairs = check_is_deterministic(new_matrix, new_states, alphabet)
+
+                non_det_pairs = check_is_deterministic(
+                    new_matrix, 
+                    new_states, 
+                    alphabet,
+                )
+
                 if len(non_det_pairs) > 0 and output == "Full":
                     print(
-                        "Merging of previous non-deterministic pair results in non-deterministic pairs:",
+                        "Merging of previous non-deterministic pair "
+                        "results in non-deterministic pairs:",
                         non_det_pairs,
                     )
+
             else:
                 recursive_merge = False
-                return initial_pathway_matrix, initial_states, recursive_merge, red_states
-        return new_matrix, new_states, recursive_merge, red_states
-    else:
-        return "Invalid method. This function supports only the methodologies from 'Carrasco and Oncina (1994)' or 'Higuera (2010)'."
+                return (
+                    initial_pathway_matrix, 
+                    initial_states, 
+                    recursive_merge,
+                )
+            
+        return new_matrix, new_states, recursive_merge
+    
+    initial_pathway_matrix = np.copy(pathway_matrix)
+    initial_states = states.copy()
+    initial_red_states = red_states.copy()
+
+    new_matrix, new_states, red_states = merge_two_states(
+        q1, 
+        q2, 
+        pathway_matrix, 
+        states, 
+        red_states,
+    )
+
+    non_det_pairs = check_is_deterministic(
+        new_matrix, 
+        new_states, 
+        alphabet,
+    )
+
+    if len(non_det_pairs) > 0 and output == "Full":
+        print(
+            "Merging of states",
+            (q1, q2),
+            "results in non-deterministic pairs:",
+            non_det_pairs,
+        )
+
+    recursive_merge = True
+
+    while non_det_pairs:
+        pair = non_det_pairs[0]
+
+        if hoeffding_bound(
+            pair[0],
+            pair[1],
+            alpha,
+            new_matrix,
+            alphabet,
+            new_states,
+        ):
+            if output == "Full":
+                print(
+                    "Successfully merged states",
+                    pair,
+                    "into a deterministic state.",
+                )
+
+            if any(x in red_states for x in pair):
+                if set(pair).issubset(set(red_states)):
+                    red_states = [
+                        min(pair) if x == max(pair) else x 
+                        for x in red_states
+                    ]
+                else:
+                    red_states = [
+                        min(pair) if x in pair else x 
+                        for x in red_states
+                    ]
+
+            new_matrix, new_states = merge_two_states(
+                pair[0], 
+                pair[1], 
+                new_matrix, 
+                new_states,
+            )
+
+            non_det_pairs = check_is_deterministic(
+                new_matrix, 
+                new_states, 
+                alphabet,
+            )
+
+            if len(non_det_pairs) > 0 and output == "Full":
+                print(
+                    "Merging of previous non-deterministic pair "
+                    "results in non-deterministic pairs:",
+                    non_det_pairs,
+                )
+
+        else:
+            recursive_merge = False
+            return (
+                initial_pathway_matrix, 
+                initial_states, 
+                recursive_merge, 
+                red_states,
+            )
+        
+    return new_matrix, new_states, recursive_merge, red_states
 
 
 def get_blue_states(pathway_matrix, red_states, states):

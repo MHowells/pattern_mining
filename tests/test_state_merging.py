@@ -1,5 +1,6 @@
 import numpy as np
 import pattern_mining as pm
+import pytest
 
 
 def test_hoeffding_bound_simple_example(simple_pta):
@@ -301,6 +302,48 @@ def test_check_is_deterministic_with_multiple_pairs_simple_example(simple_pta):
     )
     expected_nondeterministic_pairs = [(1, 6), (1, 4), (2, 4)]
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
+
+
+def test_recursive_merge_raises_for_invalid_output(simple_pta):
+    with pytest.raises(ValueError, match="output must be"):
+        pm.recursive_merge_two_states(
+            1,
+            2,
+            simple_pta.pathway_matrix,
+            simple_pta.states,
+            0.2,
+            simple_pta.alphabet,
+            output="Invalid",
+        )
+
+
+def test_recursive_merge_raises_for_invalid_method(simple_pta):
+    with pytest.raises(ValueError, match="method must be"):
+        pm.recursive_merge_two_states(
+            1,
+            2,
+            simple_pta.pathway_matrix,
+            simple_pta.states,
+            0.2,
+            simple_pta.alphabet,
+            method="Invalid",
+        )
+
+
+def test_recursive_merge_higuera_requires_red_states(simple_pta):
+    with pytest.raises(
+        ValueError,
+        match="red_states must be provided",
+    ):
+        pm.recursive_merge_two_states(
+            1,
+            2,
+            simple_pta.pathway_matrix,
+            simple_pta.states,
+            0.2,
+            simple_pta.alphabet,
+            method="Higuera",
+        )
 
 
 def test_recursive_merge_two_states_simple_example(simple_pta):
