@@ -406,7 +406,6 @@ def get_transition_matrix(sequences, alphabet, build="breadth"):
         If sequences or alphabet is empty, build is invalid, alphabet
         contains duplicate symbols, or alphabet omits observed symbols.
     """
-    sequences = _validate_sequences(sequences)
     alphabet = _validate_alphabet(alphabet)
 
     observed_symbols = set("".join(sequences))
@@ -442,6 +441,9 @@ def get_initial_states(sequences):
     """
     Return the initial state identifiers of a PPTA.
 
+    The artificial initial state ``"*"`` is followed by an integer
+    identifier for each prefix state in the PPTA.
+
     Parameters
     ----------
     sequences : iterable of str
@@ -450,7 +452,16 @@ def get_initial_states(sequences):
     Returns
     -------
     list
-        State identifiers, including the artificial initial state "*".
+        State identifiers, beginning with the artificial initial state
+        ``"*"``.
+
+    Raises
+    ------
+    TypeError
+        If sequences is None, is a single string, or contains non-string
+        elements.
+    ValueError
+        If sequences is empty.
     """
     states = list(range(len(get_state_paths(sequences))))
     states.insert(0, "*")
@@ -460,7 +471,26 @@ def get_initial_states(sequences):
 
 def get_n(q, pathway_matrix, states):
     """
-    Gets n(q), the number of pathways entering state q.
+    Return the number of sequences entering a state.
+
+    This calculates ``n(q)`` by summing all transitions entering the
+    specified state.
+
+    Parameters
+    ----------
+    q : int or str
+        State identifier.
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+
+    Returns
+    -------
+    int or float
+        Number of sequences entering the state.
     """
     i = states.index(q)
     return pathway_matrix[:, :, i].sum()
@@ -468,7 +498,26 @@ def get_n(q, pathway_matrix, states):
 
 def get_endpoint(q, pathway_matrix, states):
     """
-    Gets the number of pathways that terminate at state q.
+    Return the number of sequences terminating at a state.
+
+    The terminating count is calculated as the number of sequences entering
+    the state minus the number leaving it.
+
+    Parameters
+    ----------
+    q : int or str
+        State identifier.
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+
+    Returns
+    -------
+    int or float
+        Number of sequences terminating at the state.
     """
     i = states.index(q)
     return pathway_matrix[:, :, i].sum() - pathway_matrix[:, i, :].sum()
@@ -476,7 +525,28 @@ def get_endpoint(q, pathway_matrix, states):
 
 def get_pi(q, z, pathway_matrix, states):
     """
-    Gets pi(q, z), the probability of leaving state q via letter z.
+    Return the probability of leaving a state via a symbol.
+
+    This calculates ``pi(q, z)`` for the symbol represented by index z in
+    the first dimension of the transition-count matrix.
+
+    Parameters
+    ----------
+    q : int or str
+        State identifier.
+    z : int
+        Index of the symbol in the first dimension of pathway_matrix.
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+
+    Returns
+    -------
+    float
+        Probability of leaving state q via the indexed symbol.
     """
     i = states.index(q)
     return pathway_matrix[z, i, :].sum() / get_n(q, pathway_matrix, states)
@@ -484,33 +554,94 @@ def get_pi(q, z, pathway_matrix, states):
 
 def get_pi_endpoint(q, pathway_matrix, alphabet, states):
     """
-    Gets pi(q), the probability of terminating at state q.
+    Return the probability of terminating at a state.
+
+    The terminating probability is one minus the sum of the probabilities
+    of leaving the state through each symbol in the alphabet.
+
+    Parameters
+    ----------
+    q : int or str
+        State identifier.
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    alphabet : collection of str
+        Alphabet associated with the first dimension of pathway_matrix.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+
+    Returns
+    -------
+    float
+        Probability of terminating at state q.
     """
-    return 1 - sum(get_pi(q, z, pathway_matrix, states) for z in range(len(alphabet)))
+    return 1 - sum(
+        get_pi(
+            q, 
+            z, 
+            pathway_matrix, 
+            states,
+        ) for z in range(len(alphabet))
+    )
 
 
 def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
     """
-    Returns a Boolean indicating whether the Hoeffding bound is satisfied.
+    Determine whether two states satisfy the Hoeffding compatibility bound.
+
+    The transition probabilities associated with every symbol, together
+    with the terminating probabilities, are compared for the two states.
+
+    Parameters
+    ----------
+    q1 : int or str
+        First state to compare.
+    q2 : int or str
+        Second state to compare.
+    alpha : float
+        Significance level used to calculate the Hoeffding bound. Expected
+        to be in the range ``(0, 2]``.
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    alphabet : collection of str
+        Alphabet associated with the first dimension of pathway_matrix.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+
+    Returns
+    -------
+    bool
+        True if all symbol and terminating probabilities satisfy the
+        Hoeffding bound; otherwise False.
     """
     alpha_constant = (np.log(2 / alpha) / 2) ** 0.5
+
     rhs = alpha_constant * (
         (1 / np.sqrt(get_n(q1, pathway_matrix, states)))
         + (1 / np.sqrt(get_n(q2, pathway_matrix, states)))
     )
+
     for z in range(len(alphabet)):
         lhs = abs(
             get_pi(q1, z, pathway_matrix, states)
             - get_pi(q2, z, pathway_matrix, states)
         )
+
         if lhs > rhs:
             return False
+        
     lhs = abs(
         get_pi_endpoint(q1, pathway_matrix, alphabet, states)
         - get_pi_endpoint(q2, pathway_matrix, alphabet, states)
     )
+
     if lhs > rhs:
         return False
+    
     return True
 
 
@@ -556,9 +687,13 @@ def merge_two_states(
 
     Raises
     ------
+    TypeError
+        If pathway_matrix is not a NumPy array or alphabet has an invalid
+        type.
     ValueError
-        If q1 or q2 is unknown, if they refer to the same state, or if
-        the artificial initial state is selected for merging.
+        If alphabet or pathway_matrix has invalid contents or dimensions,
+        q1 or q2 is not present in states, q1 and q2 are identical, or the
+        artificial initial state is selected for merging.
     """
     alphabet = _validate_alphabet(alphabet)
 
@@ -614,12 +749,6 @@ def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
         Updated state identifiers.
     red_states_copy : list, optional
         Updated red states. Returned only when red_states is provided.
-
-    Raises
-    ------
-    ValueError
-        If q1 or q2 is unknown, if they refer to the same state, or if
-        the artificial initial state is selected for merging.
     """
     i1 = states.index(q1)
     i2 = states.index(q2)
@@ -674,20 +803,51 @@ def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
 
 def check_is_deterministic(pathway_matrix, states, alphabet):
     """
-    Checks whether the newly created state is deterministic.
-    Returns a list of non-deterministic state pairs.
+    Identify nondeterministic state pairs in a transition matrix.
+
+    A state is considered nondeterministic when it has positive transitions
+    to more than one destination through the same alphabet symbol. For each
+    such state-symbol combination, the first pair of destination states is
+    returned.
+
+    Parameters
+    ----------
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+    alphabet : collection of str
+        Alphabet associated with the first dimension of pathway_matrix.
+
+    Returns
+    -------
+    list of tuple
+        Pairs of destination state identifiers involved in
+        nondeterministic transitions. An empty list indicates that the
+        transition matrix is deterministic.
     """
     nondeterministic_pairs = []
+
     for a in range(len(alphabet)):
-        rows = np.where((pathway_matrix[a, :, :] > 0).sum(axis=1) > 1)[0]
-        pathway_matrix[a, rows, :] > 0
+        rows = np.where(
+            (pathway_matrix[a, :, :] > 0).sum(axis=1) > 1
+        )[0]
+
         for row in rows:
             where_non_det = np.where(pathway_matrix[a, row, :] > 0)[0]
+
             if len(where_non_det) > 2:
                 nond_pairs = np.reshape(where_non_det[:2], (1, 2))
+
             else:
                 nond_pairs = np.reshape(where_non_det, (1, 2))
-            nondeterministic_pairs += [tuple(states[i] for i in r) for r in nond_pairs]
+
+            nondeterministic_pairs += [
+                tuple(states[i] for i in r) for r in nond_pairs
+            ]
+
     return nondeterministic_pairs
 
 
@@ -703,39 +863,58 @@ def recursive_merge_two_states(
     method="Carrasco",
 ):
     """
-    Recursively merge two states until the PPTA is deterministic.
+    Recursively merge states until the resulting automaton is deterministic.
+
+    The initial pair is merged and any nondeterministic state pairs created
+    by that merge are considered recursively. A recursive pair is merged
+    only when it satisfies the Hoeffding compatibility bound.
 
     Parameters
     ----------
-    output : {"Suppressed", "Truncated", "Full"}
-        Controls the amount of information printed.
-    method : {"Carrasco", "Higuera"}
+    q1 : int or str
+        First state to merge.
+    q2 : int or str
+        Second state to merge.
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+    alpha : float
+        Significance level used by the Hoeffding compatibility test.
+    alphabet : iterable of str
+        Alphabet corresponding to the first dimension of pathway_matrix.
+    red_states : list, optional
+        Red states to update during a Higuera merge. Required when
+        method is ``"Higuera"``.
+    output : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
+        Amount of progress information printed.
+    method : {"Carrasco", "Higuera"}, default="Carrasco"
         State-merging methodology to use.
 
     Returns
     -------
-    If method is "Carrasco":
-        new_matrix : np.ndarray
-            The new transition matrix after merging.
-        new_states : list
-            The new list of states after merging.
-        recursive_merge : bool
-            True if the merge was successful, False if the merge was unsuccessful.
-    If method is "Higuera":
-        new_matrix : np.ndarray
-            The new transition matrix after merging.
-        new_states : list
-            The new list of states after merging.
-        recursive_merge : bool
-            True if the merge was successful, False if the merge was unsuccessful.
-        red_states : list
-            The updated list of red states after merging.
+    new_matrix : np.ndarray
+        Transition-count matrix after the recursive merge attempt.
+    new_states : list
+        State identifiers corresponding to new_matrix.
+    recursive_merge : bool
+        True if the complete recursive merge succeeds; otherwise False.
+    red_states_result : list, optional
+        Red states produced by the merge. Returned only when method is
+        ``"Higuera"``.
 
     Raises
     ------
+    TypeError
+        If alpha is not numeric, pathway_matrix is not a NumPy array, or
+        alphabet has an invalid type.
     ValueError
-        If output or method is invalid, or if red_states is not supplied
-        for the Higuera method.
+        If output or method is invalid, red_states is not provided for the
+        Higuera method, alpha is outside ``(0, 2]``, alphabet or
+        pathway_matrix is invalid, either state is unknown, the states are
+        identical, or the artificial initial state is selected.
     """
     valid_outputs = {"Suppressed", "Truncated", "Full"}
 
@@ -797,61 +976,49 @@ def _recursive_merge_two_states(
     method="Carrasco",
 ):
     """
-    Internal function to recursively merge two states until the PPTA is 
-    deterministic. This function assumes that the input parameters have
-    already been validated.
+    Recursively merge previously validated states until determinism is restored.
+
+    The function assumes that q1, q2, pathway_matrix, states, alpha, and
+    alphabet have already been validated. It attempts to resolve each
+    nondeterministic pair created by the initial merge using the Hoeffding
+    compatibility bound.
 
     Parameters
     ----------
-    output : {"Suppressed", "Truncated", "Full"}
-        Controls the amount of information printed.
-    method : {"Carrasco", "Higuera"}
+    q1 : int or str
+        First state to merge.
+    q2 : int or str
+        Second state to merge.
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+    alpha : float
+        Significance level used by the Hoeffding compatibility test.
+    alphabet : collection of str
+        Alphabet corresponding to the first dimension of pathway_matrix.
+    red_states : list, optional
+        Red states to update during a Higuera merge. Required when
+        method is ``"Higuera"``.
+    output : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
+        Amount of progress information printed.
+    method : {"Carrasco", "Higuera"}, default="Carrasco"
         State-merging methodology to use.
 
     Returns
     -------
-    If method is "Carrasco":
-        new_matrix : np.ndarray
-            The new transition matrix after merging.
-        new_states : list
-            The new list of states after merging.
-        recursive_merge : bool
-            True if the merge was successful, False if the merge was unsuccessful.
-    If method is "Higuera":
-        new_matrix : np.ndarray
-            The new transition matrix after merging.
-        new_states : list
-            The new list of states after merging.
-        recursive_merge : bool
-            True if the merge was successful, False if the merge was unsuccessful.
-        red_states : list
-            The updated list of red states after merging.
-
-    Raises
-    ------
-    ValueError
-        If output or method is invalid, or if red_states is not supplied
-        for the Higuera method.
+    new_matrix : np.ndarray
+        Transition-count matrix after the recursive merge attempt.
+    new_states : list
+        State identifiers corresponding to new_matrix.
+    recursive_merge : bool
+        True if the complete recursive merge succeeds; otherwise False.
+    red_states_result : list, optional
+        Red states produced by the merge. Returned only when method is
+        ``"Higuera"``.
     """
-    valid_outputs = {"Suppressed", "Truncated", "Full"}
-
-    if output not in valid_outputs:
-        raise ValueError(
-            "output must be 'Suppressed', 'Truncated', or 'Full'."
-        )
-
-    valid_methods = {"Carrasco", "Higuera"}
-
-    if method not in valid_methods:
-        raise ValueError(
-            "method must be either 'Carrasco' or 'Higuera'."
-        )
-
-    if method == "Higuera" and red_states is None:
-        raise ValueError(
-            "red_states must be provided when method='Higuera'."
-        )
-    
     if method == "Carrasco":
         initial_pathway_matrix = np.copy(pathway_matrix)
         initial_states = states.copy()
@@ -934,7 +1101,7 @@ def _recursive_merge_two_states(
         q2, 
         pathway_matrix, 
         states, 
-        red_states,
+        red_states=red_states,
     )
 
     non_det_pairs = check_is_deterministic(
@@ -1017,29 +1184,68 @@ def _recursive_merge_two_states(
 
 def get_blue_states(pathway_matrix, red_states, states):
     """
-    Returns the blue states of a PPTA given a list of red states.
+    Return the blue states associated with a set of red states.
+
+    Blue states are non-red states that can be reached directly through a
+    positive outgoing transition from at least one red state.
+
+    Parameters
+    ----------
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    red_states : list
+        State identifiers currently classified as red.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+
+    Returns
+    -------
+    list
+        Sorted blue-state identifiers.
     """
     blue_states = []
+
     for q in red_states:
         blue_states += [
             states[x]
-            for x in list(np.where(pathway_matrix[:, states.index(q), :] > 0)[1])
+            for x in list(
+                np.where(pathway_matrix[:, states.index(q), :] > 0)[1]
+            )
         ]
+
     blue_states = [x for x in blue_states if x not in red_states]
+
     return sorted(blue_states)
 
 
 def get_pairs_to_check(states):
     """
-    A function to get all pairs of states to check for merging.
+    Return all state pairs to consider for merging.
+
+    The artificial initial state ``"*"`` is excluded. Each unordered pair
+    of the remaining states is included once.
+
+    Parameters
+    ----------
+    states : list
+        State identifiers, including the artificial initial state ``"*"``.
+
+    Returns
+    -------
+    list of tuple
+        State pairs to consider for merging.
     """
     state_numbers = states.copy()
     state_numbers.remove("*")
+
     to_check = [
         (state_numbers[j], state_numbers[i])
         for j in range(len(state_numbers))
         for i in range(0, j)
     ]
+
     return to_check
 
 
@@ -1052,16 +1258,22 @@ def alergia(
     method="Carrasco",
 ):
     """
-    Implement the ALERGIA algorithm.
+    Learn a probabilistic deterministic finite automaton using ALERGIA.
+
+    The function repeatedly identifies statistically compatible states and
+    attempts to merge them using either the Carrasco all-pairs procedure or
+    the Higuera red-blue procedure.
 
     Parameters
     ----------
     transition_matrix : np.ndarray
-        Transition count matrix.
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
     states : list
-        State identifiers corresponding to the transition matrix.
-    alphabet : list of str
-        Alphabet used by the automaton.
+        State identifiers corresponding to the final two dimensions of
+        transition_matrix.
+    alphabet : iterable of str
+        Alphabet corresponding to the first dimension of transition_matrix.
     alpha : float
         Significance level used by the Hoeffding compatibility test.
     output : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
@@ -1072,20 +1284,23 @@ def alergia(
     Returns
     -------
     current_matrix : np.ndarray
-        Final transition count matrix.
+        Final transition-count matrix.
     current_states : list
-        Final states after ALERGIA terminates.
+        Final state identifiers after ALERGIA terminates.
     tracking : dict
-        Summary statistics for the ALERGIA run.
+        Summary statistics containing the initial and final state counts,
+        attempted and successful merges, recursive merge attempts, and
+        recursive merge failures.
 
     Raises
     ------
     TypeError
-        If alpha is not numeric.
+        If alpha is not numeric, transition_matrix is not a NumPy array, or
+        alphabet has an invalid type.
     ValueError
-        If output or method is invalid, or alpha is not in the range (0, 2].
+        If output or method is invalid, alpha is outside ``(0, 2]``, or
+        alphabet or transition_matrix has invalid contents or dimensions.
     """
-
     valid_outputs = {"Suppressed", "Truncated", "Full"}
 
     if output not in valid_outputs:
@@ -1317,7 +1532,36 @@ def alergia(
 
 def probability_transition_matrix(pathway_matrix, states, alphabet):
     """
-    A function to return the probability transition matrix.
+    Convert a transition-count matrix into a probability transition matrix.
+
+    Outgoing transition counts for each non-artificial state are divided by
+    the number of sequences entering that state. The artificial initial
+    state is normalised separately using its initial transition count.
+
+    Parameters
+    ----------
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+    alphabet : iterable of str
+        Alphabet corresponding to the first dimension of pathway_matrix.
+
+    Returns
+    -------
+    np.ndarray
+        Probability transition matrix with the same shape as
+        pathway_matrix.
+
+    Raises
+    ------
+    TypeError
+        If pathway_matrix is not a NumPy array or alphabet has an invalid
+        type.
+    ValueError
+        If alphabet or pathway_matrix has invalid contents or dimensions.
     """
     alphabet = _validate_alphabet(alphabet)
 
@@ -1347,7 +1591,46 @@ def network_visualisation(
     graph_format="pdf",
 ):
     """
-    A function to visualise the PPTA as a network graph using graphviz.
+    Render an automaton as a directed Graphviz network.
+
+    States are represented as nodes and positive transitions as directed
+    edges. Edge and terminating-state labels display either counts or
+    probabilities, depending on the value of probabilities.
+
+    Parameters
+    ----------
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+    alphabet : iterable of str
+        Alphabet corresponding to the first dimension of pathway_matrix.
+    name : str, optional
+        Graph name and output filename stem. The default output filename is
+        ``"my_graph"``.
+    view : bool, default=True
+        Whether to open the rendered graph using the system's default
+        viewer.
+    probabilities : bool, default=False
+        Whether to label nodes and edges with probabilities rather than
+        transition counts.
+    graph_format : str, default="pdf"
+        Graphviz output format.
+
+    Returns
+    -------
+    None
+        The rendered graph is written to disk.
+
+    Raises
+    ------
+    TypeError
+        If pathway_matrix is not a NumPy array or alphabet has an invalid
+        type.
+    ValueError
+        If alphabet or pathway_matrix has invalid contents or dimensions.
     """
     alphabet = _validate_alphabet(alphabet)
 
@@ -1455,7 +1738,26 @@ def network_visualisation(
 
 def probability_estimate_of_symbol(p_mat, symbol, alphabet):
     """
-    A function to estimate the probability squence starting from each state contains a symbol from the alphabet.
+    Estimate the probability that a generated sequence contains a symbol.
+
+    The probability is calculated separately for every possible starting
+    state and represents encountering the symbol at least once before the
+    sequence terminates.
+
+    Parameters
+    ----------
+    p_mat : np.ndarray
+        Probability transition matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    symbol : str
+        Symbol whose occurrence probability is estimated.
+    alphabet : list of str
+        Alphabet corresponding to the first dimension of p_mat.
+
+    Returns
+    -------
+    np.ndarray
+        Estimated occurrence probability for each starting state.
     """
     matrix_index = alphabet.index(symbol)
     rho = np.sum(np.delete(p_mat, matrix_index, 0), axis=0)
@@ -1466,7 +1768,26 @@ def probability_estimate_of_symbol(p_mat, symbol, alphabet):
 
 def probability_estimate_of_pattern(p_mat, pattern, alphabet):
     """
-    A function to estimate the probability of a sequence starting from each state contains a pattern.
+    Estimate the probability that a generated sequence contains a pattern.
+
+    The symbols in pattern must be encountered in the specified order, but
+    they do not need to occur consecutively. A probability is calculated
+    for every possible starting state.
+
+    Parameters
+    ----------
+    p_mat : np.ndarray
+        Probability transition matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    pattern : str
+        Non-empty ordered sequence of symbols to encounter.
+    alphabet : list of str
+        Alphabet corresponding to the first dimension of p_mat.
+
+    Returns
+    -------
+    np.ndarray
+        Estimated pattern probability for each starting state.
     """
     p_pattern = np.identity(p_mat.shape[1])
     for i in range(len(pattern)):
@@ -1488,7 +1809,28 @@ def probability_estimate_of_pattern(p_mat, pattern, alphabet):
 
 def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
     """
-    A function to estimate the probability of an exact sequence.
+    Estimate the probability of generating an exact sequence.
+
+    The sequence must be emitted consecutively from the initial
+    non-artificial state and the automaton must terminate immediately after
+    the final symbol. The probability transition matrix is assumed to
+    represent a deterministic automaton.
+
+    Parameters
+    ----------
+    p_mat : np.ndarray
+        Probability transition matrix with shape
+        ``(n_symbols, n_states, n_states)``. The first state is assumed to
+        be the artificial initial state.
+    sequence : str
+        Non-empty exact sequence whose probability is estimated.
+    alphabet : list of str
+        Alphabet corresponding to the first dimension of p_mat.
+
+    Returns
+    -------
+    float
+        Estimated probability of generating the exact sequence.
     """
     symbols = [sequence[i] for i in range(len(sequence))]
     indices = [alphabet.index(symbol) for symbol in symbols]
@@ -1529,8 +1871,35 @@ def probability_sequence_contains_letter_at_distance_theta(
     p_mat, letter, theta, alphabet
 ):
     """
-    A function to estimate the probability that a sequence starting from each state contains a letter at a distance theta from the state.
+    Estimate the probability of encountering a letter after a fixed distance.
+
+    For each starting state, the function calculates the probability that
+    letter is emitted after exactly theta preceding transitions.
+
+    Parameters
+    ----------
+    p_mat : np.ndarray
+        Probability transition matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    letter : str
+        Letter whose occurrence probability is estimated.
+    theta : int
+        Number of transitions between the starting state and the emission
+        of letter. Expected to be non-negative.
+    alphabet : list of str
+        Alphabet corresponding to the first dimension of p_mat.
+
+    Returns
+    -------
+    np.ndarray
+        Estimated probability for each starting state.
     """
+    if not isinstance(theta, (int, np.integer)):
+        raise TypeError("theta must be an integer.")
+
+    if theta < 0:
+        raise ValueError("theta must be non-negative.")
+    
     matrix_index = alphabet.index(letter)
     tau_theta = np.linalg.matrix_power(np.sum(p_mat, axis=0), theta)
     pi_symbol = np.sum(p_mat[matrix_index, :, :], axis=1)
@@ -1544,19 +1913,24 @@ def probability_to_encounter_a_pattern_at_a_distance_theta(
     alphabet,
 ):
     """
-    Estimate the probability that a sequence starting from each state
-    encounters a pattern at distance theta from that state.
+    Estimate the probability of encountering a pattern after a fixed distance.
+
+    The first symbol of pattern is emitted after exactly theta preceding
+    transitions. The remaining symbols must subsequently be encountered in
+    the specified order, but do not need to occur consecutively.
 
     Parameters
     ----------
     p_mat : np.ndarray
-        Probability transition matrix.
+        Probability transition matrix with shape
+        ``(n_symbols, n_states, n_states)``.
     pattern : str
-        Pattern containing at least two symbols.
+        Ordered pattern containing at least two symbols.
     theta : int
-        Non-negative distance from the starting state.
+        Non-negative number of transitions before the first pattern symbol
+        is emitted.
     alphabet : list of str
-        Alphabet associated with the probability transition matrix.
+        Alphabet corresponding to the first dimension of p_mat.
 
     Returns
     -------
@@ -1568,7 +1942,8 @@ def probability_to_encounter_a_pattern_at_a_distance_theta(
     TypeError
         If theta is not an integer.
     ValueError
-        If pattern contains fewer than two symbols or theta is negative.
+        If pattern contains fewer than two symbols, theta is negative, or a
+        pattern symbol is not present in alphabet.
     """
     if len(pattern) < 2:
         raise ValueError(
@@ -1619,8 +1994,11 @@ def proportion_constraint(
     p_value="pattern",
 ):
     """
-    Determine whether a pattern or exact sequence covers a significant
-    proportion of the model's probability density.
+    Determine whether an estimated probability satisfies a sampling threshold.
+
+    The probability of an ordered pattern or exact sequence is compared
+    with a normal-approximation threshold calculated from the probability,
+    the number of observed sequences, and alpha.
 
     Parameters
     ----------
@@ -1631,26 +2009,28 @@ def proportion_constraint(
     alphabet : list of str
         Alphabet associated with the probability transition matrix.
     sequences : collection
-        Observed sequences used to calculate the sampling term.
+        Observed sequences. The number of sequences is used in the sampling
+        threshold calculation.
     alpha : float
-        Significance level used by the Hoeffding compatibility test.
+        Tail probability used to obtain the standard-normal critical value.
+        Must be in the range ``(0, 1)``.
     p_value : {"pattern", "sequence"}, default="pattern"
-        Whether to calculate the probability of encountering a pattern
-        or the probability of an exact sequence.
+        Whether to estimate the probability of an ordered pattern or an
+        exact sequence.
 
     Returns
     -------
     bool
         True if the estimated probability is at least as large as the
-        calculated threshold; otherwise False.
+        calculated sampling threshold; otherwise False.
 
     Raises
     ------
     TypeError
         If alpha is not numeric.
     ValueError
-        If p_value is invalid, alpha is outside (0, 1), sequences is
-        empty, or the estimated probability is invalid.
+        If p_value is invalid, alpha is outside ``(0, 1)``, sequences is
+        empty, or the estimated probability is outside ``[0, 1]``.
     """
     if p_value not in {"pattern", "sequence"}:
         raise ValueError(
@@ -1820,7 +2200,22 @@ def string_enumerator(alphabet, n):
 
 def string_probabilities(p_mat, alphabet, strings):
     """
-    A function to estimate the probability of all strings in a given list.
+    Estimate the probability of each string in a collection.
+
+    Parameters
+    ----------
+    p_mat : np.ndarray
+        Probability transition matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    alphabet : list of str
+        Alphabet corresponding to the first dimension of p_mat.
+    strings : iterable of str
+        Non-empty exact strings whose probabilities are estimated.
+
+    Returns
+    -------
+    list of tuple
+        Pairs containing each input string and its estimated probability.
     """
     probs = [
         (x, probability_estimate_of_exact_sequence(p_mat, x, alphabet)) for x in strings
