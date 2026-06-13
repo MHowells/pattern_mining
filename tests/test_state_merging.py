@@ -64,7 +64,7 @@ def test_hoeffding_bound_arnolds_example(arnolds_example):
 
 def test_merge_two_states_simple_example(simple_pta):
     obtained_pathway_matrix, obtained_states = pm.merge_two_states(
-        0, 1, simple_pta.pathway_matrix, simple_pta.states
+        0, 1, simple_pta.pathway_matrix, simple_pta.states, simple_pta.alphabet
     )
     expected_pathway_matrix = np.array(
         [
@@ -102,7 +102,7 @@ def test_merge_two_states_simple_example(simple_pta):
     assert obtained_states == expected_states
 
     obtained_pathway_matrix, obtained_states = pm.merge_two_states(
-        2, 6, simple_pta.pathway_matrix, simple_pta.states
+        2, 6, simple_pta.pathway_matrix, simple_pta.states, simple_pta.alphabet
     )
     expected_pathway_matrix = np.array(
         [
@@ -142,7 +142,7 @@ def test_merge_two_states_simple_example(simple_pta):
 
 def test_merge_two_states_arnolds_example(arnolds_example):
     obtained_pathway_matrix, obtained_states = pm.merge_two_states(
-        0, 1, arnolds_example.pathway_matrix, arnolds_example.states
+        0, 1, arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet
     )
     expected_pathway_matrix = np.array(
         [
@@ -209,7 +209,7 @@ def test_check_is_deterministic_simple_example(simple_pta):
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
     obtained_pathway_matrix, obtained_states = pm.merge_two_states(
-        0, 1, simple_pta.pathway_matrix, simple_pta.states
+        0, 1, simple_pta.pathway_matrix, simple_pta.states, simple_pta.alphabet
     )
     obtained_nondeterministic_pairs = pm.check_is_deterministic(
         obtained_pathway_matrix, obtained_states, simple_pta.alphabet
@@ -218,7 +218,7 @@ def test_check_is_deterministic_simple_example(simple_pta):
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
     obtained_pathway_matrix, obtained_states = pm.merge_two_states(
-        2, 6, simple_pta.pathway_matrix, simple_pta.states
+        2, 6, simple_pta.pathway_matrix, simple_pta.states, simple_pta.alphabet
     )
     obtained_nondeterministic_pairs = pm.check_is_deterministic(
         obtained_pathway_matrix, obtained_states, simple_pta.alphabet
@@ -227,7 +227,7 @@ def test_check_is_deterministic_simple_example(simple_pta):
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
     obtained_pathway_matrix, obtained_states = pm.merge_two_states(
-        0, 2, simple_pta.pathway_matrix, simple_pta.states
+        0, 2, simple_pta.pathway_matrix, simple_pta.states, simple_pta.alphabet
     )
     obtained_nondeterministic_pairs = pm.check_is_deterministic(
         obtained_pathway_matrix, obtained_states, simple_pta.alphabet
@@ -244,7 +244,7 @@ def test_check_is_deterministic_arnolds_example(arnolds_example):
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
     obtained_pathway_matrix, obtained_states = pm.merge_two_states(
-        0, 1, arnolds_example.pathway_matrix, arnolds_example.states
+        0, 1, arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet
     )
     obtained_nondeterministic_pairs = pm.check_is_deterministic(
         obtained_pathway_matrix, obtained_states, arnolds_example.alphabet
@@ -253,7 +253,7 @@ def test_check_is_deterministic_arnolds_example(arnolds_example):
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
     obtained_pathway_matrix, obtained_states = pm.merge_two_states(
-        0, 3, arnolds_example.pathway_matrix, arnolds_example.states
+        0, 3, arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet
     )
     obtained_nondeterministic_pairs = pm.check_is_deterministic(
         obtained_pathway_matrix, obtained_states, arnolds_example.alphabet

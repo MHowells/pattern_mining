@@ -458,35 +458,204 @@ def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
     return True
 
 
-def merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
+def merge_two_states(
+    q1, 
+    q2, 
+    pathway_matrix, 
+    states, 
+    alphabet,
+    red_states=None,
+):
     """
-    Merges states q1 and q2 into a new state that replaces the lowest numbered state.
-    Returns the new pathway_matrix and state list as copies of the originals.
+    Merge two states in a transition-count matrix.
+
+    The merged state retains the identifier of whichever state appears
+    first in the states list. The other state is removed.
+
+    Parameters
+    ----------
+    q1 : int or str
+        First state to merge.
+    q2 : int or str
+        Second state to merge.
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+    alphabet : iterable of str
+        Alphabet corresponding to the first dimension of pathway_matrix.
+    red_states : list, optional
+        Red states to update after the merge.
+
+    Returns
+    -------
+    pathway_matrix_copy : np.ndarray
+        Transition-count matrix after merging the states.
+    states_copy : list
+        Updated state identifiers.
+    red_states_copy : list, optional
+        Updated red states. Returned only when red_states is provided.
+
+    Raises
+    ------
+    ValueError
+        If q1 or q2 is unknown, if they refer to the same state, or if
+        the artificial initial state is selected for merging.
+    """
+    alphabet = validate_alphabet(alphabet)
+
+    validate_transition_matrix(
+        pathway_matrix,
+        alphabet,
+        states,
+    )
+
+    i1 = states.index(q1)
+    i2 = states.index(q2)
+
+    which_min = min(i1, i2)
+    which_max = max(i1, i2)
+
+    surviving_state = states[which_min]
+    removed_state = states[which_max]
+
+    pathway_matrix_copy = np.copy(pathway_matrix)
+    states_copy = states.copy()
+
+    pathway_matrix_copy[:, :, which_min] = (
+        pathway_matrix_copy[:, :, i1]
+        + pathway_matrix_copy[:, :, i2]
+    )
+
+    pathway_matrix_copy = np.delete(
+        pathway_matrix_copy,
+        which_max,
+        axis=2,
+    )
+
+    pathway_matrix_copy[:, which_min, :] = (
+        pathway_matrix_copy[:, i1, :]
+        + pathway_matrix_copy[:, i2, :]
+    )
+
+    pathway_matrix_copy = np.delete(
+        pathway_matrix_copy,
+        which_max,
+        axis=1,
+    )
+
+    states_copy.remove(removed_state)
+
+    if red_states is not None:
+        red_states_copy = [
+            surviving_state if state == removed_state else state
+            for state in red_states
+        ]
+
+        red_states_copy = sorted(set(red_states_copy))
+
+        return (
+            pathway_matrix_copy,
+            states_copy,
+            red_states_copy,
+        )
+
+    return pathway_matrix_copy, states_copy
+
+
+def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
+    """
+    Internal function that merges two states in a transition-count matrix.
+
+    The merged state retains the identifier of whichever state appears
+    first in the states list. The other state is removed. Assumes that
+    the input parameters have already been validated.
+
+    Parameters
+    ----------
+    q1 : int or str
+        First state to merge.
+    q2 : int or str
+        Second state to merge.
+    pathway_matrix : np.ndarray
+        Transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    states : list
+        State identifiers corresponding to the final two dimensions of
+        pathway_matrix.
+    alphabet : iterable of str
+        Alphabet corresponding to the first dimension of pathway_matrix.
+    red_states : list, optional
+        Red states to update after the merge.
+
+    Returns
+    -------
+    pathway_matrix_copy : np.ndarray
+        Transition-count matrix after merging the states.
+    states_copy : list
+        Updated state identifiers.
+    red_states_copy : list, optional
+        Updated red states. Returned only when red_states is provided.
+
+    Raises
+    ------
+    ValueError
+        If q1 or q2 is unknown, if they refer to the same state, or if
+        the artificial initial state is selected for merging.
     """
     i1 = states.index(q1)
     i2 = states.index(q2)
+
     which_min = min(i1, i2)
     which_max = max(i1, i2)
+
+    surviving_state = states[which_min]
+    removed_state = states[which_max]
+
     pathway_matrix_copy = np.copy(pathway_matrix)
     states_copy = states.copy()
+
     pathway_matrix_copy[:, :, which_min] = (
-        pathway_matrix_copy[:, :, i1] + pathway_matrix_copy[:, :, i2]
+        pathway_matrix_copy[:, :, i1]
+        + pathway_matrix_copy[:, :, i2]
     )
-    pathway_matrix_copy = np.delete(pathway_matrix_copy, which_max, 2)
+
+    pathway_matrix_copy = np.delete(
+        pathway_matrix_copy,
+        which_max,
+        axis=2,
+    )
+
     pathway_matrix_copy[:, which_min, :] = (
-        pathway_matrix_copy[:, i1, :] + pathway_matrix_copy[:, i2, :]
+        pathway_matrix_copy[:, i1, :]
+        + pathway_matrix_copy[:, i2, :]
     )
-    pathway_matrix_copy = np.delete(pathway_matrix_copy, which_max, 1)
-    states_copy.remove(states[which_max])
-    if red_states:
-        if max([q1, q2]) in red_states:
-            red_states = [
-                min([q1, q2]) if x == max([q1, q2]) else x for x in red_states
-            ]
-    if red_states:
-        return pathway_matrix_copy, states_copy, red_states
-    else:
-        return pathway_matrix_copy, states_copy
+
+    pathway_matrix_copy = np.delete(
+        pathway_matrix_copy,
+        which_max,
+        axis=1,
+    )
+
+    states_copy.remove(removed_state)
+
+    if red_states is not None:
+        red_states_copy = [
+            surviving_state if state == removed_state else state
+            for state in red_states
+        ]
+
+        red_states_copy = sorted(set(red_states_copy))
+
+        return (
+            pathway_matrix_copy,
+            states_copy,
+            red_states_copy,
+        )
+
+    return pathway_matrix_copy, states_copy
 
 
 def check_is_deterministic(pathway_matrix, states, alphabet):
@@ -573,11 +742,19 @@ def recursive_merge_two_states(
             "red_states must be provided when method='Higuera'."
         )
     
+    alphabet = validate_alphabet(alphabet)
+
+    validate_transition_matrix(
+        pathway_matrix,
+        alphabet,
+        states,
+    )
+    
     if method == "Carrasco":
         initial_pathway_matrix = np.copy(pathway_matrix)
         initial_states = states.copy()
 
-        new_matrix, new_states = merge_two_states(
+        new_matrix, new_states = _merge_two_states(
             q1, 
             q2, 
             pathway_matrix, 
@@ -616,7 +793,7 @@ def recursive_merge_two_states(
                         "into a deterministic state.",
                     )
 
-                new_matrix, new_states = merge_two_states(
+                new_matrix, new_states = _merge_two_states(
                     non_det_pairs[0][0], 
                     non_det_pairs[0][1], 
                     new_matrix, 
@@ -650,7 +827,7 @@ def recursive_merge_two_states(
     initial_states = states.copy()
     initial_red_states = red_states.copy()
 
-    new_matrix, new_states, red_states = merge_two_states(
+    new_matrix, new_states, red_states = _merge_two_states(
         q1, 
         q2, 
         pathway_matrix, 
@@ -704,7 +881,237 @@ def recursive_merge_two_states(
                         for x in red_states
                     ]
 
-            new_matrix, new_states = merge_two_states(
+            new_matrix, new_states = _merge_two_states(
+                pair[0], 
+                pair[1], 
+                new_matrix, 
+                new_states,
+            )
+
+            non_det_pairs = check_is_deterministic(
+                new_matrix, 
+                new_states, 
+                alphabet,
+            )
+
+            if len(non_det_pairs) > 0 and output == "Full":
+                print(
+                    "Merging of previous non-deterministic pair "
+                    "results in non-deterministic pairs:",
+                    non_det_pairs,
+                )
+
+        else:
+            recursive_merge = False
+            return (
+                initial_pathway_matrix, 
+                initial_states, 
+                recursive_merge, 
+                red_states,
+            )
+        
+    return new_matrix, new_states, recursive_merge, red_states
+
+
+def _recursive_merge_two_states(
+    q1, 
+    q2, 
+    pathway_matrix, 
+    states, 
+    alpha, 
+    alphabet, 
+    red_states=None, 
+    output="Suppressed", 
+    method="Carrasco",
+):
+    """
+    Internal function to recursively merge two states until the PPTA is 
+    deterministic. This function assumes that the input parameters have
+    already been validated.
+
+    Parameters
+    ----------
+    output : {"Suppressed", "Truncated", "Full"}
+        Controls the amount of information printed.
+    method : {"Carrasco", "Higuera"}
+        State-merging methodology to use.
+
+    Returns
+    -------
+    If method is "Carrasco":
+        new_matrix : np.ndarray
+            The new transition matrix after merging.
+        new_states : list
+            The new list of states after merging.
+        recursive_merge : bool
+            True if the merge was successful, False if the merge was unsuccessful.
+    If method is "Higuera":
+        new_matrix : np.ndarray
+            The new transition matrix after merging.
+        new_states : list
+            The new list of states after merging.
+        recursive_merge : bool
+            True if the merge was successful, False if the merge was unsuccessful.
+        red_states : list
+            The updated list of red states after merging.
+
+    Raises
+    ------
+    ValueError
+        If output or method is invalid, or if red_states is not supplied
+        for the Higuera method.
+    """
+    valid_outputs = {"Suppressed", "Truncated", "Full"}
+
+    if output not in valid_outputs:
+        raise ValueError(
+            "output must be 'Suppressed', 'Truncated', or 'Full'."
+        )
+
+    valid_methods = {"Carrasco", "Higuera"}
+
+    if method not in valid_methods:
+        raise ValueError(
+            "method must be either 'Carrasco' or 'Higuera'."
+        )
+
+    if method == "Higuera" and red_states is None:
+        raise ValueError(
+            "red_states must be provided when method='Higuera'."
+        )
+    
+    if method == "Carrasco":
+        initial_pathway_matrix = np.copy(pathway_matrix)
+        initial_states = states.copy()
+
+        new_matrix, new_states = _merge_two_states(
+            q1, 
+            q2, 
+            pathway_matrix, 
+            states,
+        )
+
+        non_det_pairs = check_is_deterministic(
+            new_matrix, 
+            new_states, 
+            alphabet,
+        )
+
+        if len(non_det_pairs) > 0 and output == "Full":
+            print(
+                "Merging of states",
+                (q1, q2),
+                "results in non-deterministic pairs:",
+                non_det_pairs,
+            )
+
+        recursive_merge = True
+
+        while non_det_pairs:
+            if hoeffding_bound(
+                non_det_pairs[0][0],
+                non_det_pairs[0][1],
+                alpha,
+                new_matrix,
+                alphabet,
+                new_states,
+            ):
+                if output == "Full":
+                    print(
+                        "Successfully merged states",
+                        non_det_pairs[0],
+                        "into a deterministic state.",
+                    )
+
+                new_matrix, new_states = _merge_two_states(
+                    non_det_pairs[0][0], 
+                    non_det_pairs[0][1], 
+                    new_matrix, 
+                    new_states,
+                )
+
+                non_det_pairs = check_is_deterministic(
+                    new_matrix, 
+                    new_states, 
+                    alphabet,
+                )
+
+                if len(non_det_pairs) > 0 and output == "Full":
+                    print(
+                        "Merging of previous non-deterministic pair "
+                        "results in non-deterministic pairs:",
+                        non_det_pairs,
+                    )
+
+            else:
+                recursive_merge = False
+                return (
+                    initial_pathway_matrix, 
+                    initial_states, 
+                    recursive_merge,
+                )
+            
+        return new_matrix, new_states, recursive_merge
+    
+    initial_pathway_matrix = np.copy(pathway_matrix)
+    initial_states = states.copy()
+    initial_red_states = red_states.copy()
+
+    new_matrix, new_states, red_states = _merge_two_states(
+        q1, 
+        q2, 
+        pathway_matrix, 
+        states, 
+        red_states,
+    )
+
+    non_det_pairs = check_is_deterministic(
+        new_matrix, 
+        new_states, 
+        alphabet,
+    )
+
+    if len(non_det_pairs) > 0 and output == "Full":
+        print(
+            "Merging of states",
+            (q1, q2),
+            "results in non-deterministic pairs:",
+            non_det_pairs,
+        )
+
+    recursive_merge = True
+
+    while non_det_pairs:
+        pair = non_det_pairs[0]
+
+        if hoeffding_bound(
+            pair[0],
+            pair[1],
+            alpha,
+            new_matrix,
+            alphabet,
+            new_states,
+        ):
+            if output == "Full":
+                print(
+                    "Successfully merged states",
+                    pair,
+                    "into a deterministic state.",
+                )
+
+            if any(x in red_states for x in pair):
+                if set(pair).issubset(set(red_states)):
+                    red_states = [
+                        min(pair) if x == max(pair) else x 
+                        for x in red_states
+                    ]
+                else:
+                    red_states = [
+                        min(pair) if x in pair else x 
+                        for x in red_states
+                    ]
+
+            new_matrix, new_states = _merge_two_states(
                 pair[0], 
                 pair[1], 
                 new_matrix, 
@@ -828,6 +1235,10 @@ def alergia(
         raise ValueError(
             "alpha must be in the range (0, 2]."
         )
+
+    alphabet = validate_alphabet(alphabet)
+
+    validate_transition_matrix(transition_matrix, alphabet, states)
     
     if method == "Carrasco":
         current_matrix = transition_matrix
@@ -878,7 +1289,7 @@ def alergia(
                     current_matrix,
                     current_states,
                     recursive_merge,
-                ) = recursive_merge_two_states(
+                ) = _recursive_merge_two_states(
                     pair[0],
                     pair[1],
                     current_matrix,
@@ -984,7 +1395,7 @@ def alergia(
                     current_states,
                     recursive_merge,
                     red_states,
-                ) = recursive_merge_two_states(
+                ) = _recursive_merge_two_states(
                     q1,
                     q2,
                     current_matrix,
@@ -1042,6 +1453,14 @@ def probability_transition_matrix(pathway_matrix, states, alphabet):
     """
     A function to return the probability transition matrix.
     """
+    alphabet = validate_alphabet(alphabet)
+
+    validate_transition_matrix(
+        pathway_matrix,
+        alphabet,
+        states,
+    )
+
     p_mat = pathway_matrix.copy().astype(float)
     for j in range(len(alphabet)):
         p_mat[j, 0, :] = pathway_matrix[j, 0, :] / pathway_matrix[0, 0, :].sum()
@@ -1064,6 +1483,14 @@ def network_visualisation(
     """
     A function to visualise the PPTA as a network graph using graphviz.
     """
+    alphabet = validate_alphabet(alphabet)
+
+    validate_transition_matrix(
+        pathway_matrix,
+        alphabet,
+        states,
+    )
+
     if name == None:
         filename = "my_graph"
     else:
