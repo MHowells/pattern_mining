@@ -553,6 +553,12 @@ def merge_two_states(
         states,
     )
 
+    _validate_states_for_merging(
+        q1,
+        q2,
+        states,
+    )
+
     i1 = states.index(q1)
     i2 = states.index(q2)
 
@@ -786,6 +792,12 @@ def recursive_merge_two_states(
     _validate_transition_matrix(
         pathway_matrix,
         alphabet,
+        states,
+    )
+
+    _validate_states_for_merging(
+        q1,
+        q2,
         states,
     )
     
