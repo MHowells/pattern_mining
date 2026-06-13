@@ -180,6 +180,47 @@ def _validate_transition_matrix(transition_matrix, alphabet, states):
         raise ValueError(
             "transition_matrix must not contain negative values."
         )
+
+
+def _validate_states_for_merging(q1, q2, states):
+    """
+    Validate two states before performing a state merge.
+
+    Parameters
+    ----------
+    q1 : int or str
+        First state proposed for merging.
+    q2 : int or str
+        Second state proposed for merging.
+    states : collection
+        Valid state identifiers in the automaton.
+
+    Raises
+    ------
+    ValueError
+        If q1 or q2 is not present in states, if q1 and q2 refer
+        to the same state, or if either state is the artificial
+        initial state "*".
+    """
+    if q1 not in states:
+        raise ValueError(
+            f"q1 must be a valid state. Unknown state: {q1!r}."
+        )
+
+    if q2 not in states:
+        raise ValueError(
+            f"q2 must be a valid state. Unknown state: {q2!r}."
+        )
+
+    if q1 == q2:
+        raise ValueError(
+            "q1 and q2 must refer to different states."
+        )
+
+    if q1 == "*" or q2 == "*":
+        raise ValueError(
+            "The artificial initial state '*' cannot be merged."
+        )
     
 
 def get_alphabet(sequences):

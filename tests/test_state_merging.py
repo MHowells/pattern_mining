@@ -3,6 +3,82 @@ import pattern_mining as pm
 import pytest
 
 
+def test_validate_states_for_merging_accepts_valid_states():
+    states = ["*", 0, 1, 2]
+
+    pm._validate_states_for_merging(
+        0,
+        1,
+        states,
+    )
+
+
+def test_validate_states_for_merging_raises_for_invalid_q1():
+    states = ["*", 0, 1, 2]
+
+    with pytest.raises(
+        ValueError,
+        match="q1 must be a valid state",
+    ):
+        pm._validate_states_for_merging(
+            3,
+            1,
+            states,
+        )
+
+
+def test_validate_states_for_merging_raises_for_invalid_q2():
+    states = ["*", 0, 1, 2]
+
+    with pytest.raises(
+        ValueError,
+        match="q2 must be a valid state",
+    ):
+        pm._validate_states_for_merging(
+            0,
+            3,
+            states,
+        )
+
+
+def test_validate_states_for_merging_raises_for_same_state():
+    states = ["*", 0, 1, 2]
+
+    with pytest.raises(
+        ValueError,
+        match="q1 and q2 must refer to different states",
+    ):
+        pm._validate_states_for_merging(
+            1,
+            1,
+            states,
+        )
+
+
+@pytest.mark.parametrize(
+    ("q1", "q2"),
+    [
+        ("*", 1),
+        (1, "*"),
+    ],
+)
+def test_validate_states_for_merging_raises_for_initial_state(
+    q1,
+    q2,
+):
+    states = ["*", 0, 1, 2]
+
+    with pytest.raises(
+        ValueError,
+        match="artificial initial state",
+    ):
+        pm._validate_states_for_merging(
+            q1,
+            q2,
+            states,
+        )
+
+
 def test_hoeffding_bound_simple_example(simple_pta):
     assert (
         pm.hoeffding_bound(0, 3, 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.states)
