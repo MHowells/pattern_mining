@@ -1215,13 +1215,41 @@ def probability_sequence_contains_digram(
 
 def string_enumerator(alphabet, n):
     """
-    A function to enumerate all strings up to length n from an alphabet.
+    Enumerate all strings over an alphabet up to length n.
+
+    Parameters
+    ----------
+    alphabet : iterable of str
+        Symbols used to construct the strings.
+    n : int
+        Maximum string length. Must be greater than zero.
+
+    Returns
+    -------
+    list of str
+        All possible strings with lengths from 1 to n.
+
+    Raises
+    ------
+    TypeError
+        If n is not an integer.
+    ValueError
+        If n is less than 1.
     """
-    if n < 1:
-        return "Please use a value of n greater than 0."
+    if not isinstance(n, int):
+        raise TypeError("n must be an integer.")
+
+    if n <= 0:
+        raise ValueError("n must be greater than 0.")
+    
     strings = []
+
     for i in range(1, n + 1):
-        strings += ["".join(x) for x in it.product(alphabet, repeat=i)]
+        strings += [
+            "".join(x) 
+            for x in it.product(alphabet, repeat=i)
+        ]
+
     return strings
 
 

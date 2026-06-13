@@ -182,8 +182,7 @@ def test_proportion_constraint_raises_for_non_numeric_alpha(
     [
         -0.1,
         0.0,
-        1.0,
-        1.1,
+        2.1,
     ],
 )
 def test_proportion_constraint_raises_for_invalid_alpha(
@@ -192,7 +191,7 @@ def test_proportion_constraint_raises_for_invalid_alpha(
 ):
     with pytest.raises(
         ValueError,
-        match="alpha must be strictly between 0 and 1",
+        match="alpha must be in the range",
     ):
         pm.proportion_constraint(
             jacquemont_example.probability_matrix,
@@ -306,7 +305,7 @@ def test_proportion_constraint_arnolds_example(arnolds_example):
     ],
 )
 def test_probability_sequence_contains_digram_raises_for_invalid_length(
-    jacquemont_model,
+    jacquemont_example,
     invalid_digram,
 ):
     with pytest.raises(
@@ -314,9 +313,9 @@ def test_probability_sequence_contains_digram_raises_for_invalid_length(
         match="digram must contain exactly two symbols",
     ):
         pm.probability_sequence_contains_digram(
-            jacquemont_model.probability_matrix,
+            jacquemont_example.probability_matrix,
             invalid_digram,
-            jacquemont_model.alphabet,
+            jacquemont_example.alphabet,
         )
 
 
@@ -326,6 +325,37 @@ def test_probability_sequence_contains_digram(jacquemont_example):
     )
     expected_vector = np.array([0.2987013, 0, 0.29800281, 0.28378378])
     assert np.allclose(obtained_vector, expected_vector)
+
+
+def test_string_enumerator_raises_for_non_integer_n():
+    with pytest.raises(
+        TypeError,
+        match="n must be an integer",
+    ):
+        pm.string_enumerator(
+            ["A", "B"],
+            1.5,
+        )
+
+
+@pytest.mark.parametrize(
+    "invalid_n",
+    [
+        0,
+        -1,
+    ],
+)
+def test_string_enumerator_raises_for_n_less_than_one(
+    invalid_n,
+):
+    with pytest.raises(
+        ValueError,
+        match="n must be greater than 0",
+    ):
+        pm.string_enumerator(
+            ["A", "B"],
+            invalid_n,
+        )
 
 
 def test_string_enumerator(jacquemont_example):
