@@ -1304,13 +1304,7 @@ def alergia(
             "method must be either 'Carrasco' or 'Higuera'."
         )
 
-    if not isinstance(alpha, (int, float, np.number)):
-        raise TypeError("alpha must be numeric.")
-
-    if alpha <= 0 or alpha > 2:
-        raise ValueError(
-            "alpha must be in the range (0, 2]."
-        )
+    _validate_alpha(alpha)
 
     alphabet = _validate_alphabet(alphabet)
 
@@ -1867,13 +1861,7 @@ def proportion_constraint(
             "p_value must be either 'pattern' or 'sequence'."
         )
 
-    if not isinstance(alpha, (int, float, np.number)):
-        raise TypeError("alpha must be numeric.")
-
-    if alpha <= 0 or alpha > 2:
-        raise ValueError(
-            "alpha must be in the range (0, 2]."
-        )
+    _validate_alpha(alpha)
     
     if len(sequences) == 0:
         raise ValueError(
