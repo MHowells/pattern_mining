@@ -120,6 +120,68 @@ def validate_alphabet(alphabet):
     return alphabet
 
 
+def validate_transition_matrix(transition_matrix, alphabet, states):
+    """
+    Validate a transition-count matrix and its associated dimensions.
+
+    Parameters
+    ----------
+    transition_matrix : np.ndarray
+        Three-dimensional transition-count matrix with shape
+        ``(n_symbols, n_states, n_states)``.
+    alphabet : collection
+        Alphabet associated with the first dimension of the transition
+        matrix.
+    states : collection
+        State identifiers associated with the final two dimensions of
+        the transition matrix.
+
+    Raises
+    ------
+    TypeError
+        If transition_matrix is not a NumPy array.
+    ValueError
+        If transition_matrix is not three-dimensional, its final two
+        dimensions are not equal, its dimensions do not agree with
+        alphabet or states, or it contains non-finite or negative
+        values.
+    """
+    if not isinstance(transition_matrix, np.ndarray):
+        raise TypeError(
+            "transition_matrix must be a NumPy array."
+        )
+
+    if transition_matrix.ndim != 3:
+        raise ValueError(
+            "transition_matrix must be three-dimensional."
+        )
+
+    if transition_matrix.shape[1] != transition_matrix.shape[2]:
+        raise ValueError(
+            "The final two transition_matrix dimensions must be equal."
+        )
+
+    if transition_matrix.shape[0] != len(alphabet):
+        raise ValueError(
+            "The first transition_matrix dimension must equal len(alphabet)."
+        )
+
+    if transition_matrix.shape[1] != len(states):
+        raise ValueError(
+            "The transition_matrix state dimensions must equal len(states)."
+        )
+
+    if not np.all(np.isfinite(transition_matrix)):
+        raise ValueError(
+            "transition_matrix must contain only finite values."
+        )
+
+    if np.any(transition_matrix < 0):
+        raise ValueError(
+            "transition_matrix must not contain negative values."
+        )
+    
+
 def get_alphabet(sequences):
     """
     Returns the sorted alphabet across all sequences of a PPTA.

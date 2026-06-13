@@ -1,5 +1,130 @@
 import numpy as np
 import pattern_mining as pm
+import pytest
+
+
+def test_validate_transition_matrix_accepts_valid_matrix(
+    simple_pta,
+):
+    pm.validate_transition_matrix(
+        simple_pta.pathway_matrix,
+        simple_pta.alphabet,
+        simple_pta.states,
+    )
+
+
+def test_validate_transition_matrix_raises_for_non_numpy_array(
+    simple_pta,
+):
+    with pytest.raises(
+        TypeError,
+        match="transition_matrix must be a NumPy array",
+    ):
+        pm.validate_transition_matrix(
+            simple_pta.pathway_matrix.tolist(),
+            simple_pta.alphabet,
+            simple_pta.states,
+        )
+
+
+@pytest.mark.parametrize(
+    "invalid_matrix",
+    [
+        np.zeros(3),
+        np.zeros((3, 3)),
+        np.zeros((3, 3, 3, 3)),
+    ],
+)
+def test_validate_transition_matrix_raises_for_invalid_dimensions(
+    simple_pta,
+    invalid_matrix,
+):
+    with pytest.raises(
+        ValueError,
+        match="transition_matrix must be three-dimensional",
+    ):
+        pm.validate_transition_matrix(
+            invalid_matrix,
+            simple_pta.alphabet,
+            simple_pta.states,
+        )
+
+
+def test_validate_transition_matrix_raises_for_non_square_state_dimensions():
+    transition_matrix = np.zeros((3, 4, 5))
+
+    alphabet = ["A", "B", "C"]
+    states = ["*", 0, 1, 2]
+
+    with pytest.raises(
+        ValueError,
+        match="final two transition_matrix dimensions must be equal",
+    ):
+        pm.validate_transition_matrix(
+            transition_matrix,
+            alphabet,
+            states,
+        )
+
+
+def test_validate_transition_matrix_raises_for_alphabet_dimension_mismatch():
+    transition_matrix = np.zeros((2, 3, 3))
+
+    alphabet = ["A", "B", "C"]
+    states = ["*", 0, 1]
+
+    with pytest.raises(
+        ValueError,
+        match="first transition_matrix dimension must equal len",
+    ):
+        pm.validate_transition_matrix(
+            transition_matrix,
+            alphabet,
+            states,
+        )
+
+
+def test_validate_transition_matrix_raises_for_state_dimension_mismatch():
+    transition_matrix = np.zeros((2, 3, 3))
+
+    alphabet = ["A", "B"]
+    states = ["*", 0, 1, 2]
+
+    with pytest.raises(
+        ValueError,
+        match="transition_matrix state dimensions must equal len",
+    ):
+        pm.validate_transition_matrix(
+            transition_matrix,
+            alphabet,
+            states,
+        )
+
+
+@pytest.mark.parametrize(
+    "invalid_value",
+    [
+        np.nan,
+        np.inf,
+        -np.inf,
+    ],
+)
+def test_validate_transition_matrix_raises_for_non_finite_values(
+    simple_pta,
+    invalid_value,
+):
+    transition_matrix = simple_pta.pathway_matrix.astype(float).copy()
+    transition_matrix[0, 0, 0] = invalid_value
+
+    with pytest.raises(
+        ValueError,
+        match="transition_matrix must contain only finite values",
+    ):
+        pm.validate_transition_matrix(
+            transition_matrix,
+            simple_pta.alphabet,
+            simple_pta.states,
+        )
 
 
 def test_get_n_simple_example(simple_pta):
