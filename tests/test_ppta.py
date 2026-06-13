@@ -8,7 +8,7 @@ def test_validate_sequences_raises_for_none():
         TypeError,
         match="sequences must be an iterable of strings",
     ):
-        pm.validate_sequences(None)
+        pm._validate_sequences(None)
 
 
 def test_validate_sequences_raises_for_single_string():
@@ -16,7 +16,7 @@ def test_validate_sequences_raises_for_single_string():
         TypeError,
         match="sequences must be an iterable of strings",
     ):
-        pm.validate_sequences("ABC")
+        pm._validate_sequences("ABC")
 
 
 def test_validate_sequences_raises_for_empty_sequences():
@@ -24,7 +24,7 @@ def test_validate_sequences_raises_for_empty_sequences():
         ValueError,
         match="sequences must contain at least one sequence",
     ):
-        pm.validate_sequences([])
+        pm._validate_sequences([])
 
 
 @pytest.mark.parametrize(
@@ -42,7 +42,7 @@ def test_validate_sequences_raises_for_non_string_sequences(
         TypeError,
         match="every sequence must be a string",
     ):
-        pm.validate_sequences(invalid_sequences)
+        pm._validate_sequences(invalid_sequences)
 
 
 def test_validate_alphabet_raises_for_none():
@@ -50,7 +50,7 @@ def test_validate_alphabet_raises_for_none():
         TypeError,
         match="alphabet must be an iterable of strings",
     ):
-        pm.validate_alphabet(None)
+        pm._validate_alphabet(None)
 
 
 def test_validate_alphabet_raises_for_single_string():
@@ -58,7 +58,7 @@ def test_validate_alphabet_raises_for_single_string():
         TypeError,
         match="alphabet must be an iterable of strings",
     ):
-        pm.validate_alphabet("ABC")
+        pm._validate_alphabet("ABC")
 
 
 def test_validate_alphabet_raises_for_empty_alphabet():
@@ -66,7 +66,7 @@ def test_validate_alphabet_raises_for_empty_alphabet():
         ValueError,
         match="alphabet must contain at least one symbol",
     ):
-        pm.validate_alphabet([])
+        pm._validate_alphabet([])
 
 
 @pytest.mark.parametrize(
@@ -84,7 +84,7 @@ def test_validate_alphabet_raises_for_non_string_symbols(
         TypeError,
         match="every alphabet symbol must be a string",
     ):
-        pm.validate_alphabet(invalid_alphabet)
+        pm._validate_alphabet(invalid_alphabet)
 
 
 def test_validate_alphabet_raises_for_duplicate_symbols():
@@ -92,13 +92,13 @@ def test_validate_alphabet_raises_for_duplicate_symbols():
         ValueError,
         match="alphabet must not contain duplicate symbols",
     ):
-        pm.validate_alphabet(
+        pm._validate_alphabet(
             ["A", "B", "A"]
         )
 
 
 def test_validate_alphabet_returns_validated_alphabet():
-    obtained = pm.validate_alphabet(
+    obtained = pm._validate_alphabet(
         ("A", "B", "C")
     )
 

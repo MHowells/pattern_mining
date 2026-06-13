@@ -6,7 +6,7 @@ import pytest
 def test_validate_transition_matrix_accepts_valid_matrix(
     simple_pta,
 ):
-    pm.validate_transition_matrix(
+    pm._validate_transition_matrix(
         simple_pta.pathway_matrix,
         simple_pta.alphabet,
         simple_pta.states,
@@ -20,7 +20,7 @@ def test_validate_transition_matrix_raises_for_non_numpy_array(
         TypeError,
         match="transition_matrix must be a NumPy array",
     ):
-        pm.validate_transition_matrix(
+        pm._validate_transition_matrix(
             simple_pta.pathway_matrix.tolist(),
             simple_pta.alphabet,
             simple_pta.states,
@@ -43,7 +43,7 @@ def test_validate_transition_matrix_raises_for_invalid_dimensions(
         ValueError,
         match="transition_matrix must be three-dimensional",
     ):
-        pm.validate_transition_matrix(
+        pm._validate_transition_matrix(
             invalid_matrix,
             simple_pta.alphabet,
             simple_pta.states,
@@ -60,7 +60,7 @@ def test_validate_transition_matrix_raises_for_non_square_state_dimensions():
         ValueError,
         match="final two transition_matrix dimensions must be equal",
     ):
-        pm.validate_transition_matrix(
+        pm._validate_transition_matrix(
             transition_matrix,
             alphabet,
             states,
@@ -77,7 +77,7 @@ def test_validate_transition_matrix_raises_for_alphabet_dimension_mismatch():
         ValueError,
         match="first transition_matrix dimension must equal len",
     ):
-        pm.validate_transition_matrix(
+        pm._validate_transition_matrix(
             transition_matrix,
             alphabet,
             states,
@@ -94,7 +94,7 @@ def test_validate_transition_matrix_raises_for_state_dimension_mismatch():
         ValueError,
         match="transition_matrix state dimensions must equal len",
     ):
-        pm.validate_transition_matrix(
+        pm._validate_transition_matrix(
             transition_matrix,
             alphabet,
             states,
@@ -120,7 +120,7 @@ def test_validate_transition_matrix_raises_for_non_finite_values(
         ValueError,
         match="transition_matrix must contain only finite values",
     ):
-        pm.validate_transition_matrix(
+        pm._validate_transition_matrix(
             transition_matrix,
             simple_pta.alphabet,
             simple_pta.states,

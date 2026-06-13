@@ -4,7 +4,7 @@ from scipy.stats import norm
 import itertools as it
 
 
-def validate_sequences(sequences):
+def _validate_sequences(sequences):
     """
     Validates the input sequences for a PPTA.
 
@@ -55,7 +55,7 @@ def validate_sequences(sequences):
     return sequences
 
 
-def validate_alphabet(alphabet):
+def _validate_alphabet(alphabet):
     """
     Validates the input alphabet for a PPTA.
 
@@ -120,7 +120,7 @@ def validate_alphabet(alphabet):
     return alphabet
 
 
-def validate_transition_matrix(transition_matrix, alphabet, states):
+def _validate_transition_matrix(transition_matrix, alphabet, states):
     """
     Validate a transition-count matrix and its associated dimensions.
 
@@ -204,7 +204,7 @@ def get_alphabet(sequences):
     ValueError
         If sequences is empty.
     """
-    sequences = validate_sequences(sequences)
+    sequences = _validate_sequences(sequences)
     return sorted(set("".join(sequences)))
 
 
@@ -232,7 +232,7 @@ def get_state_paths(sequences, build="breadth"):
     ValueError
         If sequences is empty or build is not "breadth" or "depth".
     """
-    sequences = validate_sequences(sequences)
+    sequences = _validate_sequences(sequences)
 
     if build not in {"breadth", "depth"}:
         raise ValueError(
@@ -340,8 +340,8 @@ def get_transition_matrix(sequences, alphabet, build="breadth"):
         If sequences or alphabet is empty, build is invalid, alphabet
         contains duplicate symbols, or alphabet omits observed symbols.
     """
-    sequences = validate_sequences(sequences)
-    alphabet = validate_alphabet(alphabet)
+    sequences = _validate_sequences(sequences)
+    alphabet = _validate_alphabet(alphabet)
 
     observed_symbols = set("".join(sequences))
     missing_symbols = observed_symbols - set(alphabet)
@@ -394,7 +394,7 @@ def get_initial_states(sequences):
     ValueError
         If sequences is empty.
     """
-    sequences = validate_sequences(sequences)
+    sequences = _validate_sequences(sequences)
 
     states = list(range(len(get_state_paths(sequences))))
     states.insert(0, "*")
@@ -504,9 +504,9 @@ def merge_two_states(
         If q1 or q2 is unknown, if they refer to the same state, or if
         the artificial initial state is selected for merging.
     """
-    alphabet = validate_alphabet(alphabet)
+    alphabet = _validate_alphabet(alphabet)
 
-    validate_transition_matrix(
+    _validate_transition_matrix(
         pathway_matrix,
         alphabet,
         states,
@@ -740,9 +740,9 @@ def recursive_merge_two_states(
             "red_states must be provided when method='Higuera'."
         )
     
-    alphabet = validate_alphabet(alphabet)
+    alphabet = _validate_alphabet(alphabet)
 
-    validate_transition_matrix(
+    _validate_transition_matrix(
         pathway_matrix,
         alphabet,
         states,
@@ -1234,9 +1234,9 @@ def alergia(
             "alpha must be in the range (0, 2]."
         )
 
-    alphabet = validate_alphabet(alphabet)
+    alphabet = _validate_alphabet(alphabet)
 
-    validate_transition_matrix(transition_matrix, alphabet, states)
+    _validate_transition_matrix(transition_matrix, alphabet, states)
     
     if method == "Carrasco":
         current_matrix = transition_matrix
@@ -1451,9 +1451,9 @@ def probability_transition_matrix(pathway_matrix, states, alphabet):
     """
     A function to return the probability transition matrix.
     """
-    alphabet = validate_alphabet(alphabet)
+    alphabet = _validate_alphabet(alphabet)
 
-    validate_transition_matrix(
+    _validate_transition_matrix(
         pathway_matrix,
         alphabet,
         states,
@@ -1481,9 +1481,9 @@ def network_visualisation(
     """
     A function to visualise the PPTA as a network graph using graphviz.
     """
-    alphabet = validate_alphabet(alphabet)
+    alphabet = _validate_alphabet(alphabet)
 
-    validate_transition_matrix(
+    _validate_transition_matrix(
         pathway_matrix,
         alphabet,
         states,
