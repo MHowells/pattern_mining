@@ -968,23 +968,75 @@ def probability_sequence_contains_letter_at_distance_theta(
 
 
 def probability_to_encounter_a_pattern_at_a_distance_theta(
-    p_mat, pattern, theta, alphabet
+    p_mat, 
+    pattern, 
+    theta, 
+    alphabet,
 ):
     """
-    A function to estimate the probability that a sequence starting from each state contains a pattern at a distance theta from the state.
+    Estimate the probability that a sequence starting from each state
+    encounters a pattern at distance theta from that state.
+
+    Parameters
+    ----------
+    p_mat : np.ndarray
+        Probability transition matrix.
+    pattern : str
+        Pattern containing at least two symbols.
+    theta : int
+        Non-negative distance from the starting state.
+    alphabet : list of str
+        Alphabet associated with the probability transition matrix.
+
+    Returns
+    -------
+    np.ndarray
+        Estimated probability for each starting state.
+
+    Raises
+    ------
+    TypeError
+        If theta is not an integer.
+    ValueError
+        If pattern contains fewer than two symbols or theta is negative.
     """
     if len(pattern) < 2:
-        return "Please use a pattern of length greater than 1. For a single symbol, use the probability_sequence_contains_letter_at_distance_theta() function."
+        raise ValueError(
+            "pattern must contain at least two symbols. "
+            "Use probability_sequence_contains_letter_at_distance_theta() "
+            "for a single symbol."
+        )
+    
+    if not isinstance(theta, (int, np.integer)):
+        raise TypeError("theta must be an integer.")
+
+    if theta < 0:
+        raise ValueError("theta must be non-negative.")
+    
     symbol = pattern[0]
     matrix_index = alphabet.index(symbol)
+
     gamma = p_mat[matrix_index, :, :]
-    tau_theta = np.linalg.matrix_power(np.sum(p_mat, axis=0), theta)
+    transition_matrix = np.sum(p_mat, axis=0)
+    tau_theta = np.linalg.matrix_power(transition_matrix, theta)
     f_x_theta = np.matmul(tau_theta, gamma)
-    x2_to_xl = pattern[1:]
-    if len(x2_to_xl) > 1:
-        est_of_pattern = probability_estimate_of_pattern(p_mat, x2_to_xl, alphabet)
+
+    remaining_pattern = pattern[1:]
+
+    if len(remaining_pattern) > 1:
+        est_of_pattern = probability_estimate_of_pattern(
+            p_mat, 
+            remaining_pattern, 
+            alphabet,
+        )
+
     else:
-        est_of_pattern = probability_estimate_of_symbol(p_mat, x2_to_xl, alphabet)
+        est_of_pattern = probability_estimate_of_symbol(
+            p_mat, 
+            remaining_pattern, 
+            alphabet,
+        )
+
     return np.matmul(f_x_theta, est_of_pattern)
 
 

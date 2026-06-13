@@ -1,5 +1,6 @@
 import numpy as np
 import pattern_mining as pm
+import pytest
 
 
 def test_probability_transition_matrix_simple_example(simple_pta):
@@ -89,6 +90,39 @@ def test_probability_sequence_contains_letter_at_distance_theta(jacquemont_examp
     )
     expected_vector = np.array([0.201467, 0.3629, 0.2146, 0.137696])
     assert np.allclose(obtained_vector, expected_vector)
+
+
+def test_pattern_at_distance_raises_for_single_symbol(jacquemont_example):
+    with pytest.raises(
+        ValueError,
+        match="pattern must contain at least two symbols",
+    ):
+        pm.probability_to_encounter_a_pattern_at_a_distance_theta(
+            jacquemont_example.probability_matrix,
+            "A",
+            1,
+            jacquemont_example.alphabet,
+        )
+
+
+def test_pattern_at_distance_raises_for_non_integer_theta(jacquemont_example):
+    with pytest.raises(TypeError, match="theta must be an integer"):
+        pm.probability_to_encounter_a_pattern_at_a_distance_theta(
+            jacquemont_example.probability_matrix,
+            "AB",
+            1.5,
+            jacquemont_example.alphabet,
+        )
+
+
+def test_pattern_at_distance_raises_for_negative_theta(jacquemont_example):
+    with pytest.raises(ValueError, match="theta must be non-negative"):
+        pm.probability_to_encounter_a_pattern_at_a_distance_theta(
+            jacquemont_example.probability_matrix,
+            "AB",
+            -1,
+            jacquemont_example.alphabet,
+        )
 
 
 def test_probability_to_encounter_a_pattern_at_a_distance_theta(jacquemont_example):
