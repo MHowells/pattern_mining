@@ -546,6 +546,11 @@ def alergia(
         raise ValueError(
             "method must be either 'Carrasco' or 'Higuera'."
         )
+
+    if alpha <= 0 or alpha > 2:
+        raise ValueError(
+            "alpha must be in the range (0, 2]."
+        )
     
     if method == "Carrasco":
         current_matrix = transition_matrix

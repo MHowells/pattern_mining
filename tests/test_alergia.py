@@ -173,6 +173,32 @@ def test_alergia_raises_for_invalid_method(simple_pta):
         )
 
 
+def test_alergia_raises_for_invalid_alpha_less_than_or_equal_to_zero(simple_pta):
+    with pytest.raises(
+        ValueError,
+        match="alpha must be in",
+    ):
+        pm.alergia(
+            simple_pta.pathway_matrix,
+            simple_pta.states,
+            simple_pta.alphabet,
+            alpha=0,
+        )
+
+
+def test_alergia_raises_for_invalid_alpha_greater_than_two(simple_pta):
+    with pytest.raises(
+        ValueError,
+        match="alpha must be in",
+    ):
+        pm.alergia(
+            simple_pta.pathway_matrix,
+            simple_pta.states,
+            simple_pta.alphabet,
+            alpha=2.1,
+        )
+
+
 def test_alergia_simple_example(simple_pta):
     obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
         simple_pta.pathway_matrix, simple_pta.states, simple_pta.alphabet, 0.2
