@@ -1,122 +1,25 @@
 import numpy as np
 import pattern_mining as pm
 
-alphabet = ["0", "1", "2"]
 
-arnolds_alphabet = ["A", "B", "C"]
-
-states = ["*", 0, 1, 2, 3, 4, 5, 6]
-example_red_states = [0]
-
-pathway_matrix = np.array(
-    [
-        [
-            [0, 30, 0, 0, 0, 0, 0, 0],
-            [0, 0, 15, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 5, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-        ],
-        [
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 15, 0, 0, 0, 0],
-            [0, 0, 0, 0, 7, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 5, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-        ],
-        [
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 2],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-        ],
-    ]
-)
-
-arnolds_states = ["*", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-arnolds_pathway_matrix = np.array(
-    [
-        [
-            [0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ],
-        [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ],
-        [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ],
-    ]
-)
-
-
-def test_get_blue_states():
+def test_get_blue_states_simple_example(simple_pta):
     obtained_blue_states = pm.get_blue_states(
-        pathway_matrix, example_red_states, states
-    )
-    expected_blue_states = [1, 2]
-    assert obtained_blue_states == expected_blue_states
-
-    obtained_blue_states = pm.get_blue_states(
-        arnolds_pathway_matrix, example_red_states, arnolds_states
+        simple_pta.pathway_matrix, simple_pta.red_states, simple_pta.states
     )
     expected_blue_states = [1, 2]
     assert obtained_blue_states == expected_blue_states
 
 
-def test_get_pairs_to_check():
-    obtained_pairs = pm.get_pairs_to_check(states)
+def test_get_blue_states_arnolds_example(arnolds_example):
+    obtained_blue_states = pm.get_blue_states(
+        arnolds_example.pathway_matrix, arnolds_example.red_states, arnolds_example.states
+    )
+    expected_blue_states = [1, 2]
+    assert obtained_blue_states == expected_blue_states
+
+
+def test_get_pairs_to_check_simple_example(simple_pta):
+    obtained_pairs = pm.get_pairs_to_check(simple_pta.states)
     expected_pairs = [
         (1, 0),
         (2, 0),
@@ -142,7 +45,9 @@ def test_get_pairs_to_check():
     ]
     assert obtained_pairs == expected_pairs
 
-    obtained_pairs = pm.get_pairs_to_check(arnolds_states)
+
+def test_get_pairs_to_check_arnolds_example(arnolds_example):
+    obtained_pairs = pm.get_pairs_to_check(arnolds_example.states)
     expected_pairs = [
         (1, 0),
         (2, 0),
@@ -239,9 +144,9 @@ def test_get_pairs_to_check():
     assert obtained_pairs == expected_pairs
 
 
-def test_alergia():
+def test_alergia_simple_example(simple_pta):
     obtained_matrix, obtained_states, obtained_merges = pm.alergia(
-        pathway_matrix, states, alphabet, 0.2
+        simple_pta.pathway_matrix, simple_pta.states, simple_pta.alphabet, 0.2
     )
     expected_matrix = np.array(
         [
@@ -271,8 +176,10 @@ def test_alergia():
     assert obtained_states == expected_states
     assert obtained_merges == expected_merges
 
+
+def test_alergia_arnolds_example_alpha_point_two(arnolds_example):
     obtained_matrix, obtained_states, obtained_merges = pm.alergia(
-        arnolds_pathway_matrix, arnolds_states, arnolds_alphabet, 0.2
+        arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet, 0.2
     )
     expected_matrix = np.array(
         [
@@ -296,8 +203,10 @@ def test_alergia():
     assert obtained_states == expected_states
     assert obtained_merges == expected_merges
 
+
+def test_alergia_arnolds_example_alpha_point_nine(arnolds_example):
     obtained_matrix, obtained_states, obtained_merges = pm.alergia(
-        arnolds_pathway_matrix, arnolds_states, arnolds_alphabet, 0.9
+        arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet, 0.9
     )
     expected_matrix = np.array(
         [
@@ -325,7 +234,7 @@ def test_alergia():
     assert obtained_merges == expected_merges
 
     obtained_matrix, obtained_states, obtained_merges = pm.alergia(
-        arnolds_pathway_matrix, arnolds_states, arnolds_alphabet, 0.9, method="Higuera"
+        arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet, 0.9, method="Higuera"
     )
     expected_matrix = np.array(
         [

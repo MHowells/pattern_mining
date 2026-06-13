@@ -194,6 +194,8 @@ def arnolds_example():
         ]
     )
 
+    red_states = [0]
+
     pathway_matrix_after_merges = np.array(
         [
             [
@@ -291,6 +293,7 @@ def arnolds_example():
         alphabet=alphabet,
         states=states,
         pathway_matrix=pathway_matrix,
+        red_states=red_states,
         pathway_matrix_after_merges=pathway_matrix_after_merges,
         states_after_merges=states_after_merges,
         red_states_after_merges=red_states_after_merges,
