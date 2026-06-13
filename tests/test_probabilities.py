@@ -143,6 +143,118 @@ def test_probability_to_encounter_a_pattern_at_a_distance_theta(jacquemont_examp
     assert np.allclose(obtained_vector, expected_vector)
 
 
+def test_proportion_constraint_raises_for_invalid_p_value(
+    jacquemont_example,
+):
+    with pytest.raises(
+        ValueError,
+        match="p_value must be either 'pattern' or 'sequence'",
+    ):
+        pm.proportion_constraint(
+            jacquemont_example.probability_matrix,
+            "AB",
+            jacquemont_example.alphabet,
+            jacquemont_example.sequences,
+            alpha=0.05,
+            p_value="invalid",
+        )
+
+
+def test_proportion_constraint_raises_for_non_numeric_alpha(
+    jacquemont_example,
+):
+    with pytest.raises(
+        TypeError,
+        match="alpha must be numeric",
+    ):
+        pm.proportion_constraint(
+            jacquemont_example.probability_matrix,
+            "AB",
+            jacquemont_example.alphabet,
+            jacquemont_example.sequences,
+            alpha="0.05",
+            p_value="pattern",
+        )
+
+
+@pytest.mark.parametrize(
+    "invalid_alpha",
+    [
+        -0.1,
+        0.0,
+        1.0,
+        1.1,
+    ],
+)
+def test_proportion_constraint_raises_for_invalid_alpha(
+    jacquemont_example,
+    invalid_alpha,
+):
+    with pytest.raises(
+        ValueError,
+        match="alpha must be strictly between 0 and 1",
+    ):
+        pm.proportion_constraint(
+            jacquemont_example.probability_matrix,
+            "AB",
+            jacquemont_example.alphabet,
+            jacquemont_example.sequences,
+            alpha=invalid_alpha,
+            p_value="pattern",
+        )
+
+
+def test_proportion_constraint_raises_for_empty_sequences(
+    jacquemont_example,
+):
+    with pytest.raises(
+        ValueError,
+        match="sequences must contain at least one observed sequence",
+    ):
+        pm.proportion_constraint(
+            jacquemont_example.probability_matrix,
+            "AB",
+            jacquemont_example.alphabet,
+            [],
+            alpha=0.05,
+            p_value="pattern",
+        )
+
+
+@pytest.mark.parametrize(
+    "invalid_probability",
+    [
+        -0.1,
+        1.1,
+    ],
+)
+def test_proportion_constraint_raises_for_probability_outside_range(
+    jacquemont_example,
+    monkeypatch,
+    invalid_probability,
+):
+    monkeypatch.setattr(
+        pm,
+        "probability_estimate_of_pattern",
+        lambda p_mat, pattern, alphabet: np.array(
+            [invalid_probability]
+        ),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="estimated probability must be between 0 and 1",
+    ):
+        pm.proportion_constraint(
+            jacquemont_example.probability_matrix,
+            "AB",
+            jacquemont_example.alphabet,
+            jacquemont_example.sequences,
+            alpha=0.05,
+            p_value="pattern",
+        )
+
+
 def test_proportion_constraint_jacquemont_example(jacquemont_example):
     assert (
         pm.proportion_constraint(

@@ -529,8 +529,10 @@ def alergia(
 
     Raises
     ------
+    TypeError
+        If alpha is not numeric.
     ValueError
-        If output or method is invalid.
+        If output or method is invalid, or alpha is not in the range (0, 2].
     """
 
     valid_outputs = {"Suppressed", "Truncated", "Full"}
@@ -546,6 +548,9 @@ def alergia(
         raise ValueError(
             "method must be either 'Carrasco' or 'Higuera'."
         )
+
+    if not isinstance(alpha, (int, float, np.number)):
+        raise TypeError("alpha must be numeric.")
 
     if alpha <= 0 or alpha > 2:
         raise ValueError(
@@ -1041,26 +1046,89 @@ def probability_to_encounter_a_pattern_at_a_distance_theta(
 
 
 def proportion_constraint(
-    p_mat, pattern, alphabet, sequences, alpha, p_value="pattern"
+    p_mat, 
+    pattern, 
+    alphabet, 
+    sequences, 
+    alpha, 
+    p_value="pattern",
 ):
     """
-    Returns a Boolean indicating whether a pattern or sequence covers a significant part of the probability density
-    of all sequences.
+    Determine whether a pattern or exact sequence covers a significant
+    proportion of the model's probability density.
+
+    Parameters
+    ----------
+    p_mat : np.ndarray
+        Probability transition matrix.
+    pattern : str
+        Pattern or exact sequence being evaluated.
+    alphabet : list of str
+        Alphabet associated with the probability transition matrix.
+    sequences : collection
+        Observed sequences used to calculate the sampling term.
+    alpha : float
+        Significance level used by the Hoeffding compatibility test.
+    p_value : {"pattern", "sequence"}, default="pattern"
+        Whether to calculate the probability of encountering a pattern
+        or the probability of an exact sequence.
+
+    Returns
+    -------
+    bool
+        True if the estimated probability is at least as large as the
+        calculated threshold; otherwise False.
+
+    Raises
+    ------
+    TypeError
+        If alpha is not numeric.
+    ValueError
+        If p_value is invalid, alpha is outside (0, 2), sequences is
+        empty, or the estimated probability is invalid.
     """
+    if p_value not in {"pattern", "sequence"}:
+        raise ValueError(
+            "p_value must be either 'pattern' or 'sequence'."
+        )
+
+    if not isinstance(alpha, (int, float, np.number)):
+        raise TypeError("alpha must be numeric.")
+
+    if alpha <= 0 or alpha > 2:
+        raise ValueError(
+            "alpha must be in the range (0, 2]."
+        )
+    
+    if len(sequences) == 0:
+        raise ValueError(
+            "sequences must contain at least one observed sequence."
+        )
+    
     if p_value == "pattern":
-        prob_value = probability_estimate_of_pattern(p_mat, pattern, alphabet)[0]
-    if p_value == "sequence":
-        prob_value = probability_estimate_of_exact_sequence(p_mat, pattern, alphabet)
-    elif p_value not in ["pattern", "sequence"]:
-        return "Invalid p_value type. Please use either 'pattern' or 'sequence'."
-    print(prob_value)
+        prob_value = probability_estimate_of_pattern(
+            p_mat,
+            pattern,
+            alphabet,
+        )[0]
+
+    else:
+        prob_value = probability_estimate_of_exact_sequence(
+            p_mat,
+            pattern,
+            alphabet,
+        )
+
+    if not 0 <= prob_value <= 1:
+        raise ValueError(
+            "The estimated probability must be between 0 and 1."
+        )
+    
     k = abs(norm.ppf(1 - alpha)) * (
         (prob_value * (1 - prob_value) / len(sequences)) ** 0.5
     )
-    print(k)
-    if prob_value < k:
-        return False
-    return True
+
+    return bool(prob_value >= k)
 
 
 def probability_sequence_contains_digram(p_mat, digram, alphabet):
