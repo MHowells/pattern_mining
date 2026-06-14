@@ -199,6 +199,485 @@ def test_alergia_raises_for_invalid_alpha_greater_than_two(simple_pta):
         )
 
 
+def test_alergia_prints_next_pair_of_states(
+    monkeypatch,
+    capsys,
+):
+    states = ["*", 0, 1]
+    alphabet = ["A"]
+
+    transition_matrix = np.zeros((1, 3, 3), dtype=int)
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: False,
+    )
+
+    final_matrix, final_states, tracking = pm.alergia(
+        transition_matrix,
+        states,
+        alphabet,
+        alpha=0.05,
+        output="Truncated",
+        method="Carrasco",
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "The next pair of states to check is: (1, 0)"
+        in captured.out
+    )
+    assert final_states == states
+    assert np.array_equal(final_matrix, transition_matrix)
+    assert tracking["attempted_merges"] == 1
+    assert tracking["successful_merges"] == 0
+
+
+def test_alergia_prints_iteration_number(
+    monkeypatch,
+    capsys,
+):
+    states = ["*", 0, 1]
+    alphabet = ["A"]
+
+    transition_matrix = np.zeros((1, 3, 3), dtype=int)
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: False,
+    )
+
+    final_matrix, final_states, tracking = pm.alergia(
+        transition_matrix,
+        states,
+        alphabet,
+        alpha=0.05,
+        output="Full",
+        method="Carrasco",
+    )
+
+    captured = capsys.readouterr()
+
+    assert "Iteration 1" in captured.out
+    assert final_states == states
+    assert np.array_equal(final_matrix, transition_matrix)
+    assert tracking["attempted_merges"] == 1
+    assert tracking["successful_merges"] == 0
+
+
+def test_alergia_prints_when_hoeffding_bound_is_satisfied(
+    monkeypatch,
+    capsys,
+):
+    states = ["*", 0, 1]
+    alphabet = ["A"]
+
+    transition_matrix = np.zeros((1, 3, 3), dtype=int)
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: True,
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "_recursive_merge_two_states",
+        lambda *args, **kwargs: (
+            transition_matrix,
+            states,
+            False,
+        ),
+    )
+
+    final_matrix, final_states, tracking = pm.alergia(
+        transition_matrix,
+        states,
+        alphabet,
+        alpha=0.05,
+        output="Truncated",
+        method="Carrasco",
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Hoeffding Bound satisfied for (1, 0)"
+        in captured.out
+    )
+    assert np.array_equal(final_matrix, transition_matrix)
+    assert final_states == states
+    assert tracking["attempted_merges"] == 1
+    assert tracking["recursive_merge_attempts"] == 1
+    assert tracking["recursive_merge_failures"] == 1
+    assert tracking["successful_merges"] == 0
+
+
+def test_alergia_prints_successful_recursive_merge(
+    monkeypatch,
+    capsys,
+):
+    states = ["*", 0, 1]
+    alphabet = ["A"]
+
+    transition_matrix = np.zeros((1, 3, 3), dtype=int)
+    merged_matrix = np.zeros((1, 2, 2), dtype=int)
+    merged_states = ["*", 0]
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: True,
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "_recursive_merge_two_states",
+        lambda *args, **kwargs: (
+            merged_matrix,
+            merged_states,
+            True,
+        ),
+    )
+
+    final_matrix, final_states, tracking = pm.alergia(
+        transition_matrix,
+        states,
+        alphabet,
+        alpha=0.05,
+        output="Truncated",
+        method="Carrasco",
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Recursively merged states. "
+        "Successfully merged (1, 0)"
+        in captured.out
+    )
+    assert np.array_equal(final_matrix, merged_matrix)
+    assert final_states == merged_states
+    assert tracking["attempted_merges"] == 1
+    assert tracking["successful_merges"] == 1
+    assert tracking["recursive_merge_attempts"] == 1
+    assert tracking["recursive_merge_failures"] == 0
+
+
+def test_alergia_prints_failed_recursive_merge(
+    monkeypatch,
+    capsys,
+):
+    states = ["*", 0, 1]
+    alphabet = ["A"]
+
+    transition_matrix = np.zeros((1, 3, 3), dtype=int)
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: True,
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "_recursive_merge_two_states",
+        lambda *args, **kwargs: (
+            transition_matrix,
+            states,
+            False,
+        ),
+    )
+
+    final_matrix, final_states, tracking = pm.alergia(
+        transition_matrix,
+        states,
+        alphabet,
+        alpha=0.05,
+        output="Truncated",
+        method="Carrasco",
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Recursive merge process failed. "
+        "Cannot merge (1, 0)"
+        in captured.out
+    )
+    assert np.array_equal(final_matrix, transition_matrix)
+    assert final_states == states
+    assert tracking["attempted_merges"] == 1
+    assert tracking["successful_merges"] == 0
+    assert tracking["recursive_merge_attempts"] == 1
+    assert tracking["recursive_merge_failures"] == 1
+
+
+def test_alergia_prints_when_hoeffding_bound_is_not_satisfied(
+    monkeypatch,
+    capsys,
+):
+    states = ["*", 0, 1]
+    alphabet = ["A"]
+
+    transition_matrix = np.zeros((1, 3, 3), dtype=int)
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: False,
+    )
+
+    final_matrix, final_states, tracking = pm.alergia(
+        transition_matrix,
+        states,
+        alphabet,
+        alpha=0.05,
+        output="Truncated",
+        method="Carrasco",
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Hoeffding Bound not satisfied for (1, 0)"
+        in captured.out
+    )
+    assert np.array_equal(final_matrix, transition_matrix)
+    assert final_states == states
+    assert tracking["attempted_merges"] == 1
+    assert tracking["successful_merges"] == 0
+    assert tracking["recursive_merge_attempts"] == 0
+    assert tracking["recursive_merge_failures"] == 0
+
+
+def test_alergia_higuera_prints_iteration_number(
+    monkeypatch,
+    capsys,
+):
+    states = ["*", 0, 1]
+    alphabet = ["A"]
+
+    transition_matrix = np.zeros((1, 3, 3), dtype=int)
+
+    blue_state_results = iter(
+        [
+            [1],
+            [],
+        ]
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "get_blue_states",
+        lambda *args, **kwargs: next(blue_state_results),
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: False,
+    )
+
+    final_matrix, final_states, tracking = pm.alergia(
+        transition_matrix,
+        states,
+        alphabet,
+        alpha=0.05,
+        output="Full",
+        method="Higuera",
+    )
+
+    captured = capsys.readouterr()
+
+    assert "Iteration 1" in captured.out
+    assert np.array_equal(final_matrix, transition_matrix)
+    assert final_states == states
+    assert tracking["attempted_merges"] == 1
+    assert tracking["successful_merges"] == 0
+
+
+def test_alergia_higuera_prints_when_hoeffding_bound_is_satisfied(
+    monkeypatch,
+    capsys,
+):
+    states = ["*", 0, 1]
+    alphabet = ["A"]
+
+    transition_matrix = np.zeros((1, 3, 3), dtype=int)
+
+    blue_state_results = iter(
+        [
+            [1],
+            [],
+        ]
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "get_blue_states",
+        lambda *args, **kwargs: next(blue_state_results),
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: True,
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "_recursive_merge_two_states",
+        lambda *args, **kwargs: (
+            transition_matrix,
+            states,
+            False,
+            [0],
+        ),
+    )
+
+    final_matrix, final_states, tracking = pm.alergia(
+        transition_matrix,
+        states,
+        alphabet,
+        alpha=0.05,
+        output="Truncated",
+        method="Higuera",
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Hoeffding Bound satisfied for (0, 1)"
+        in captured.out
+    )
+    assert np.array_equal(final_matrix, transition_matrix)
+    assert final_states == states
+    assert tracking["attempted_merges"] == 1
+    assert tracking["recursive_merge_attempts"] == 1
+    assert tracking["successful_merges"] == 0
+    assert tracking["recursive_merge_failures"] == 1
+
+
+def test_alergia_higuera_prints_successful_recursive_merge(
+    monkeypatch,
+    capsys,
+):
+    states = ["*", 0, 1]
+    alphabet = ["A"]
+
+    transition_matrix = np.zeros((1, 3, 3), dtype=int)
+    merged_matrix = np.zeros((1, 2, 2), dtype=int)
+    merged_states = ["*", 0]
+
+    blue_state_results = iter(
+        [
+            [1],
+            [],
+        ]
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "get_blue_states",
+        lambda *args, **kwargs: next(blue_state_results),
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: True,
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "_recursive_merge_two_states",
+        lambda *args, **kwargs: (
+            merged_matrix,
+            merged_states,
+            True,
+            [0],
+        ),
+    )
+
+    final_matrix, final_states, tracking = pm.alergia(
+        transition_matrix,
+        states,
+        alphabet,
+        alpha=0.05,
+        output="Truncated",
+        method="Higuera",
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Recursively merged states. "
+        "Successfully merged (0, 1)"
+        in captured.out
+    )
+    assert np.array_equal(final_matrix, merged_matrix)
+    assert final_states == merged_states
+    assert tracking["attempted_merges"] == 1
+    assert tracking["successful_merges"] == 1
+    assert tracking["recursive_merge_attempts"] == 1
+    assert tracking["recursive_merge_failures"] == 0
+
+
+def test_alergia_higuera_prints_when_hoeffding_bound_is_not_satisfied(
+    monkeypatch,
+    capsys,
+):
+    states = ["*", 0, 1]
+    alphabet = ["A"]
+
+    transition_matrix = np.zeros((1, 3, 3), dtype=int)
+
+    blue_state_results = iter(
+        [
+            [1],
+            [],
+        ]
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "get_blue_states",
+        lambda *args, **kwargs: next(blue_state_results),
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: False,
+    )
+
+    final_matrix, final_states, tracking = pm.alergia(
+        transition_matrix,
+        states,
+        alphabet,
+        alpha=0.05,
+        output="Truncated",
+        method="Higuera",
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Hoeffding Bound not satisfied for (0, 1)"
+        in captured.out
+    )
+    assert np.array_equal(final_matrix, transition_matrix)
+    assert final_states == states
+    assert tracking["attempted_merges"] == 1
+    assert tracking["successful_merges"] == 0
+    assert tracking["recursive_merge_attempts"] == 0
+    assert tracking["recursive_merge_failures"] == 0
+
+
 def test_alergia_simple_example(simple_pta):
     obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
         simple_pta.pathway_matrix, simple_pta.states, simple_pta.alphabet, 0.2

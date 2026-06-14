@@ -127,6 +127,24 @@ def test_validate_transition_matrix_raises_for_non_finite_values(
         )
 
 
+def test_validate_transition_matrix_raises_for_negative_values():
+    transition_matrix = np.zeros((2, 3, 3))
+    transition_matrix[0, 1, 2] = -1
+
+    alphabet = ["A", "B"]
+    states = ["*", 0, 1]
+
+    with pytest.raises(
+        ValueError,
+        match="transition_matrix must not contain negative values",
+    ):
+        pm._validate_transition_matrix(
+            transition_matrix,
+            alphabet,
+            states,
+        )
+
+
 def test_get_n_simple_example(simple_pta):
     assert pm.get_n(0, simple_pta.pathway_matrix, simple_pta.states) == 30
     assert pm.get_n(1, simple_pta.pathway_matrix, simple_pta.states) == 15

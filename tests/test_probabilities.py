@@ -74,12 +74,74 @@ def test_probability_estimate_of_pattern(jacquemont_example):
     assert np.allclose(obtained_vector, expected_vector)
 
 
+def test_probability_estimate_of_exact_sequence_returns_zero_when_first_symbol_is_unavailable():
+    alphabet = ["A"]
+
+    p_mat = np.zeros((1, 3, 3))
+
+    probability = pm.probability_estimate_of_exact_sequence(
+        p_mat,
+        sequence="A",
+        alphabet=alphabet,
+    )
+
+    assert probability == 0
+
+
+def test_probability_estimate_of_exact_sequence_returns_zero_when_intermediate_symbol_is_unavailable():
+    alphabet = ["A", "B", "C"]
+
+    p_mat = np.zeros((3, 4, 4))
+
+    p_mat[0, 1, 2] = 1.0
+
+    probability = pm.probability_estimate_of_exact_sequence(
+        p_mat,
+        sequence="ABC",
+        alphabet=alphabet,
+    )
+
+    assert probability == 0
+
+
 def test_probability_estimate_of_exact_sequence(arnolds_example):
     obtained_probability = pm.probability_estimate_of_exact_sequence(
         arnolds_example.final_p_matrix_point9, "ABC", arnolds_example.alphabet
     )
     expected_probability = 0.0016163599573759896
     assert np.allclose(obtained_probability, expected_probability)
+
+
+def test_probability_sequence_contains_letter_at_distance_theta_rejects_non_integer_theta():
+    p_mat = np.zeros((1, 2, 2))
+    alphabet = ["A"]
+
+    with pytest.raises(
+        TypeError,
+        match="theta must be an integer.",
+    ):
+        pm.probability_sequence_contains_letter_at_distance_theta(
+            p_mat,
+            letter="A",
+            theta=1.5,
+            alphabet=alphabet,
+        )
+
+
+def test_probability_sequence_contains_letter_at_distance_theta_rejects_negative_theta():
+    p_mat = np.zeros((1, 2, 2))
+    alphabet = ["A"]
+
+    with pytest.raises(
+        ValueError,
+        match="theta must be non-negative.",
+    ):
+        pm.probability_sequence_contains_letter_at_distance_theta(
+            p_mat,
+            letter="A",
+            theta=-1,
+            alphabet=alphabet,
+        )
 
 
 def test_probability_sequence_contains_letter_at_distance_theta(jacquemont_example):

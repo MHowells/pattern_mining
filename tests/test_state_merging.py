@@ -461,6 +461,246 @@ def test_recursive_merge_higuera_requires_red_states(simple_pta):
         )
 
 
+def test_recursive_merge_two_states_prints_nondeterministic_pairs(
+    capsys,
+    monkeypatch,
+):
+    pathway_matrix = np.zeros((1, 5, 5), dtype=int)
+    states = ["*", 0, 1, 2, 3]
+    alphabet = ["A"]
+
+    pathway_matrix[0, 2, 1] = 1
+    pathway_matrix[0, 3, 4] = 1
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: False,
+    )
+
+    pm._recursive_merge_two_states(
+        q1=1,
+        q2=2,
+        pathway_matrix=pathway_matrix,
+        states=states,
+        alpha=0.2,
+        alphabet=alphabet,
+        output="Full",
+        method="Carrasco",
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Merging of states (1, 2) results in "
+        "non-deterministic pairs: [(0, 3)]"
+        in captured.out
+    )
+
+
+def test_recursive_merge_two_states_prints_successful_merge(capsys):
+    states = ["*", 0, 1, 2, 3]
+    alphabet = ["A"]
+
+    pathway_matrix = np.zeros((1, 5, 5), dtype=int)
+
+    pathway_matrix[0, 0, 1] = 10
+    pathway_matrix[0, 1, 3] = 5
+    pathway_matrix[0, 2, 4] = 5
+
+    new_matrix, new_states, recursive_merge = (
+        pm._recursive_merge_two_states(
+            0,
+            1,
+            pathway_matrix,
+            states,
+            alpha=0.05,
+            alphabet=alphabet,
+            output="Full",
+            method="Carrasco",
+        )
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Successfully merged states "
+        "(2, 3) "
+        "into a deterministic state."
+        in captured.out
+    )
+    assert recursive_merge is True
+    assert new_states == ["*", 0, 2]
+    assert new_matrix.shape == (1, 3, 3)
+
+
+def test_recursive_merge_two_states_prints_new_nondeterministic_pairs(
+    capsys,
+):
+    states = ["*", 0, 1, 2, 3, 4, 5]
+    alphabet = ["A"]
+
+    pathway_matrix = np.zeros((1, 7, 7), dtype=int)
+
+    pathway_matrix[0, 0, 1] = 10
+    pathway_matrix[0, 1, 3] = 5
+    pathway_matrix[0, 2, 4] = 5
+    pathway_matrix[0, 3, 5] = 5
+    pathway_matrix[0, 4, 6] = 5
+
+    new_matrix, new_states, recursive_merge = (
+        pm._recursive_merge_two_states(
+            0,
+            1,
+            pathway_matrix,
+            states,
+            alpha=0.05,
+            alphabet=alphabet,
+            output="Full",
+            method="Carrasco",
+        )
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Merging of previous non-deterministic pair "
+        "results in non-deterministic pairs: [(4, 5)]"
+        in captured.out
+    )
+    assert recursive_merge is True
+    assert new_states == ["*", 0, 2, 4]
+    assert new_matrix.shape == (1, 4, 4)
+
+
+def test_recursive_merge_two_states_higuera_prints_nondeterministic_pairs(
+    capsys,
+):
+    states = ["*", 0, 1, 2, 3]
+    alphabet = ["A"]
+    red_states = [0]
+
+    pathway_matrix = np.zeros((1, 5, 5), dtype=int)
+
+    pathway_matrix[0, 0, 1] = 10
+    pathway_matrix[0, 1, 3] = 5
+    pathway_matrix[0, 2, 4] = 5
+
+    (
+        new_matrix,
+        new_states,
+        recursive_merge,
+        new_red_states,
+    ) = pm._recursive_merge_two_states(
+        0,
+        1,
+        pathway_matrix,
+        states,
+        alpha=0.05,
+        alphabet=alphabet,
+        red_states=red_states,
+        output="Full",
+        method="Higuera",
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Merging of states "
+        "(0, 1) "
+        "results in non-deterministic pairs: [(2, 3)]"
+        in captured.out
+    )
+    assert (
+        "Successfully merged states "
+        "(2, 3) "
+        "into a deterministic state."
+        in captured.out
+    )
+    assert recursive_merge is True
+    assert new_states == ["*", 0, 2]
+    assert new_red_states == [0]
+    assert new_matrix.shape == (1, 3, 3)
+
+
+def test_recursive_merge_two_states_updates_two_red_states():
+    states = ["*", 0, 1, 2, 3]
+    alphabet = ["A"]
+    red_states = [0, 2, 3]
+
+    pathway_matrix = np.zeros((1, 5, 5), dtype=int)
+
+    pathway_matrix[0, 0, 1] = 10
+    pathway_matrix[0, 1, 3] = 5
+    pathway_matrix[0, 2, 4] = 5
+
+    (
+        new_matrix,
+        new_states,
+        recursive_merge,
+        new_red_states,
+    ) = pm._recursive_merge_two_states(
+        0,
+        1,
+        pathway_matrix,
+        states,
+        alpha=0.05,
+        alphabet=alphabet,
+        red_states=red_states,
+        method="Higuera",
+    )
+
+    assert recursive_merge is True
+    assert new_states == ["*", 0, 2]
+    assert new_matrix.shape == (1, 3, 3)
+    assert new_red_states == [0, 2, 2]
+
+
+def test_recursive_merge_two_states_higuera_prints_new_nondeterministic_pairs(
+    capsys,
+):
+    states = ["*", 0, 1, 2, 3, 4, 5]
+    alphabet = ["A"]
+    red_states = [0]
+
+    pathway_matrix = np.zeros((1, 7, 7), dtype=int)
+
+    pathway_matrix[0, 0, 1] = 10
+    pathway_matrix[0, 1, 3] = 5
+    pathway_matrix[0, 2, 4] = 5
+    pathway_matrix[0, 3, 5] = 5
+    pathway_matrix[0, 4, 6] = 5
+
+    (
+        new_matrix,
+        new_states,
+        recursive_merge,
+        new_red_states,
+    ) = pm._recursive_merge_two_states(
+        0,
+        1,
+        pathway_matrix,
+        states,
+        alpha=0.05,
+        alphabet=alphabet,
+        red_states=red_states,
+        output="Full",
+        method="Higuera",
+    )
+
+    captured = capsys.readouterr()
+
+    assert (
+        "Merging of previous non-deterministic pair "
+        "results in non-deterministic pairs: [(4, 5)]"
+        in captured.out
+    )
+    assert recursive_merge is True
+    assert new_states == ["*", 0, 2, 4]
+    assert new_red_states == [0]
+    assert new_matrix.shape == (1, 4, 4)
+
+
 def test_recursive_merge_two_states_simple_example(simple_pta):
     (
         obtained_matrix,

@@ -87,6 +87,23 @@ def test_validate_alphabet_raises_for_non_string_symbols(
         pm._validate_alphabet(invalid_alphabet)
 
 
+@pytest.mark.parametrize(
+    "invalid_alphabet_sizes",
+    [
+        ["A", "AB"],
+        ["", "BC"],
+    ],
+)
+def test_validate_alphabet_raises_for_non_single_character_symbols(
+    invalid_alphabet_sizes,
+):
+    with pytest.raises(
+        ValueError,
+        match="every alphabet symbol must contain exactly one character.",
+    ):
+        pm._validate_alphabet(invalid_alphabet_sizes)
+
+
 def test_validate_alphabet_raises_for_duplicate_symbols():
     with pytest.raises(
         ValueError,
