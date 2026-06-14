@@ -120,31 +120,49 @@ def test_validate_alpha_raises_for_values_outside_range(
 
 def test_hoeffding_bound_simple_example(simple_pta):
     assert (
-        pm.hoeffding_bound(0, 3, 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.states)
+        pm.hoeffding_bound(
+            0, 3, 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.states
+        )
         == False
     )
-    assert (
-        pm.hoeffding_bound(1, 5, 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.states)
-        == True
-    )
-    assert (
-        pm.hoeffding_bound(2, 0, 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.states)
-        == True
-    )
-    assert (
-        pm.hoeffding_bound(5, 0, 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.states)
-        == False
-    )
-
     assert (
         pm.hoeffding_bound(
-            "B", "F", 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.alternate_state_names
+            1, 5, 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.states
         )
         == True
     )
     assert (
         pm.hoeffding_bound(
-            "D", "A", 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.alternate_state_names
+            2, 0, 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.states
+        )
+        == True
+    )
+    assert (
+        pm.hoeffding_bound(
+            5, 0, 0.2, simple_pta.pathway_matrix, simple_pta.alphabet, simple_pta.states
+        )
+        == False
+    )
+
+    assert (
+        pm.hoeffding_bound(
+            "B",
+            "F",
+            0.2,
+            simple_pta.pathway_matrix,
+            simple_pta.alphabet,
+            simple_pta.alternate_state_names,
+        )
+        == True
+    )
+    assert (
+        pm.hoeffding_bound(
+            "D",
+            "A",
+            0.2,
+            simple_pta.pathway_matrix,
+            simple_pta.alphabet,
+            simple_pta.alternate_state_names,
         )
         == False
     )
@@ -153,25 +171,45 @@ def test_hoeffding_bound_simple_example(simple_pta):
 def test_hoeffding_bound_arnolds_example(arnolds_example):
     assert (
         pm.hoeffding_bound(
-            0, 1, 0.2, arnolds_example.pathway_matrix, arnolds_example.alphabet, arnolds_example.states
+            0,
+            1,
+            0.2,
+            arnolds_example.pathway_matrix,
+            arnolds_example.alphabet,
+            arnolds_example.states,
         )
         == True
     )
     assert (
         pm.hoeffding_bound(
-            1, 2, 0.2, arnolds_example.pathway_matrix, arnolds_example.alphabet, arnolds_example.states
+            1,
+            2,
+            0.2,
+            arnolds_example.pathway_matrix,
+            arnolds_example.alphabet,
+            arnolds_example.states,
         )
         == True
     )
     assert (
         pm.hoeffding_bound(
-            0, 1, 0.9, arnolds_example.pathway_matrix, arnolds_example.alphabet, arnolds_example.states
+            0,
+            1,
+            0.9,
+            arnolds_example.pathway_matrix,
+            arnolds_example.alphabet,
+            arnolds_example.states,
         )
         == False
     )
     assert (
         pm.hoeffding_bound(
-            1, 3, 0.9, arnolds_example.pathway_matrix, arnolds_example.alphabet, arnolds_example.states
+            1,
+            3,
+            0.9,
+            arnolds_example.pathway_matrix,
+            arnolds_example.alphabet,
+            arnolds_example.states,
         )
         == True
     )
@@ -257,7 +295,11 @@ def test_merge_two_states_simple_example(simple_pta):
 
 def test_merge_two_states_arnolds_example(arnolds_example):
     obtained_pathway_matrix, obtained_states = pm.merge_two_states(
-        0, 1, arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet
+        0,
+        1,
+        arnolds_example.pathway_matrix,
+        arnolds_example.states,
+        arnolds_example.alphabet,
     )
     expected_pathway_matrix = np.array(
         [
@@ -359,7 +401,11 @@ def test_check_is_deterministic_arnolds_example(arnolds_example):
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
     obtained_pathway_matrix, obtained_states = pm.merge_two_states(
-        0, 1, arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet
+        0,
+        1,
+        arnolds_example.pathway_matrix,
+        arnolds_example.states,
+        arnolds_example.alphabet,
     )
     obtained_nondeterministic_pairs = pm.check_is_deterministic(
         obtained_pathway_matrix, obtained_states, arnolds_example.alphabet
@@ -368,7 +414,11 @@ def test_check_is_deterministic_arnolds_example(arnolds_example):
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
     obtained_pathway_matrix, obtained_states = pm.merge_two_states(
-        0, 3, arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet
+        0,
+        3,
+        arnolds_example.pathway_matrix,
+        arnolds_example.states,
+        arnolds_example.alphabet,
     )
     obtained_nondeterministic_pairs = pm.check_is_deterministic(
         obtained_pathway_matrix, obtained_states, arnolds_example.alphabet
@@ -493,8 +543,7 @@ def test_recursive_merge_two_states_prints_nondeterministic_pairs(
 
     assert (
         "Merging of states (1, 2) results in "
-        "non-deterministic pairs: [(0, 3)]"
-        in captured.out
+        "non-deterministic pairs: [(0, 3)]" in captured.out
     )
 
 
@@ -508,17 +557,15 @@ def test_recursive_merge_two_states_prints_successful_merge(capsys):
     pathway_matrix[0, 1, 3] = 5
     pathway_matrix[0, 2, 4] = 5
 
-    new_matrix, new_states, recursive_merge = (
-        pm._recursive_merge_two_states(
-            0,
-            1,
-            pathway_matrix,
-            states,
-            alpha=0.05,
-            alphabet=alphabet,
-            output="Full",
-            method="Carrasco",
-        )
+    new_matrix, new_states, recursive_merge = pm._recursive_merge_two_states(
+        0,
+        1,
+        pathway_matrix,
+        states,
+        alpha=0.05,
+        alphabet=alphabet,
+        output="Full",
+        method="Carrasco",
     )
 
     captured = capsys.readouterr()
@@ -526,8 +573,7 @@ def test_recursive_merge_two_states_prints_successful_merge(capsys):
     assert (
         "Successfully merged states "
         "(2, 3) "
-        "into a deterministic state."
-        in captured.out
+        "into a deterministic state." in captured.out
     )
     assert recursive_merge is True
     assert new_states == ["*", 0, 2]
@@ -548,25 +594,22 @@ def test_recursive_merge_two_states_prints_new_nondeterministic_pairs(
     pathway_matrix[0, 3, 5] = 5
     pathway_matrix[0, 4, 6] = 5
 
-    new_matrix, new_states, recursive_merge = (
-        pm._recursive_merge_two_states(
-            0,
-            1,
-            pathway_matrix,
-            states,
-            alpha=0.05,
-            alphabet=alphabet,
-            output="Full",
-            method="Carrasco",
-        )
+    new_matrix, new_states, recursive_merge = pm._recursive_merge_two_states(
+        0,
+        1,
+        pathway_matrix,
+        states,
+        alpha=0.05,
+        alphabet=alphabet,
+        output="Full",
+        method="Carrasco",
     )
 
     captured = capsys.readouterr()
 
     assert (
         "Merging of previous non-deterministic pair "
-        "results in non-deterministic pairs: [(4, 5)]"
-        in captured.out
+        "results in non-deterministic pairs: [(4, 5)]" in captured.out
     )
     assert recursive_merge is True
     assert new_states == ["*", 0, 2, 4]
@@ -608,14 +651,12 @@ def test_recursive_merge_two_states_higuera_prints_nondeterministic_pairs(
     assert (
         "Merging of states "
         "(0, 1) "
-        "results in non-deterministic pairs: [(2, 3)]"
-        in captured.out
+        "results in non-deterministic pairs: [(2, 3)]" in captured.out
     )
     assert (
         "Successfully merged states "
         "(2, 3) "
-        "into a deterministic state."
-        in captured.out
+        "into a deterministic state." in captured.out
     )
     assert recursive_merge is True
     assert new_states == ["*", 0, 2]
@@ -693,8 +734,7 @@ def test_recursive_merge_two_states_higuera_prints_new_nondeterministic_pairs(
 
     assert (
         "Merging of previous non-deterministic pair "
-        "results in non-deterministic pairs: [(4, 5)]"
-        in captured.out
+        "results in non-deterministic pairs: [(4, 5)]" in captured.out
     )
     assert recursive_merge is True
     assert new_states == ["*", 0, 2, 4]
@@ -728,17 +768,13 @@ def test_recursive_merge_two_states_restores_initial_input(
     monkeypatch.setattr(
         pm,
         "check_is_deterministic",
-        lambda *args, **kwargs: next(
-            nondeterministic_results
-        ),
+        lambda *args, **kwargs: next(nondeterministic_results),
     )
 
     monkeypatch.setattr(
         pm,
         "hoeffding_bound",
-        lambda *args, **kwargs: next(
-            hoeffding_results
-        ),
+        lambda *args, **kwargs: next(hoeffding_results),
     )
 
     (
@@ -815,7 +851,12 @@ def test_recursive_merge_two_states_arnolds_example(arnolds_example):
         obtained_states,
         obtained_recursive_merge,
     ) = pm.recursive_merge_two_states(
-        0, 1, arnolds_example.pathway_matrix, arnolds_example.states, 0.2, arnolds_example.alphabet
+        0,
+        1,
+        arnolds_example.pathway_matrix,
+        arnolds_example.states,
+        0.2,
+        arnolds_example.alphabet,
     )
     expected_matrix = np.array(
         [
@@ -863,13 +904,17 @@ def test_recursive_merge_two_states_arnolds_example(arnolds_example):
     assert obtained_states == expected_states
     assert obtained_recursive_merge == expected_recursive_merge
 
-    # Test where Hoeffding's Bound fails during recursive merge
     (
         obtained_matrix,
         obtained_states,
         obtained_recursive_merge,
     ) = pm.recursive_merge_two_states(
-        0, 3, arnolds_example.pathway_matrix, arnolds_example.states, 0.9, arnolds_example.alphabet
+        0,
+        3,
+        arnolds_example.pathway_matrix,
+        arnolds_example.states,
+        0.9,
+        arnolds_example.alphabet,
     )
     assert np.allclose(obtained_matrix, arnolds_example.pathway_matrix)
     assert obtained_states == arnolds_example.states
@@ -877,7 +922,6 @@ def test_recursive_merge_two_states_arnolds_example(arnolds_example):
 
 
 def test_recursive_merge_two_states_with_red_states_simple_example(simple_pta):
-    # Test where states are merged recursively (Higuera)
     (
         obtained_matrix,
         obtained_states,
@@ -993,8 +1037,9 @@ def test_recursive_merge_two_states_with_red_states_arnolds_example(arnolds_exam
     assert red_states == arnolds_example.red_states
 
 
-def test_recursive_merge_two_states_with_red_states_arnolds_example_failure(arnolds_example):
-    # Test where Hoeffding's Bound fails during recursive merge (Higuera)
+def test_recursive_merge_two_states_with_red_states_arnolds_example_failure(
+    arnolds_example,
+):
     (
         obtained_matrix,
         obtained_states,
@@ -1016,8 +1061,9 @@ def test_recursive_merge_two_states_with_red_states_arnolds_example_failure(arno
     assert red_states == arnolds_example.red_states
 
 
-def test_recursive_merge_two_states_with_red_states_arnolds_example_merge_red_state(arnolds_example):
-    # Test where a red state gets merged during the recursive merge (Higuera)
+def test_recursive_merge_two_states_with_red_states_arnolds_example_merge_red_state(
+    arnolds_example,
+):
     expected_matrix = np.array(
         [
             [

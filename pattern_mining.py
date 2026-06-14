@@ -27,30 +27,20 @@ def _validate_sequences(sequences):
         If sequences is empty.
     """
     if sequences is None:
-        raise TypeError(
-            "sequences must be an iterable of strings."
-        )
+        raise TypeError("sequences must be an iterable of strings.")
 
     if isinstance(sequences, str):
         raise TypeError(
-            "sequences must be an iterable of strings, "
-            "not a single string."
+            "sequences must be an iterable of strings, " "not a single string."
         )
 
     sequences = list(sequences)
 
     if len(sequences) == 0:
-        raise ValueError(
-            "sequences must contain at least one sequence."
-        )
+        raise ValueError("sequences must contain at least one sequence.")
 
-    if not all(
-        isinstance(sequence, str)
-        for sequence in sequences
-    ):
-        raise TypeError(
-            "every sequence must be a string."
-        )
+    if not all(isinstance(sequence, str) for sequence in sequences):
+        raise TypeError("every sequence must be a string.")
 
     return sequences
 
@@ -79,43 +69,26 @@ def _validate_alphabet(alphabet):
         or contains duplicate symbols.
     """
     if alphabet is None:
-        raise TypeError(
-            "alphabet must be an iterable of strings."
-        )
+        raise TypeError("alphabet must be an iterable of strings.")
 
     if isinstance(alphabet, str):
         raise TypeError(
-            "alphabet must be an iterable of strings, "
-            "not a single string."
+            "alphabet must be an iterable of strings, " "not a single string."
         )
 
     alphabet = list(alphabet)
 
     if len(alphabet) == 0:
-        raise ValueError(
-            "alphabet must contain at least one symbol."
-        )
+        raise ValueError("alphabet must contain at least one symbol.")
 
-    if not all(
-        isinstance(symbol, str)
-        for symbol in alphabet
-    ):
-        raise TypeError(
-            "every alphabet symbol must be a string."
-        )
+    if not all(isinstance(symbol, str) for symbol in alphabet):
+        raise TypeError("every alphabet symbol must be a string.")
 
-    if not all(
-        len(symbol) == 1
-        for symbol in alphabet
-    ):
-        raise ValueError(
-            "every alphabet symbol must contain exactly one character."
-        )
+    if not all(len(symbol) == 1 for symbol in alphabet):
+        raise ValueError("every alphabet symbol must contain exactly one character.")
 
     if len(alphabet) != len(set(alphabet)):
-        raise ValueError(
-            "alphabet must not contain duplicate symbols."
-        )
+        raise ValueError("alphabet must not contain duplicate symbols.")
 
     return alphabet
 
@@ -147,19 +120,13 @@ def _validate_transition_matrix(transition_matrix, alphabet, states):
         values.
     """
     if not isinstance(transition_matrix, np.ndarray):
-        raise TypeError(
-            "transition_matrix must be a NumPy array."
-        )
+        raise TypeError("transition_matrix must be a NumPy array.")
 
     if transition_matrix.ndim != 3:
-        raise ValueError(
-            "transition_matrix must be three-dimensional."
-        )
+        raise ValueError("transition_matrix must be three-dimensional.")
 
     if transition_matrix.shape[1] != transition_matrix.shape[2]:
-        raise ValueError(
-            "The final two transition_matrix dimensions must be equal."
-        )
+        raise ValueError("The final two transition_matrix dimensions must be equal.")
 
     if transition_matrix.shape[0] != len(alphabet):
         raise ValueError(
@@ -172,14 +139,10 @@ def _validate_transition_matrix(transition_matrix, alphabet, states):
         )
 
     if not np.all(np.isfinite(transition_matrix)):
-        raise ValueError(
-            "transition_matrix must contain only finite values."
-        )
+        raise ValueError("transition_matrix must contain only finite values.")
 
     if np.any(transition_matrix < 0):
-        raise ValueError(
-            "transition_matrix must not contain negative values."
-        )
+        raise ValueError("transition_matrix must not contain negative values.")
 
 
 def _validate_alpha(alpha):
@@ -202,9 +165,7 @@ def _validate_alpha(alpha):
         raise TypeError("alpha must be numeric.")
 
     if alpha <= 0 or alpha > 2:
-        raise ValueError(
-            "alpha must be in the range (0, 2]."
-        )
+        raise ValueError("alpha must be in the range (0, 2].")
 
 
 def _validate_states_for_merging(q1, q2, states):
@@ -228,25 +189,17 @@ def _validate_states_for_merging(q1, q2, states):
         initial state "*".
     """
     if q1 not in states:
-        raise ValueError(
-            f"q1 must be a valid state. Unknown state: {q1!r}."
-        )
+        raise ValueError(f"q1 must be a valid state. Unknown state: {q1!r}.")
 
     if q2 not in states:
-        raise ValueError(
-            f"q2 must be a valid state. Unknown state: {q2!r}."
-        )
+        raise ValueError(f"q2 must be a valid state. Unknown state: {q2!r}.")
 
     if q1 == q2:
-        raise ValueError(
-            "q1 and q2 must refer to different states."
-        )
+        raise ValueError("q1 and q2 must refer to different states.")
 
     if q1 == "*" or q2 == "*":
-        raise ValueError(
-            "The artificial initial state '*' cannot be merged."
-        )
-    
+        raise ValueError("The artificial initial state '*' cannot be merged.")
+
 
 def get_alphabet(sequences):
     """
@@ -301,9 +254,7 @@ def get_state_paths(sequences, build="breadth"):
     sequences = _validate_sequences(sequences)
 
     if build not in {"breadth", "depth"}:
-        raise ValueError(
-            "build must be either 'breadth' or 'depth'."
-        )
+        raise ValueError("build must be either 'breadth' or 'depth'.")
 
     if build == "breadth":
         all_paths = [""]
@@ -318,8 +269,7 @@ def get_state_paths(sequences, build="breadth"):
                         [
                             x[: len(current_node) + 1]
                             for x in sequences
-                            if len(x) > len(current_node) 
-                            and x.startswith(current_node)
+                            if len(x) > len(current_node) and x.startswith(current_node)
                         ]
                     )
                 )
@@ -328,7 +278,7 @@ def get_state_paths(sequences, build="breadth"):
             for j in range(len(this_iter)):
                 all_paths.append(this_iter[j])
                 all_ordered.insert(
-                    all_ordered.index(current_node) + 1 + j, 
+                    all_ordered.index(current_node) + 1 + j,
                     this_iter[j],
                 )
 
@@ -337,12 +287,10 @@ def get_state_paths(sequences, build="breadth"):
             if tracker == len(all_paths):
                 break
 
-            current_node = all_ordered[
-                all_ordered.index(current_node) + 1
-            ]
+            current_node = all_ordered[all_ordered.index(current_node) + 1]
 
         return all_paths
-    
+
     else:
         all_paths = [""]
         current_node = all_paths[0]
@@ -356,7 +304,7 @@ def get_state_paths(sequences, build="breadth"):
                             x[: len(current_node) + 1]
                             for x in sequences
                             if (
-                                len(x) > len(current_node) 
+                                len(x) > len(current_node)
                                 and x.startswith(current_node)
                             )
                         ]
@@ -372,9 +320,7 @@ def get_state_paths(sequences, build="breadth"):
             if tracker == len(all_paths):
                 break
 
-            current_node = all_paths[
-                all_paths.index(current_node) + 1
-            ]
+            current_node = all_paths[all_paths.index(current_node) + 1]
 
         return all_paths
 
@@ -465,7 +411,7 @@ def get_initial_states(sequences):
     """
     states = list(range(len(get_state_paths(sequences))))
     states.insert(0, "*")
-    
+
     return states
 
 
@@ -579,11 +525,12 @@ def get_pi_endpoint(q, pathway_matrix, alphabet, states):
     """
     return 1 - sum(
         get_pi(
-            q, 
-            z, 
-            pathway_matrix, 
+            q,
+            z,
+            pathway_matrix,
             states,
-        ) for z in range(len(alphabet))
+        )
+        for z in range(len(alphabet))
     )
 
 
@@ -633,7 +580,7 @@ def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
 
         if lhs > rhs:
             return False
-        
+
     lhs = abs(
         get_pi_endpoint(q1, pathway_matrix, alphabet, states)
         - get_pi_endpoint(q2, pathway_matrix, alphabet, states)
@@ -641,15 +588,15 @@ def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
 
     if lhs > rhs:
         return False
-    
+
     return True
 
 
 def merge_two_states(
-    q1, 
-    q2, 
-    pathway_matrix, 
-    states, 
+    q1,
+    q2,
+    pathway_matrix,
+    states,
     alphabet,
     red_states=None,
 ):
@@ -763,8 +710,7 @@ def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
     states_copy = states.copy()
 
     pathway_matrix_copy[:, :, which_min] = (
-        pathway_matrix_copy[:, :, i1]
-        + pathway_matrix_copy[:, :, i2]
+        pathway_matrix_copy[:, :, i1] + pathway_matrix_copy[:, :, i2]
     )
 
     pathway_matrix_copy = np.delete(
@@ -774,8 +720,7 @@ def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
     )
 
     pathway_matrix_copy[:, which_min, :] = (
-        pathway_matrix_copy[:, i1, :]
-        + pathway_matrix_copy[:, i2, :]
+        pathway_matrix_copy[:, i1, :] + pathway_matrix_copy[:, i2, :]
     )
 
     pathway_matrix_copy = np.delete(
@@ -788,13 +733,10 @@ def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
 
     if red_states is not None:
         updated_red_states = [
-            surviving_state if state == removed_state else state
-            for state in red_states
+            surviving_state if state == removed_state else state for state in red_states
         ]
 
-        red_states_copy = list(
-            dict.fromkeys(updated_red_states)
-        )
+        red_states_copy = list(dict.fromkeys(updated_red_states))
 
         return (
             pathway_matrix_copy,
@@ -835,9 +777,7 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
     nondeterministic_pairs = []
 
     for a in range(len(alphabet)):
-        rows = np.where(
-            (pathway_matrix[a, :, :] > 0).sum(axis=1) > 1
-        )[0]
+        rows = np.where((pathway_matrix[a, :, :] > 0).sum(axis=1) > 1)[0]
 
         for row in rows:
             where_non_det = np.where(pathway_matrix[a, row, :] > 0)[0]
@@ -848,22 +788,20 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
             else:
                 nond_pairs = np.reshape(where_non_det, (1, 2))
 
-            nondeterministic_pairs += [
-                tuple(states[i] for i in r) for r in nond_pairs
-            ]
+            nondeterministic_pairs += [tuple(states[i] for i in r) for r in nond_pairs]
 
     return nondeterministic_pairs
 
 
 def recursive_merge_two_states(
-    q1, 
-    q2, 
-    pathway_matrix, 
-    states, 
-    alpha, 
-    alphabet, 
-    red_states=None, 
-    output="Suppressed", 
+    q1,
+    q2,
+    pathway_matrix,
+    states,
+    alpha,
+    alphabet,
+    red_states=None,
+    output="Suppressed",
     method="Carrasco",
 ):
     """
@@ -923,24 +861,18 @@ def recursive_merge_two_states(
     valid_outputs = {"Suppressed", "Truncated", "Full"}
 
     if output not in valid_outputs:
-        raise ValueError(
-            "output must be 'Suppressed', 'Truncated', or 'Full'."
-        )
+        raise ValueError("output must be 'Suppressed', 'Truncated', or 'Full'.")
 
     valid_methods = {"Carrasco", "Higuera"}
 
     if method not in valid_methods:
-        raise ValueError(
-            "method must be either 'Carrasco' or 'Higuera'."
-        )
+        raise ValueError("method must be either 'Carrasco' or 'Higuera'.")
 
     if method == "Higuera" and red_states is None:
-        raise ValueError(
-            "red_states must be provided when method='Higuera'."
-        )
+        raise ValueError("red_states must be provided when method='Higuera'.")
 
     _validate_alpha(alpha)
-    
+
     alphabet = _validate_alphabet(alphabet)
 
     _validate_transition_matrix(
@@ -954,7 +886,7 @@ def recursive_merge_two_states(
         q2,
         states,
     )
-    
+
     return _recursive_merge_two_states(
         q1,
         q2,
@@ -969,14 +901,14 @@ def recursive_merge_two_states(
 
 
 def _recursive_merge_two_states(
-    q1, 
-    q2, 
-    pathway_matrix, 
-    states, 
-    alpha, 
-    alphabet, 
-    red_states=None, 
-    output="Suppressed", 
+    q1,
+    q2,
+    pathway_matrix,
+    states,
+    alpha,
+    alphabet,
+    red_states=None,
+    output="Suppressed",
     method="Carrasco",
 ):
     """
@@ -1028,15 +960,15 @@ def _recursive_merge_two_states(
         initial_states = states.copy()
 
         new_matrix, new_states = _merge_two_states(
-            q1, 
-            q2, 
-            pathway_matrix, 
+            q1,
+            q2,
+            pathway_matrix,
             states,
         )
 
         non_det_pairs = check_is_deterministic(
-            new_matrix, 
-            new_states, 
+            new_matrix,
+            new_states,
             alphabet,
         )
 
@@ -1067,15 +999,15 @@ def _recursive_merge_two_states(
                     )
 
                 new_matrix, new_states = _merge_two_states(
-                    non_det_pairs[0][0], 
-                    non_det_pairs[0][1], 
-                    new_matrix, 
+                    non_det_pairs[0][0],
+                    non_det_pairs[0][1],
+                    new_matrix,
                     new_states,
                 )
 
                 non_det_pairs = check_is_deterministic(
-                    new_matrix, 
-                    new_states, 
+                    new_matrix,
+                    new_states,
                     alphabet,
                 )
 
@@ -1089,28 +1021,28 @@ def _recursive_merge_two_states(
             else:
                 recursive_merge = False
                 return (
-                    initial_pathway_matrix, 
-                    initial_states, 
+                    initial_pathway_matrix,
+                    initial_states,
                     recursive_merge,
                 )
-            
+
         return new_matrix, new_states, recursive_merge
-    
+
     initial_pathway_matrix = np.copy(pathway_matrix)
     initial_states = states.copy()
     initial_red_states = red_states.copy()
 
     new_matrix, new_states, red_states = _merge_two_states(
-        q1, 
-        q2, 
-        pathway_matrix, 
-        states, 
+        q1,
+        q2,
+        pathway_matrix,
+        states,
         red_states=red_states,
     )
 
     non_det_pairs = check_is_deterministic(
-        new_matrix, 
-        new_states, 
+        new_matrix,
+        new_states,
         alphabet,
     )
 
@@ -1143,16 +1075,16 @@ def _recursive_merge_two_states(
                 )
 
             new_matrix, new_states, red_states = _merge_two_states(
-                pair[0], 
-                pair[1], 
-                new_matrix, 
+                pair[0],
+                pair[1],
+                new_matrix,
                 new_states,
                 red_states=red_states,
             )
 
             non_det_pairs = check_is_deterministic(
-                new_matrix, 
-                new_states, 
+                new_matrix,
+                new_states,
                 alphabet,
             )
 
@@ -1166,12 +1098,12 @@ def _recursive_merge_two_states(
         else:
             recursive_merge = False
             return (
-                initial_pathway_matrix, 
-                initial_states, 
-                recursive_merge, 
+                initial_pathway_matrix,
+                initial_states,
+                recursive_merge,
                 initial_red_states,
             )
-        
+
     return new_matrix, new_states, recursive_merge, red_states
 
 
@@ -1203,9 +1135,7 @@ def get_blue_states(pathway_matrix, red_states, states):
     for q in red_states:
         blue_states += [
             states[x]
-            for x in list(
-                np.where(pathway_matrix[:, states.index(q), :] > 0)[1]
-            )
+            for x in list(np.where(pathway_matrix[:, states.index(q), :] > 0)[1])
         ]
 
     blue_states = [x for x in blue_states if x not in red_states]
@@ -1243,11 +1173,11 @@ def get_pairs_to_check(states):
 
 
 def alergia(
-    transition_matrix, 
-    states, 
-    alphabet, 
-    alpha, 
-    output="Suppressed", 
+    transition_matrix,
+    states,
+    alphabet,
+    alpha,
+    output="Suppressed",
     method="Carrasco",
 ):
     """
@@ -1297,23 +1227,19 @@ def alergia(
     valid_outputs = {"Suppressed", "Truncated", "Full"}
 
     if output not in valid_outputs:
-        raise ValueError(
-            "output must be 'Suppressed', 'Truncated', or 'Full'."
-        )
+        raise ValueError("output must be 'Suppressed', 'Truncated', or 'Full'.")
 
     valid_methods = {"Carrasco", "Higuera"}
 
     if method not in valid_methods:
-        raise ValueError(
-            "method must be either 'Carrasco' or 'Higuera'."
-        )
+        raise ValueError("method must be either 'Carrasco' or 'Higuera'.")
 
     _validate_alpha(alpha)
 
     alphabet = _validate_alphabet(alphabet)
 
     _validate_transition_matrix(transition_matrix, alphabet, states)
-    
+
     if method == "Carrasco":
         current_matrix = transition_matrix
         current_states = states
@@ -1333,7 +1259,7 @@ def alergia(
 
             if output in ("Full", "Truncated"):
                 print(
-                    "The next pair of states to check is:", 
+                    "The next pair of states to check is:",
                     to_check[0],
                 )
 
@@ -1353,7 +1279,7 @@ def alergia(
             ):
                 if output in ("Full", "Truncated"):
                     print(
-                        "Hoeffding Bound satisfied for", 
+                        "Hoeffding Bound satisfied for",
                         to_check[0],
                     )
 
@@ -1379,8 +1305,7 @@ def alergia(
 
                     if output in ("Full", "Truncated"):
                         print(
-                            "Recursively merged states. "
-                            "Successfully merged", 
+                            "Recursively merged states. " "Successfully merged",
                             to_check[0],
                         )
 
@@ -1391,17 +1316,16 @@ def alergia(
 
                     if output in ("Full", "Truncated"):
                         print(
-                            "Recursive merge process failed. "
-                            "Cannot merge", 
+                            "Recursive merge process failed. " "Cannot merge",
                             pair,
                         )
 
                     to_check.pop(0)
-                    
+
             else:
                 if output in ("Full", "Truncated"):
                     print(
-                        "Hoeffding Bound not satisfied for", 
+                        "Hoeffding Bound not satisfied for",
                         pair,
                     )
 
@@ -1417,7 +1341,7 @@ def alergia(
         }
 
         return current_matrix, current_states, tracking
-    
+
     # Higuera method using red and blue states
     current_matrix = transition_matrix
     current_states = states
@@ -1426,8 +1350,8 @@ def alergia(
 
     red_states = [0]
     blue_states = get_blue_states(
-        current_matrix, 
-        red_states, 
+        current_matrix,
+        red_states,
         current_states,
     )
 
@@ -1458,7 +1382,7 @@ def alergia(
             ):
                 if output in ("Full", "Truncated"):
                     print(
-                        "Hoeffding Bound satisfied for", 
+                        "Hoeffding Bound satisfied for",
                         (q1, q2),
                     )
 
@@ -1485,11 +1409,11 @@ def alergia(
                     merge_counter += 1
 
                     if output in ("Full", "Truncated"):
-                        print("Recursively merged states. "
-                              "Successfully merged", 
-                              (q1, q2),
-                            )
-                        
+                        print(
+                            "Recursively merged states. " "Successfully merged",
+                            (q1, q2),
+                        )
+
                     merged = True
                     break
 
@@ -1501,13 +1425,13 @@ def alergia(
 
             if output in ("Full", "Truncated"):
                 print(
-                    "Hoeffding Bound not satisfied for", 
+                    "Hoeffding Bound not satisfied for",
                     (q1, q2),
                 )
 
         blue_states = get_blue_states(
-            current_matrix, 
-            red_states, 
+            current_matrix,
+            red_states,
             current_states,
         )
 
@@ -1892,7 +1816,7 @@ def probability_sequence_contains_letter_at_distance_theta(
 
     if theta < 0:
         raise ValueError("theta must be non-negative.")
-    
+
     matrix_index = alphabet.index(letter)
     tau_theta = np.linalg.matrix_power(np.sum(p_mat, axis=0), theta)
     pi_symbol = np.sum(p_mat[matrix_index, :, :], axis=1)
@@ -1900,9 +1824,9 @@ def probability_sequence_contains_letter_at_distance_theta(
 
 
 def probability_to_encounter_a_pattern_at_a_distance_theta(
-    p_mat, 
-    pattern, 
-    theta, 
+    p_mat,
+    pattern,
+    theta,
     alphabet,
 ):
     """
@@ -1944,13 +1868,13 @@ def probability_to_encounter_a_pattern_at_a_distance_theta(
             "Use probability_sequence_contains_letter_at_distance_theta() "
             "for a single symbol."
         )
-    
+
     if not isinstance(theta, (int, np.integer)):
         raise TypeError("theta must be an integer.")
 
     if theta < 0:
         raise ValueError("theta must be non-negative.")
-    
+
     symbol = pattern[0]
     matrix_index = alphabet.index(symbol)
 
@@ -1963,15 +1887,15 @@ def probability_to_encounter_a_pattern_at_a_distance_theta(
 
     if len(remaining_pattern) > 1:
         est_of_pattern = probability_estimate_of_pattern(
-            p_mat, 
-            remaining_pattern, 
+            p_mat,
+            remaining_pattern,
             alphabet,
         )
 
     else:
         est_of_pattern = probability_estimate_of_symbol(
-            p_mat, 
-            remaining_pattern, 
+            p_mat,
+            remaining_pattern,
             alphabet,
         )
 
@@ -1979,11 +1903,11 @@ def probability_to_encounter_a_pattern_at_a_distance_theta(
 
 
 def proportion_constraint(
-    p_mat, 
-    pattern, 
-    alphabet, 
-    sequences, 
-    alpha, 
+    p_mat,
+    pattern,
+    alphabet,
+    sequences,
+    alpha,
     p_value="pattern",
 ):
     """
@@ -2026,10 +1950,8 @@ def proportion_constraint(
         empty, or the estimated probability is outside ``[0, 1]``.
     """
     if p_value not in {"pattern", "sequence"}:
-        raise ValueError(
-            "p_value must be either 'pattern' or 'sequence'."
-        )
-    
+        raise ValueError("p_value must be either 'pattern' or 'sequence'.")
+
     if not isinstance(alpha, (int, float, np.number)):
         raise TypeError("alpha must be numeric.")
 
@@ -2037,12 +1959,10 @@ def proportion_constraint(
         raise ValueError(
             "alpha must be in the range (0, 1) for proportion_constraint()"
         )
-    
+
     if len(sequences) == 0:
-        raise ValueError(
-            "sequences must contain at least one observed sequence."
-        )
-    
+        raise ValueError("sequences must contain at least one observed sequence.")
+
     if p_value == "pattern":
         prob_value = probability_estimate_of_pattern(
             p_mat,
@@ -2058,10 +1978,8 @@ def proportion_constraint(
         )
 
     if not 0 <= prob_value <= 1:
-        raise ValueError(
-            "The estimated probability must be between 0 and 1."
-        )
-    
+        raise ValueError("The estimated probability must be between 0 and 1.")
+
     k = abs(norm.ppf(1 - alpha)) * (
         (prob_value * (1 - prob_value) / len(sequences)) ** 0.5
     )
@@ -2070,8 +1988,8 @@ def proportion_constraint(
 
 
 def probability_sequence_contains_digram(
-    p_mat, 
-    digram, 
+    p_mat,
+    digram,
     alphabet,
 ):
     """
@@ -2098,10 +2016,8 @@ def probability_sequence_contains_digram(
         If digram does not contain exactly two symbols.
     """
     if len(digram) != 2:
-        raise ValueError(
-            "digram must contain exactly two symbols."
-        )
-    
+        raise ValueError("digram must contain exactly two symbols.")
+
     symbol_1 = digram[0]
     symbol_2 = digram[1]
 
@@ -2109,29 +2025,23 @@ def probability_sequence_contains_digram(
     matrix_index_2 = alphabet.index(symbol_2)
 
     rho = np.sum(
-        np.delete(p_mat, matrix_index_1, 0), 
+        np.delete(p_mat, matrix_index_1, 0),
         axis=0,
     )
 
-    inverse = np.linalg.inv(
-        np.identity(p_mat.shape[1]) - rho
-    )
+    inverse = np.linalg.inv(np.identity(p_mat.shape[1]) - rho)
 
     p_symbol_1 = np.sum(
-        p_mat[matrix_index_1, :, :], 
+        p_mat[matrix_index_1, :, :],
         axis=1,
     )
 
     nonzero = []
 
     for state_index in range(p_mat.shape[1]):
-        destinations = np.where(
-            p_mat[matrix_index_1, state_index, :] > 0
-        )[0]
+        destinations = np.where(p_mat[matrix_index_1, state_index, :] > 0)[0]
 
-        if np.any(
-            p_mat[matrix_index_1, state_index, :] > 0
-        ):
+        if np.any(p_mat[matrix_index_1, state_index, :] > 0):
             nonzero.append(destinations[0])
         else:
             nonzero.append(0)
@@ -2140,11 +2050,12 @@ def probability_sequence_contains_digram(
 
     for i, emitted in enumerate(nonzero):
         p_symbol_2[0, i] = np.sum(
-            p_mat[matrix_index_2, emitted, :], axis=0,
+            p_mat[matrix_index_2, emitted, :],
+            axis=0,
         )
 
     tau = np.multiply(
-        p_symbol_1, 
+        p_symbol_1,
         p_symbol_2,
     )
 
@@ -2179,14 +2090,11 @@ def string_enumerator(alphabet, n):
 
     if n <= 0:
         raise ValueError("n must be greater than 0.")
-    
+
     strings = []
 
     for i in range(1, n + 1):
-        strings += [
-            "".join(x) 
-            for x in it.product(alphabet, repeat=i)
-        ]
+        strings += ["".join(x) for x in it.product(alphabet, repeat=i)]
 
     return strings
 

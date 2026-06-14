@@ -34,7 +34,9 @@ def test_probability_transition_matrix_simple_example(simple_pta):
 
 def test_probability_transition_matrix_arnolds_example(arnolds_example):
     obtained_matrix = pm.probability_transition_matrix(
-        arnolds_example.final_pathway_matrix, arnolds_example.final_states, arnolds_example.alphabet
+        arnolds_example.final_pathway_matrix,
+        arnolds_example.final_states,
+        arnolds_example.alphabet,
     )
     expected_matrix = np.array(
         [
@@ -145,10 +147,8 @@ def test_probability_sequence_contains_letter_at_distance_theta_rejects_negative
 
 
 def test_probability_sequence_contains_letter_at_distance_theta(jacquemont_example):
-    obtained_vector = (
-        pm.probability_sequence_contains_letter_at_distance_theta(
-            jacquemont_example.probability_matrix, "a", 2, jacquemont_example.alphabet
-        )
+    obtained_vector = pm.probability_sequence_contains_letter_at_distance_theta(
+        jacquemont_example.probability_matrix, "a", 2, jacquemont_example.alphabet
     )
     expected_vector = np.array([0.201467, 0.3629, 0.2146, 0.137696])
     assert np.allclose(obtained_vector, expected_vector)
@@ -188,18 +188,14 @@ def test_pattern_at_distance_raises_for_negative_theta(jacquemont_example):
 
 
 def test_probability_to_encounter_a_pattern_at_a_distance_theta(jacquemont_example):
-    obtained_vector = (
-        pm.probability_to_encounter_a_pattern_at_a_distance_theta(
-            jacquemont_example.probability_matrix, "ab", 2, jacquemont_example.alphabet
-        )
+    obtained_vector = pm.probability_to_encounter_a_pattern_at_a_distance_theta(
+        jacquemont_example.probability_matrix, "ab", 2, jacquemont_example.alphabet
     )
     expected_vector = np.array([0.165817, 0.2079, 0.1346, 0.116896])
     assert np.allclose(obtained_vector, expected_vector)
 
-    obtained_vector = (
-        pm.probability_to_encounter_a_pattern_at_a_distance_theta(
-            jacquemont_example.probability_matrix, "abc", 2, jacquemont_example.alphabet
-        )
+    obtained_vector = pm.probability_to_encounter_a_pattern_at_a_distance_theta(
+        jacquemont_example.probability_matrix, "abc", 2, jacquemont_example.alphabet
     )
     expected_vector = np.array([0.0773778, 0.0949411, 0.06185016, 0.0546305])
     assert np.allclose(obtained_vector, expected_vector)
@@ -297,9 +293,7 @@ def test_proportion_constraint_raises_for_probability_outside_range(
     monkeypatch.setattr(
         pm,
         "probability_estimate_of_pattern",
-        lambda p_mat, pattern, alphabet: np.array(
-            [invalid_probability]
-        ),
+        lambda p_mat, pattern, alphabet: np.array([invalid_probability]),
     )
 
     with pytest.raises(
@@ -319,14 +313,22 @@ def test_proportion_constraint_raises_for_probability_outside_range(
 def test_proportion_constraint_jacquemont_example(jacquemont_example):
     assert (
         pm.proportion_constraint(
-            jacquemont_example.probability_matrix, "cc", jacquemont_example.alphabet, jacquemont_example.sequences, 0.05
+            jacquemont_example.probability_matrix,
+            "cc",
+            jacquemont_example.alphabet,
+            jacquemont_example.sequences,
+            0.05,
         )
         == True
     )
 
     assert (
         pm.proportion_constraint(
-            jacquemont_example.probability_matrix, "bcc", jacquemont_example.alphabet, jacquemont_example.sequences, 0.05
+            jacquemont_example.probability_matrix,
+            "bcc",
+            jacquemont_example.alphabet,
+            jacquemont_example.sequences,
+            0.05,
         )
         == False
     )

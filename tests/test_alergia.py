@@ -13,7 +13,9 @@ def test_get_blue_states_simple_example(simple_pta):
 
 def test_get_blue_states_arnolds_example(arnolds_example):
     obtained_blue_states = pm.get_blue_states(
-        arnolds_example.pathway_matrix, arnolds_example.red_states, arnolds_example.states
+        arnolds_example.pathway_matrix,
+        arnolds_example.red_states,
+        arnolds_example.states,
     )
     expected_blue_states = [1, 2]
     assert obtained_blue_states == expected_blue_states
@@ -225,10 +227,7 @@ def test_alergia_prints_next_pair_of_states(
 
     captured = capsys.readouterr()
 
-    assert (
-        "The next pair of states to check is: (1, 0)"
-        in captured.out
-    )
+    assert "The next pair of states to check is: (1, 0)" in captured.out
     assert final_states == states
     assert np.array_equal(final_matrix, transition_matrix)
     assert tracking["attempted_merges"] == 1
@@ -304,10 +303,7 @@ def test_alergia_prints_when_hoeffding_bound_is_satisfied(
 
     captured = capsys.readouterr()
 
-    assert (
-        "Hoeffding Bound satisfied for (1, 0)"
-        in captured.out
-    )
+    assert "Hoeffding Bound satisfied for (1, 0)" in captured.out
     assert np.array_equal(final_matrix, transition_matrix)
     assert final_states == states
     assert tracking["attempted_merges"] == 1
@@ -354,11 +350,7 @@ def test_alergia_prints_successful_recursive_merge(
 
     captured = capsys.readouterr()
 
-    assert (
-        "Recursively merged states. "
-        "Successfully merged (1, 0)"
-        in captured.out
-    )
+    assert "Recursively merged states. " "Successfully merged (1, 0)" in captured.out
     assert np.array_equal(final_matrix, merged_matrix)
     assert final_states == merged_states
     assert tracking["attempted_merges"] == 1
@@ -403,11 +395,7 @@ def test_alergia_prints_failed_recursive_merge(
 
     captured = capsys.readouterr()
 
-    assert (
-        "Recursive merge process failed. "
-        "Cannot merge (1, 0)"
-        in captured.out
-    )
+    assert "Recursive merge process failed. " "Cannot merge (1, 0)" in captured.out
     assert np.array_equal(final_matrix, transition_matrix)
     assert final_states == states
     assert tracking["attempted_merges"] == 1
@@ -442,10 +430,7 @@ def test_alergia_prints_when_hoeffding_bound_is_not_satisfied(
 
     captured = capsys.readouterr()
 
-    assert (
-        "Hoeffding Bound not satisfied for (1, 0)"
-        in captured.out
-    )
+    assert "Hoeffding Bound not satisfied for (1, 0)" in captured.out
     assert np.array_equal(final_matrix, transition_matrix)
     assert final_states == states
     assert tracking["attempted_merges"] == 1
@@ -550,10 +535,7 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_satisfied(
 
     captured = capsys.readouterr()
 
-    assert (
-        "Hoeffding Bound satisfied for (0, 1)"
-        in captured.out
-    )
+    assert "Hoeffding Bound satisfied for (0, 1)" in captured.out
     assert np.array_equal(final_matrix, transition_matrix)
     assert final_states == states
     assert tracking["attempted_merges"] == 1
@@ -614,11 +596,7 @@ def test_alergia_higuera_prints_successful_recursive_merge(
 
     captured = capsys.readouterr()
 
-    assert (
-        "Recursively merged states. "
-        "Successfully merged (0, 1)"
-        in captured.out
-    )
+    assert "Recursively merged states. " "Successfully merged (0, 1)" in captured.out
     assert np.array_equal(final_matrix, merged_matrix)
     assert final_states == merged_states
     assert tracking["attempted_merges"] == 1
@@ -666,10 +644,7 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_not_satisfied(
 
     captured = capsys.readouterr()
 
-    assert (
-        "Hoeffding Bound not satisfied for (0, 1)"
-        in captured.out
-    )
+    assert "Hoeffding Bound not satisfied for (0, 1)" in captured.out
     assert np.array_equal(final_matrix, transition_matrix)
     assert final_states == states
     assert tracking["attempted_merges"] == 1
@@ -728,10 +703,12 @@ def test_alergia_simple_example(simple_pta):
     assert obtained_tracking == expected_tracking
 
 
-
 def test_alergia_arnolds_example_alpha_point_two(arnolds_example):
     obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
-        arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet, 0.2
+        arnolds_example.pathway_matrix,
+        arnolds_example.states,
+        arnolds_example.alphabet,
+        0.2,
     )
     expected_matrix = np.array(
         [
@@ -775,7 +752,10 @@ def test_alergia_arnolds_example_alpha_point_two(arnolds_example):
 
 def test_alergia_arnolds_example_alpha_point_nine_carrasco(arnolds_example):
     obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
-        arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet, 0.9
+        arnolds_example.pathway_matrix,
+        arnolds_example.states,
+        arnolds_example.alphabet,
+        0.9,
     )
     expected_matrix = np.array(
         [
@@ -822,7 +802,11 @@ def test_alergia_arnolds_example_alpha_point_nine_carrasco(arnolds_example):
 
 def test_alergia_arnolds_example_alpha_point_nine_higuera(arnolds_example):
     obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
-        arnolds_example.pathway_matrix, arnolds_example.states, arnolds_example.alphabet, 0.9, method="Higuera"
+        arnolds_example.pathway_matrix,
+        arnolds_example.states,
+        arnolds_example.alphabet,
+        0.9,
+        method="Higuera",
     )
     expected_matrix = np.array(
         [

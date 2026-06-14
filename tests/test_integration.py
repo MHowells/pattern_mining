@@ -41,11 +41,14 @@ def test_pattern_mining_pipeline_returns_valid_pdfa_carrasco():
 
     assert probability_matrix.shape == learned_matrix.shape
 
-    assert pm.check_is_deterministic(
-        learned_matrix,
-        learned_states,
-        alphabet,
-    ) == []
+    assert (
+        pm.check_is_deterministic(
+            learned_matrix,
+            learned_states,
+            alphabet,
+        )
+        == []
+    )
 
     assert tracking["initial_states"] == len(states)
     assert tracking["final_states"] == len(learned_states)
@@ -91,11 +94,14 @@ def test_pattern_mining_pipeline_returns_valid_pdfa_higuera():
 
     assert probability_matrix.shape == learned_matrix.shape
 
-    assert pm.check_is_deterministic(
-        learned_matrix,
-        learned_states,
-        alphabet,
-    ) == []
+    assert (
+        pm.check_is_deterministic(
+            learned_matrix,
+            learned_states,
+            alphabet,
+        )
+        == []
+    )
 
     assert tracking["initial_states"] == len(states)
     assert tracking["final_states"] == len(learned_states)

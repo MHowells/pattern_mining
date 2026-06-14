@@ -121,18 +121,7 @@ def simple_pta():
 
 @pytest.fixture
 def arnolds_example():
-    sequences = [
-        "AB",
-        "ABA", 
-        "ABB", 
-        "ABCA", 
-        "AC", 
-        "ACC", 
-        "BA", 
-        "BAA", 
-        "BC", 
-        "BCA"
-    ]
+    sequences = ["AB", "ABA", "ABB", "ABCA", "AC", "ACC", "BA", "BAA", "BC", "BCA"]
 
     alphabet = ["A", "B", "C"]
 
@@ -356,7 +345,7 @@ def jacquemont_example():
         26,
         27,
     ]
-    
+
     probability_matrix = np.array(
         [
             [

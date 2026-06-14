@@ -109,15 +109,11 @@ def test_validate_alphabet_raises_for_duplicate_symbols():
         ValueError,
         match="alphabet must not contain duplicate symbols",
     ):
-        pm._validate_alphabet(
-            ["A", "B", "A"]
-        )
+        pm._validate_alphabet(["A", "B", "A"])
 
 
 def test_validate_alphabet_returns_validated_alphabet():
-    obtained = pm._validate_alphabet(
-        ("A", "B", "C")
-    )
+    obtained = pm._validate_alphabet(("A", "B", "C"))
 
     expected = ["A", "B", "C"]
 
@@ -148,13 +144,9 @@ def test_get_state_paths_raises_for_invalid_build(simple_pta):
 
 
 def test_get_state_paths_simple_example(simple_pta):
-    obtained_state_paths_breadth = pm.get_state_paths(
-        simple_pta.sequences, "breadth"
-    )
+    obtained_state_paths_breadth = pm.get_state_paths(simple_pta.sequences, "breadth")
     expected_state_paths_breadth = ["", "0", "1", "01", "10", "11", "12"]
-    obtained_state_paths_depth = pm.get_state_paths(
-        simple_pta.sequences, "depth"
-    )
+    obtained_state_paths_depth = pm.get_state_paths(simple_pta.sequences, "depth")
     expected_state_paths_depth = ["", "0", "1", "01", "10", "11", "12"]
     assert obtained_state_paths_breadth == expected_state_paths_breadth
     assert obtained_state_paths_depth == expected_state_paths_depth
@@ -180,9 +172,7 @@ def test_get_state_paths_arnolds_example(arnolds_example):
         "BAA",
         "BCA",
     ]
-    obtained_state_paths_depth = pm.get_state_paths(
-        arnolds_example.sequences, "depth"
-    )
+    obtained_state_paths_depth = pm.get_state_paths(arnolds_example.sequences, "depth")
     expected_state_paths_depth = [
         "",
         "A",
