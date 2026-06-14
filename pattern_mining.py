@@ -1142,23 +1142,12 @@ def _recursive_merge_two_states(
                     "into a deterministic state.",
                 )
 
-            if any(x in red_states for x in pair):
-                if set(pair).issubset(set(red_states)):
-                    red_states = [
-                        min(pair) if x == max(pair) else x 
-                        for x in red_states
-                    ]
-                else:
-                    red_states = [
-                        min(pair) if x in pair else x 
-                        for x in red_states
-                    ]
-
-            new_matrix, new_states = _merge_two_states(
+            new_matrix, new_states, red_states = _merge_two_states(
                 pair[0], 
                 pair[1], 
                 new_matrix, 
                 new_states,
+                red_states=red_states,
             )
 
             non_det_pairs = check_is_deterministic(

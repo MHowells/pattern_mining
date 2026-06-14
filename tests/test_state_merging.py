@@ -623,7 +623,7 @@ def test_recursive_merge_two_states_higuera_prints_nondeterministic_pairs(
     assert new_matrix.shape == (1, 3, 3)
 
 
-def test_recursive_merge_two_states_updates_two_red_states():
+def test_recursive_merge_two_states_keeps_red_states_unique():
     states = ["*", 0, 1, 2, 3]
     alphabet = ["A"]
     red_states = [0, 2, 3]
@@ -653,7 +653,8 @@ def test_recursive_merge_two_states_updates_two_red_states():
     assert recursive_merge is True
     assert new_states == ["*", 0, 2]
     assert new_matrix.shape == (1, 3, 3)
-    assert new_red_states == [0, 2, 2]
+    assert new_red_states == [0, 2]
+    assert len(new_red_states) == len(set(new_red_states))
 
 
 def test_recursive_merge_two_states_higuera_prints_new_nondeterministic_pairs(
