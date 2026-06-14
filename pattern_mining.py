@@ -787,10 +787,14 @@ def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
     states_copy.remove(removed_state)
 
     if red_states is not None:
-        red_states_copy = [
+        updated_red_states = [
             surviving_state if state == removed_state else state
             for state in red_states
         ]
+
+        red_states_copy = list(
+            dict.fromkeys(updated_red_states)
+        )
 
         return (
             pathway_matrix_copy,
