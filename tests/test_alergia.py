@@ -644,7 +644,7 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_not_satisfied(
 
     captured = capsys.readouterr()
 
-    assert "Hoeffding Bound not satisfied for (0, 1)" in captured.out
+    assert "Could not merge blue state 1 with any red state." in captured.out
     assert np.array_equal(final_matrix, transition_matrix)
     assert final_states == states
     assert tracking["attempted_merges"] == 1

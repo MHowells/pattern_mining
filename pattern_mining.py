@@ -1426,8 +1426,9 @@ def alergia(
 
             if output in ("Full", "Truncated"):
                 print(
-                    "Hoeffding Bound not satisfied for",
-                    (q1, q2),
+                    "Could not merge blue state",
+                    q2,
+                    "with any red state.",
                 )
 
         blue_states = get_blue_states(
