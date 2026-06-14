@@ -802,7 +802,7 @@ def recursive_merge_two_states(
     alpha,
     alphabet,
     red_states=None,
-    output="Suppressed",
+    output_level="Suppressed",
     method="Carrasco",
 ):
     """
@@ -831,8 +831,15 @@ def recursive_merge_two_states(
     red_states : list, optional
         Red states to update during a Higuera merge. Required when
         method is ``"Higuera"``.
-    output : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
-        Amount of progress information printed.
+    output_level : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
+        Controls the amount of progress information printed during the
+        state-merging process:
+
+        - ``"Suppressed"``: prints no progress information.
+        - ``"Truncated"``: prints the main state comparisons and merge
+        outcomes, but omits details of the recursive merges.
+        - ``"Full"``: prints all available progress information, including
+        iteration numbers and the internal recursive merge process.
     method : {"Carrasco", "Higuera"}, default="Carrasco"
         State-merging methodology to use.
 
@@ -854,15 +861,15 @@ def recursive_merge_two_states(
         If alpha is not numeric, pathway_matrix is not a NumPy array, or
         alphabet has an invalid type.
     ValueError
-        If output or method is invalid, red_states is not provided for the
+        If output_level or method is invalid, red_states is not provided for the
         Higuera method, alpha is outside ``(0, 2]``, alphabet or
         pathway_matrix is invalid, either state is unknown, the states are
         identical, or the artificial initial state is selected.
     """
     valid_outputs = {"Suppressed", "Truncated", "Full"}
 
-    if output not in valid_outputs:
-        raise ValueError("output must be 'Suppressed', 'Truncated', or 'Full'.")
+    if output_level not in valid_outputs:
+        raise ValueError("output_level must be 'Suppressed', 'Truncated', or 'Full'.")
 
     valid_methods = {"Carrasco", "Higuera"}
 
@@ -896,7 +903,7 @@ def recursive_merge_two_states(
         alpha,
         alphabet,
         red_states=red_states,
-        output=output,
+        output_level=output_level,
         method=method,
     )
 
@@ -909,7 +916,7 @@ def _recursive_merge_two_states(
     alpha,
     alphabet,
     red_states=None,
-    output="Suppressed",
+    output_level="Suppressed",
     method="Carrasco",
 ):
     """
@@ -939,7 +946,7 @@ def _recursive_merge_two_states(
     red_states : list, optional
         Red states to update during a Higuera merge. Required when
         method is ``"Higuera"``.
-    output : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
+    output_level : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
         Amount of progress information printed.
     method : {"Carrasco", "Higuera"}, default="Carrasco"
         State-merging methodology to use.
@@ -973,7 +980,7 @@ def _recursive_merge_two_states(
             alphabet,
         )
 
-        if len(non_det_pairs) > 0 and output == "Full":
+        if len(non_det_pairs) > 0 and output_level == "Full":
             print(
                 "Merging of states",
                 (q1, q2),
@@ -992,7 +999,7 @@ def _recursive_merge_two_states(
                 alphabet,
                 new_states,
             ):
-                if output == "Full":
+                if output_level == "Full":
                     print(
                         "Successfully merged states",
                         non_det_pairs[0],
@@ -1012,7 +1019,7 @@ def _recursive_merge_two_states(
                     alphabet,
                 )
 
-                if len(non_det_pairs) > 0 and output == "Full":
+                if len(non_det_pairs) > 0 and output_level == "Full":
                     print(
                         "Merging of previous non-deterministic pair "
                         "results in non-deterministic pairs:",
@@ -1047,7 +1054,7 @@ def _recursive_merge_two_states(
         alphabet,
     )
 
-    if len(non_det_pairs) > 0 and output == "Full":
+    if len(non_det_pairs) > 0 and output_level == "Full":
         print(
             "Merging of states",
             (q1, q2),
@@ -1068,7 +1075,7 @@ def _recursive_merge_two_states(
             alphabet,
             new_states,
         ):
-            if output == "Full":
+            if output_level == "Full":
                 print(
                     "Successfully merged states",
                     pair,
@@ -1089,7 +1096,7 @@ def _recursive_merge_two_states(
                 alphabet,
             )
 
-            if len(non_det_pairs) > 0 and output == "Full":
+            if len(non_det_pairs) > 0 and output_level == "Full":
                 print(
                     "Merging of previous non-deterministic pair "
                     "results in non-deterministic pairs:",
@@ -1178,7 +1185,7 @@ def alergia(
     states,
     alphabet,
     alpha,
-    output="Suppressed",
+    output_level="Suppressed",
     method="Carrasco",
 ):
     """
@@ -1200,8 +1207,15 @@ def alergia(
         Alphabet corresponding to the first dimension of transition_matrix.
     alpha : float
         Significance level used by the Hoeffding compatibility test.
-    output : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
-        Amount of progress information printed.
+    output_level : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
+        Controls the amount of progress information printed during the
+        state-merging process:
+
+        - ``"Suppressed"``: prints no progress information.
+        - ``"Truncated"``: prints the main state comparisons and merge
+        outcomes, but omits details of the recursive merges.
+        - ``"Full"``: prints all available progress information, including
+        iteration numbers and the internal recursive merge process.
     method : {"Carrasco", "Higuera"}, default="Carrasco"
         State-merging methodology.
 
@@ -1222,13 +1236,13 @@ def alergia(
         If alpha is not numeric, transition_matrix is not a NumPy array, or
         alphabet has an invalid type.
     ValueError
-        If output or method is invalid, alpha is outside ``(0, 2]``, or
+        If output_level or method is invalid, alpha is outside ``(0, 2]``, or
         alphabet or transition_matrix has invalid contents or dimensions.
     """
     valid_outputs = {"Suppressed", "Truncated", "Full"}
 
-    if output not in valid_outputs:
-        raise ValueError("output must be 'Suppressed', 'Truncated', or 'Full'.")
+    if output_level not in valid_outputs:
+        raise ValueError("output_level must be 'Suppressed', 'Truncated', or 'Full'.")
 
     valid_methods = {"Carrasco", "Higuera"}
 
@@ -1258,13 +1272,13 @@ def alergia(
         while to_check:
             pair = to_check[0]
 
-            if output in ("Full", "Truncated"):
+            if output_level in ("Full", "Truncated"):
                 print(
                     "The next pair of states to check is:",
                     pair,
                 )
 
-            if output == "Full":
+            if output_level == "Full":
                 iter_counter += 1
                 print("Iteration", iter_counter)
 
@@ -1278,7 +1292,7 @@ def alergia(
                 alphabet,
                 current_states,
             ):
-                if output in ("Full", "Truncated"):
+                if output_level in ("Full", "Truncated"):
                     print(
                         "Hoeffding Bound satisfied for",
                         pair,
@@ -1297,14 +1311,14 @@ def alergia(
                     current_states,
                     alpha,
                     alphabet,
-                    output=output,
+                    output_level=output_level,
                     method="Carrasco",
                 )
 
                 if recursive_merge:
                     merge_counter += 1
 
-                    if output in ("Full", "Truncated"):
+                    if output_level in ("Full", "Truncated"):
                         print(
                             "Recursively merged states. Successfully merged",
                             pair,
@@ -1315,7 +1329,7 @@ def alergia(
                 else:
                     recursive_failure_counter += 1
 
-                    if output in ("Full", "Truncated"):
+                    if output_level in ("Full", "Truncated"):
                         print(
                             "Recursive merge process failed. Cannot merge",
                             pair,
@@ -1324,7 +1338,7 @@ def alergia(
                     to_check.pop(0)
 
             else:
-                if output in ("Full", "Truncated"):
+                if output_level in ("Full", "Truncated"):
                     print(
                         "Hoeffding Bound not satisfied for",
                         pair,
@@ -1363,7 +1377,7 @@ def alergia(
     recursive_failure_counter = 0
 
     while len(blue_states) > 0:
-        if output == "Full":
+        if output_level == "Full":
             iter_counter += 1
             print("Iteration", iter_counter)
 
@@ -1381,7 +1395,7 @@ def alergia(
                 alphabet,
                 current_states,
             ):
-                if output in ("Full", "Truncated"):
+                if output_level in ("Full", "Truncated"):
                     print(
                         "Hoeffding Bound satisfied for",
                         (q1, q2),
@@ -1402,14 +1416,14 @@ def alergia(
                     alpha,
                     alphabet,
                     red_states,
-                    output=output,
+                    output_level=output_level,
                     method="Higuera",
                 )
 
                 if recursive_merge:
                     merge_counter += 1
 
-                    if output in ("Full", "Truncated"):
+                    if output_level in ("Full", "Truncated"):
                         print(
                             "Recursively merged states. Successfully merged",
                             (q1, q2),
@@ -1424,7 +1438,7 @@ def alergia(
             red_states.append(q2)
             red_states = sorted(red_states)
 
-            if output in ("Full", "Truncated"):
+            if output_level in ("Full", "Truncated"):
                 print(
                     "Could not merge blue state",
                     q2,

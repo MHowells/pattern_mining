@@ -470,7 +470,7 @@ def test_check_is_deterministic_with_multiple_pairs_simple_example(simple_pta):
 
 
 def test_recursive_merge_raises_for_invalid_output(simple_pta):
-    with pytest.raises(ValueError, match="output must be"):
+    with pytest.raises(ValueError, match="output_level must be"):
         pm.recursive_merge_two_states(
             1,
             2,
@@ -478,7 +478,7 @@ def test_recursive_merge_raises_for_invalid_output(simple_pta):
             simple_pta.states,
             0.2,
             simple_pta.alphabet,
-            output="Invalid",
+            output_level="Invalid",
         )
 
 
@@ -535,7 +535,7 @@ def test_recursive_merge_two_states_prints_nondeterministic_pairs(
         states=states,
         alpha=0.2,
         alphabet=alphabet,
-        output="Full",
+        output_level="Full",
         method="Carrasco",
     )
 
@@ -564,7 +564,7 @@ def test_recursive_merge_two_states_prints_successful_merge(capsys):
         states,
         alpha=0.05,
         alphabet=alphabet,
-        output="Full",
+        output_level="Full",
         method="Carrasco",
     )
 
@@ -601,7 +601,7 @@ def test_recursive_merge_two_states_prints_new_nondeterministic_pairs(
         states,
         alpha=0.05,
         alphabet=alphabet,
-        output="Full",
+        output_level="Full",
         method="Carrasco",
     )
 
@@ -642,7 +642,7 @@ def test_recursive_merge_two_states_higuera_prints_nondeterministic_pairs(
         alpha=0.05,
         alphabet=alphabet,
         red_states=red_states,
-        output="Full",
+        output_level="Full",
         method="Higuera",
     )
 
@@ -726,7 +726,7 @@ def test_recursive_merge_two_states_higuera_prints_new_nondeterministic_pairs(
         alpha=0.05,
         alphabet=alphabet,
         red_states=red_states,
-        output="Full",
+        output_level="Full",
         method="Higuera",
     )
 

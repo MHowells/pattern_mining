@@ -150,14 +150,14 @@ def test_get_pairs_to_check_arnolds_example(arnolds_example):
 def test_alergia_raises_for_invalid_output(simple_pta):
     with pytest.raises(
         ValueError,
-        match="output must be",
+        match="output_level must be",
     ):
         pm.alergia(
             simple_pta.pathway_matrix,
             simple_pta.states,
             simple_pta.alphabet,
             alpha=0.2,
-            output="Invalid",
+            output_level="Invalid",
         )
 
 
@@ -221,7 +221,7 @@ def test_alergia_prints_next_pair_of_states(
         states,
         alphabet,
         alpha=0.05,
-        output="Truncated",
+        output_level="Truncated",
         method="Carrasco",
     )
 
@@ -254,7 +254,7 @@ def test_alergia_prints_iteration_number(
         states,
         alphabet,
         alpha=0.05,
-        output="Full",
+        output_level="Full",
         method="Carrasco",
     )
 
@@ -297,7 +297,7 @@ def test_alergia_prints_when_hoeffding_bound_is_satisfied(
         states,
         alphabet,
         alpha=0.05,
-        output="Truncated",
+        output_level="Truncated",
         method="Carrasco",
     )
 
@@ -344,7 +344,7 @@ def test_alergia_prints_successful_recursive_merge(
         states,
         alphabet,
         alpha=0.05,
-        output="Truncated",
+        output_level="Truncated",
         method="Carrasco",
     )
 
@@ -389,7 +389,7 @@ def test_alergia_prints_failed_recursive_merge(
         states,
         alphabet,
         alpha=0.05,
-        output="Truncated",
+        output_level="Truncated",
         method="Carrasco",
     )
 
@@ -424,7 +424,7 @@ def test_alergia_prints_when_hoeffding_bound_is_not_satisfied(
         states,
         alphabet,
         alpha=0.05,
-        output="Truncated",
+        output_level="Truncated",
         method="Carrasco",
     )
 
@@ -472,7 +472,7 @@ def test_alergia_higuera_prints_iteration_number(
         states,
         alphabet,
         alpha=0.05,
-        output="Full",
+        output_level="Full",
         method="Higuera",
     )
 
@@ -529,7 +529,7 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_satisfied(
         states,
         alphabet,
         alpha=0.05,
-        output="Truncated",
+        output_level="Truncated",
         method="Higuera",
     )
 
@@ -590,7 +590,7 @@ def test_alergia_higuera_prints_successful_recursive_merge(
         states,
         alphabet,
         alpha=0.05,
-        output="Truncated",
+        output_level="Truncated",
         method="Higuera",
     )
 
@@ -638,7 +638,7 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_not_satisfied(
         states,
         alphabet,
         alpha=0.05,
-        output="Truncated",
+        output_level="Truncated",
         method="Higuera",
     )
 

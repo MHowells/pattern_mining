@@ -178,16 +178,20 @@ The function returns:
 - `tracking`, containing information about the attempted, successful, and 
 failed merges.
 
+### Controlling Print Output
+
 The amount of information printed while the algorithm runs can be controlled 
-using the `output` parameter:
+using the `output_level` parameter:
 
 ```python
-output="Suppressed"
-output="Truncated"
-output="Full"
+output_level="Suppressed"
+output_level="Truncated"
+output_level="Full"
 ```
 
-The default value is `"Suppressed"`, that suppresses all output.
+- `"Suppressed"` prints no progress information and is the default. 
+- `"Truncated"` prints the main state comparisons and merge outcomes. 
+- `"Full"` additionally prints iteration numbers and details of recursive merges.
 
 ## Probability Deterministic Finite Automata (PDFA)
 
