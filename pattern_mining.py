@@ -803,7 +803,7 @@ def recursive_merge_two_states(
     alphabet,
     red_states=None,
     output_level="Suppressed",
-    method="Carrasco",
+    method="carrasco",
 ):
     """
     Recursively merge states until the resulting automaton is deterministic.
@@ -829,8 +829,8 @@ def recursive_merge_two_states(
     alphabet : iterable of str
         Alphabet corresponding to the first dimension of transition_matrix.
     red_states : list, optional
-        Red states to update during a Higuera merge. Required when
-        method is ``"Higuera"``.
+        Red states to update during a de_la_higuera merge. Required when
+        method is ``"de_la_higuera"``.
     output_level : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
         Controls the amount of progress information printed during the
         state-merging process:
@@ -840,10 +840,10 @@ def recursive_merge_two_states(
         outcomes, but omits details of the recursive merges.
         - ``"Full"``: prints all available progress information, including
         iteration numbers and the internal recursive merge process.
-    method : {"Carrasco", "Higuera"}, default="Carrasco" 
+    method : {"carrasco", "de_la_higuera"}, default="carrasco" 
         Method used to test whether two states are compatible during the 
-        state-merging process. ``"Carrasco"`` follows the compatibility 
-        test presented by Carrasco and Oncina [1]_, while ``"Higuera"`` 
+        state-merging process. ``"carrasco"`` follows the compatibility 
+        test presented by Carrasco and Oncina [1]_, while ``"de_la_higuera"`` 
         follows the red-blue merge formulation presented by de la Higuera [2]_. 
         See the Notes and References sections for further information.
 
@@ -857,7 +857,7 @@ def recursive_merge_two_states(
         True if the complete recursive merge succeeds; otherwise False.
     red_states_result : list, optional
         Red states produced by the merge. Returned only when method is
-        ``"Higuera"``.
+        ``"de_la_higuera"``.
 
     Raises
     ------
@@ -866,7 +866,7 @@ def recursive_merge_two_states(
         alphabet has an invalid type.
     ValueError
         If output_level or method is invalid, red_states is not provided for the
-        Higuera method, alpha is outside ``(0, 2]``, alphabet or
+        de_la_higuera method, alpha is outside ``(0, 2]``, alphabet or
         transition_matrix is invalid, either state is unknown, the states are
         identical, or the artificial initial state is selected.
     
@@ -889,13 +889,13 @@ def recursive_merge_two_states(
     if output_level not in valid_outputs:
         raise ValueError("output_level must be 'Suppressed', 'Truncated', or 'Full'.")
 
-    valid_methods = {"Carrasco", "Higuera"}
+    valid_methods = {"carrasco", "de_la_higuera"}
 
     if method not in valid_methods:
-        raise ValueError("method must be either 'Carrasco' or 'Higuera'.")
+        raise ValueError("method must be either 'carrasco' or 'de_la_higuera'.")
 
-    if method == "Higuera" and red_states is None:
-        raise ValueError("red_states must be provided when method='Higuera'.")
+    if method == "de_la_higuera" and red_states is None:
+        raise ValueError("red_states must be provided when method='de_la_higuera'.")
 
     _validate_alpha(alpha)
 
@@ -935,7 +935,7 @@ def _recursive_merge_two_states(
     alphabet,
     red_states=None,
     output_level="Suppressed",
-    method="Carrasco",
+    method="carrasco",
 ):
     """
     Recursively merge previously validated states until determinism is restored.
@@ -962,11 +962,11 @@ def _recursive_merge_two_states(
     alphabet : collection of str
         Alphabet corresponding to the first dimension of transition_matrix.
     red_states : list, optional
-        Red states to update during a Higuera merge. Required when
-        method is ``"Higuera"``.
+        Red states to update during a de_la_higuera merge. Required when
+        method is ``"de_la_higuera"``.
     output_level : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
         Amount of progress information printed.
-    method : {"Carrasco", "Higuera"}, default="Carrasco"
+    method : {"carrasco", "de_la_higuera"}, default="carrasco"
         State-merging methodology to use.
 
     Returns
@@ -979,9 +979,9 @@ def _recursive_merge_two_states(
         True if the complete recursive merge succeeds; otherwise False.
     red_states_result : list, optional
         Red states produced by the merge. Returned only when method is
-        ``"Higuera"``.
+        ``"de_la_higuera"``.
     """
-    if method == "Carrasco":
+    if method == "carrasco":
         initial_transition_matrix = np.copy(transition_matrix)
         initial_states = states.copy()
 
@@ -1204,14 +1204,14 @@ def alergia(
     alphabet,
     alpha,
     output_level="Suppressed",
-    method="Carrasco",
+    method="carrasco",
 ):
     """
     Learn a probabilistic deterministic finite automaton using ALERGIA.
 
     The function repeatedly identifies statistically compatible states and
-    attempts to merge them using either the Carrasco all-pairs procedure or
-    the Higuera red-blue procedure.
+    attempts to merge them using either the carrasco all-pairs procedure or
+    the de_la_higuera red-blue procedure.
 
     Parameters
     ----------
@@ -1234,10 +1234,10 @@ def alergia(
         outcomes, but omits details of the recursive merges.
         - ``"Full"``: prints all available progress information, including
         iteration numbers and the internal recursive merge process.
-    method : {"Carrasco", "Higuera"}, default="Carrasco" 
+    method : {"carrasco", "de_la_higuera"}, default="carrasco" 
         Method used to test whether two states are compatible during the 
-        state-merging process. ``"Carrasco"`` follows the compatibility 
-        test presented by Carrasco and Oncina [1]_, while ``"Higuera"`` 
+        state-merging process. ``"carrasco"`` follows the compatibility 
+        test presented by Carrasco and Oncina [1]_, while ``"de_la_higuera"`` 
         follows the red-blue merge formulation presented by de la Higuera [2]_. 
         See the Notes and References sections for further information.
 
@@ -1280,10 +1280,10 @@ def alergia(
     if output_level not in valid_outputs:
         raise ValueError("output_level must be 'Suppressed', 'Truncated', or 'Full'.")
 
-    valid_methods = {"Carrasco", "Higuera"}
+    valid_methods = {"carrasco", "de_la_higuera"}
 
     if method not in valid_methods:
-        raise ValueError("method must be either 'Carrasco' or 'Higuera'.")
+        raise ValueError("method must be either 'carrasco' or 'de_la_higuera'.")
 
     _validate_alpha(alpha)
 
@@ -1291,7 +1291,7 @@ def alergia(
 
     _validate_transition_matrix(transition_matrix, alphabet, states)
 
-    if method == "Carrasco":
+    if method == "carrasco":
         current_matrix = transition_matrix
         current_states = states
 
@@ -1348,7 +1348,7 @@ def alergia(
                     alpha,
                     alphabet,
                     output_level=output_level,
-                    method="Carrasco",
+                    method="carrasco",
                 )
 
                 if recursive_merge:
@@ -1393,7 +1393,7 @@ def alergia(
 
         return current_matrix, current_states, tracking
 
-    # Higuera method using red and blue states
+    # de_la_higuera method using red and blue states
     current_matrix = transition_matrix
     current_states = states
 
@@ -1453,7 +1453,7 @@ def alergia(
                     alphabet,
                     red_states,
                     output_level=output_level,
-                    method="Higuera",
+                    method="de_la_higuera",
                 )
 
                 if recursive_merge:

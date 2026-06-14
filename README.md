@@ -8,11 +8,11 @@ finite automata (PDFAs), estimating pattern and sequence probabilities, and
 visualising the resulting automata. 
 
 There are two approaches to the ALERGIA algorithm implemented in this codebase. 
-The first is the `Carrasco` approach, found in the original paper for the 
+The first is the `carrasco` approach, found in the original paper for the 
 ALERGIA algorithm by Carrasco and Oncina (1994)[[1]](#1). The second is the 
-`Higuera` approach, that uses a red-blue framework to solve the algorithm, as 
-outlined in Higuera (2010)[[2]](#2). The default method is `Carrasco`, although 
-the `Higuera` approach is cheaper to compute.
+`de_la_higuera` approach, that uses a red-blue framework to solve the algorithm, as 
+outlined in Higuera (2010)[[2]](#2). The default method is `carrasco`, although 
+the `de_la_higuera` approach is cheaper to compute.
 
 ## Installing Dependencies
 
@@ -70,7 +70,7 @@ import pattern_mining as pm
 alphabet = pm.get_alphabet(sequences) 
 states = pm.get_initial_states(sequences) 
 
-transition_matrix = pm.get_transition_matrix(
+pathway_matrix = pm.get_transition_matrix(
     sequences, 
     alphabet, 
 )
@@ -89,14 +89,14 @@ state `"*"`:
 ["*", 0, 1, 2, 3, 4, 5, 6]
 ```
 
-The `transition_matrix` is a three-dimensional NumPy array. Its first dimension 
+The `pathway_matrix` is a three-dimensional NumPy array. Its first dimension 
 represents the alphabet symbol, its second dimension represents the current 
 state, and its third dimension represents the destination state.
 
 For example:
 
 ```python
-transition_matrix[0, 1, 2]
+pathway_matrix[0, 1, 2]
 ```
 
 contains the number of transitions from state `0` to state `1` using 
@@ -151,24 +151,24 @@ DFA:
 
 ```python
 learned_matrix, learned_states, tracking = pm.alergia(
-    transition_matrix,
+    pathway_matrix,
     states,
     alphabet,
     alpha=0.2,
-    method="Carrasco",
+    method="carrasco",
 )
 ```
 
 The `method` parameter can be either:
 
 ```python
-method="Carrasco"
+method="carrasco"
 ```
 
 or:
 
 ```python
-method="Higuera"
+method="de_la_higuera"
 ```
 
 The function returns:

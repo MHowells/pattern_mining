@@ -507,7 +507,7 @@ def test_recursive_merge_higuera_requires_red_states(simple_pta):
             simple_pta.states,
             0.2,
             simple_pta.alphabet,
-            method="Higuera",
+            method="de_la_higuera",
         )
 
 
@@ -536,7 +536,7 @@ def test_recursive_merge_two_states_prints_nondeterministic_pairs(
         alpha=0.2,
         alphabet=alphabet,
         output_level="Full",
-        method="Carrasco",
+        method="carrasco",
     )
 
     captured = capsys.readouterr()
@@ -565,7 +565,7 @@ def test_recursive_merge_two_states_prints_successful_merge(capsys):
         alpha=0.05,
         alphabet=alphabet,
         output_level="Full",
-        method="Carrasco",
+        method="carrasco",
     )
 
     captured = capsys.readouterr()
@@ -602,7 +602,7 @@ def test_recursive_merge_two_states_prints_new_nondeterministic_pairs(
         alpha=0.05,
         alphabet=alphabet,
         output_level="Full",
-        method="Carrasco",
+        method="carrasco",
     )
 
     captured = capsys.readouterr()
@@ -643,7 +643,7 @@ def test_recursive_merge_two_states_higuera_prints_nondeterministic_pairs(
         alphabet=alphabet,
         red_states=red_states,
         output_level="Full",
-        method="Higuera",
+        method="de_la_higuera",
     )
 
     captured = capsys.readouterr()
@@ -688,7 +688,7 @@ def test_recursive_merge_two_states_keeps_red_states_unique():
         alpha=0.05,
         alphabet=alphabet,
         red_states=red_states,
-        method="Higuera",
+        method="de_la_higuera",
     )
 
     assert recursive_merge is True
@@ -727,7 +727,7 @@ def test_recursive_merge_two_states_higuera_prints_new_nondeterministic_pairs(
         alphabet=alphabet,
         red_states=red_states,
         output_level="Full",
-        method="Higuera",
+        method="de_la_higuera",
     )
 
     captured = capsys.readouterr()
@@ -790,7 +790,7 @@ def test_recursive_merge_two_states_restores_initial_input(
         alpha=0.05,
         alphabet=alphabet,
         red_states=red_states,
-        method="Higuera",
+        method="de_la_higuera",
     )
 
     assert np.array_equal(
@@ -935,7 +935,7 @@ def test_recursive_merge_two_states_with_red_states_simple_example(simple_pta):
         0.2,
         simple_pta.alphabet,
         simple_pta.red_states,
-        method="Higuera",
+        method="de_la_higuera",
     )
     expected_matrix = np.array(
         [
@@ -987,7 +987,7 @@ def test_recursive_merge_two_states_with_red_states_arnolds_example(arnolds_exam
         0.2,
         arnolds_example.alphabet,
         arnolds_example.red_states,
-        method="Higuera",
+        method="de_la_higuera",
     )
     expected_matrix = np.array(
         [
@@ -1053,7 +1053,7 @@ def test_recursive_merge_two_states_with_red_states_arnolds_example_failure(
         0.9,
         arnolds_example.alphabet,
         arnolds_example.red_states,
-        method="Higuera",
+        method="de_la_higuera",
     )
     assert np.allclose(obtained_matrix, arnolds_example.transition_matrix)
     assert obtained_states == arnolds_example.states
@@ -1111,7 +1111,7 @@ def test_recursive_merge_two_states_with_red_states_arnolds_example_merge_red_st
         0.9,
         arnolds_example.alphabet,
         arnolds_example.red_states_after_merges,
-        method="Higuera",
+        method="de_la_higuera",
     )
     assert np.allclose(obtained_matrix, expected_matrix)
     assert obtained_states == expected_states

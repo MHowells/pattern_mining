@@ -222,7 +222,7 @@ def test_alergia_prints_next_pair_of_states(
         alphabet,
         alpha=0.05,
         output_level="Truncated",
-        method="Carrasco",
+        method="carrasco",
     )
 
     captured = capsys.readouterr()
@@ -255,7 +255,7 @@ def test_alergia_prints_iteration_number(
         alphabet,
         alpha=0.05,
         output_level="Full",
-        method="Carrasco",
+        method="carrasco",
     )
 
     captured = capsys.readouterr()
@@ -298,7 +298,7 @@ def test_alergia_prints_when_hoeffding_bound_is_satisfied(
         alphabet,
         alpha=0.05,
         output_level="Truncated",
-        method="Carrasco",
+        method="carrasco",
     )
 
     captured = capsys.readouterr()
@@ -345,7 +345,7 @@ def test_alergia_prints_successful_recursive_merge(
         alphabet,
         alpha=0.05,
         output_level="Truncated",
-        method="Carrasco",
+        method="carrasco",
     )
 
     captured = capsys.readouterr()
@@ -390,7 +390,7 @@ def test_alergia_prints_failed_recursive_merge(
         alphabet,
         alpha=0.05,
         output_level="Truncated",
-        method="Carrasco",
+        method="carrasco",
     )
 
     captured = capsys.readouterr()
@@ -425,7 +425,7 @@ def test_alergia_prints_when_hoeffding_bound_is_not_satisfied(
         alphabet,
         alpha=0.05,
         output_level="Truncated",
-        method="Carrasco",
+        method="carrasco",
     )
 
     captured = capsys.readouterr()
@@ -473,7 +473,7 @@ def test_alergia_higuera_prints_iteration_number(
         alphabet,
         alpha=0.05,
         output_level="Full",
-        method="Higuera",
+        method="de_la_higuera",
     )
 
     captured = capsys.readouterr()
@@ -530,7 +530,7 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_satisfied(
         alphabet,
         alpha=0.05,
         output_level="Truncated",
-        method="Higuera",
+        method="de_la_higuera",
     )
 
     captured = capsys.readouterr()
@@ -591,7 +591,7 @@ def test_alergia_higuera_prints_successful_recursive_merge(
         alphabet,
         alpha=0.05,
         output_level="Truncated",
-        method="Higuera",
+        method="de_la_higuera",
     )
 
     captured = capsys.readouterr()
@@ -639,7 +639,7 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_not_satisfied(
         alphabet,
         alpha=0.05,
         output_level="Truncated",
-        method="Higuera",
+        method="de_la_higuera",
     )
 
     captured = capsys.readouterr()
@@ -806,7 +806,7 @@ def test_alergia_arnolds_example_alpha_point_nine_higuera(arnolds_example):
         arnolds_example.states,
         arnolds_example.alphabet,
         0.9,
-        method="Higuera",
+        method="de_la_higuera",
     )
     expected_matrix = np.array(
         [

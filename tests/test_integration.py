@@ -24,7 +24,7 @@ def test_pattern_mining_pipeline_returns_valid_pdfa_carrasco():
         states,
         alphabet,
         alpha=0.2,
-        method="Carrasco",
+        method="carrasco",
     )
 
     probability_matrix = pm.probability_transition_matrix(
@@ -77,7 +77,7 @@ def test_pattern_mining_pipeline_returns_valid_pdfa_higuera():
         states,
         alphabet,
         alpha=0.2,
-        method="Higuera",
+        method="de_la_higuera",
     )
 
     probability_matrix = pm.probability_transition_matrix(
