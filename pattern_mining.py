@@ -1,7 +1,8 @@
-import numpy as np
-import graphviz
-from scipy.stats import norm
 import itertools as it
+
+import graphviz
+import numpy as np
+from scipy.stats import norm
 
 
 def _validate_sequences(sequences):
@@ -31,7 +32,7 @@ def _validate_sequences(sequences):
 
     if isinstance(sequences, str):
         raise TypeError(
-            "sequences must be an iterable of strings, " "not a single string."
+            "sequences must be an iterable of strings, not a single string."
         )
 
     sequences = list(sequences)
@@ -73,7 +74,7 @@ def _validate_alphabet(alphabet):
 
     if isinstance(alphabet, str):
         raise TypeError(
-            "alphabet must be an iterable of strings, " "not a single string."
+            "alphabet must be an iterable of strings, not a single string."
         )
 
     alphabet = list(alphabet)
@@ -291,38 +292,37 @@ def get_state_paths(sequences, build="breadth"):
 
         return all_paths
 
-    else:
-        all_paths = [""]
-        current_node = all_paths[0]
-        tracker = 0
+    all_paths = [""]
+    current_node = all_paths[0]
+    tracker = 0
 
-        while tracker < len(all_paths):
-            this_iter = sorted(
-                list(
-                    set(
-                        [
-                            x[: len(current_node) + 1]
-                            for x in sequences
-                            if (
-                                len(x) > len(current_node)
-                                and x.startswith(current_node)
-                            )
-                        ]
-                    )
+    while tracker < len(all_paths):
+        this_iter = sorted(
+            list(
+                set(
+                    [
+                        x[: len(current_node) + 1]
+                        for x in sequences
+                        if (
+                            len(x) > len(current_node)
+                            and x.startswith(current_node)
+                        )
+                    ]
                 )
             )
+        )
 
-            for j in range(len(this_iter)):
-                all_paths.append(this_iter[j])
+        for j in range(len(this_iter)):
+            all_paths.append(this_iter[j])
 
-            tracker += 1
+        tracker += 1
 
-            if tracker == len(all_paths):
-                break
+        if tracker == len(all_paths):
+            break
 
-            current_node = all_paths[all_paths.index(current_node) + 1]
+        current_node = all_paths[all_paths.index(current_node) + 1]
 
-        return all_paths
+    return all_paths
 
 
 def get_transition_matrix(sequences, alphabet, build="breadth"):
@@ -1305,7 +1305,7 @@ def alergia(
 
                     if output in ("Full", "Truncated"):
                         print(
-                            "Recursively merged states. " "Successfully merged",
+                            "Recursively merged states. Successfully merged",
                             to_check[0],
                         )
 
@@ -1316,7 +1316,7 @@ def alergia(
 
                     if output in ("Full", "Truncated"):
                         print(
-                            "Recursive merge process failed. " "Cannot merge",
+                            "Recursive merge process failed. Cannot merge",
                             pair,
                         )
 
@@ -1410,7 +1410,7 @@ def alergia(
 
                     if output in ("Full", "Truncated"):
                         print(
-                            "Recursively merged states. " "Successfully merged",
+                            "Recursively merged states. Successfully merged",
                             (q1, q2),
                         )
 
@@ -2118,7 +2118,14 @@ def string_probabilities(p_mat, alphabet, strings):
     list of tuple
         Pairs containing each input string and its estimated probability.
     """
-    probs = [
-        (x, probability_estimate_of_exact_sequence(p_mat, x, alphabet)) for x in strings
+    return [
+        (
+            string,
+            probability_estimate_of_exact_sequence(
+                p_mat,
+                string,
+                alphabet,
+            ),
+        )
+        for string in strings
     ]
-    return probs
