@@ -840,8 +840,12 @@ def recursive_merge_two_states(
         outcomes, but omits details of the recursive merges.
         - ``"Full"``: prints all available progress information, including
         iteration numbers and the internal recursive merge process.
-    method : {"Carrasco", "Higuera"}, default="Carrasco"
-        State-merging methodology to use.
+    method : {"Carrasco", "Higuera"}, default="Carrasco" 
+        Method used to test whether two states are compatible during the 
+        state-merging process. ``"Carrasco"`` follows the compatibility 
+        test presented by Carrasco and Oncina [1]_, while ``"Higuera"`` 
+        follows the red-blue merge formulation presented by de la Higuera [2]_. 
+        See the Notes and References sections for further information.
 
     Returns
     -------
@@ -865,6 +869,20 @@ def recursive_merge_two_states(
         Higuera method, alpha is outside ``(0, 2]``, alphabet or
         transition_matrix is invalid, either state is unknown, the states are
         identical, or the artificial initial state is selected.
+    
+    Notes 
+    ----- 
+    The available methods implement alternative formulations of the 
+    statistical compatibility test used when determining whether two 
+    states may be merged.
+
+    References 
+    ---------- 
+    .. [1] Carrasco, R. C. and Oncina, J. (1994). "Learning Stochastic 
+    Regular Grammars by Means of a State Merging Method." In *Grammatical 
+    Inference and Applications*, pp. 139–152. 
+    .. [2] de la Higuera, C. (2010). *Grammatical Inference: Learning 
+    Automata and Grammars*. Cambridge University Press.
     """
     valid_outputs = {"Suppressed", "Truncated", "Full"}
 
@@ -1216,8 +1234,12 @@ def alergia(
         outcomes, but omits details of the recursive merges.
         - ``"Full"``: prints all available progress information, including
         iteration numbers and the internal recursive merge process.
-    method : {"Carrasco", "Higuera"}, default="Carrasco"
-        State-merging methodology.
+    method : {"Carrasco", "Higuera"}, default="Carrasco" 
+        Method used to test whether two states are compatible during the 
+        state-merging process. ``"Carrasco"`` follows the compatibility 
+        test presented by Carrasco and Oncina [1]_, while ``"Higuera"`` 
+        follows the red-blue merge formulation presented by de la Higuera [2]_. 
+        See the Notes and References sections for further information.
 
     Returns
     -------
@@ -1238,6 +1260,20 @@ def alergia(
     ValueError
         If output_level or method is invalid, alpha is outside ``(0, 2]``, or
         alphabet or transition_matrix has invalid contents or dimensions.
+
+    Notes 
+    ----- 
+    The available methods implement alternative formulations of the 
+    statistical compatibility test used when determining whether two 
+    states may be merged.
+    
+    References 
+    ---------- 
+    .. [1] Carrasco, R. C. and Oncina, J. (1994). "Learning Stochastic 
+    Regular Grammars by Means of a State Merging Method." In *Grammatical 
+    Inference and Applications*, pp. 139–152. 
+    .. [2] de la Higuera, C. (2010). *Grammatical Inference: Learning 
+    Automata and Grammars*. Cambridge University Press.
     """
     valid_outputs = {"Suppressed", "Truncated", "Full"}
 
