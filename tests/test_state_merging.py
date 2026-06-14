@@ -702,6 +702,70 @@ def test_recursive_merge_two_states_higuera_prints_new_nondeterministic_pairs(
     assert new_matrix.shape == (1, 4, 4)
 
 
+def test_recursive_merge_two_states_restores_initial_input(
+    monkeypatch,
+):
+    states = ["*", 0, 1, 2, 3, 4, 5]
+    alphabet = ["A"]
+    red_states = [0, 2, 3]
+
+    pathway_matrix = np.zeros((1, 7, 7), dtype=int)
+
+    nondeterministic_results = iter(
+        [
+            [(2, 3)],
+            [(4, 5)],
+        ]
+    )
+
+    hoeffding_results = iter(
+        [
+            True,
+            False,
+        ]
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "check_is_deterministic",
+        lambda *args, **kwargs: next(
+            nondeterministic_results
+        ),
+    )
+
+    monkeypatch.setattr(
+        pm,
+        "hoeffding_bound",
+        lambda *args, **kwargs: next(
+            hoeffding_results
+        ),
+    )
+
+    (
+        obtained_matrix,
+        obtained_states,
+        obtained_recursive_merge,
+        obtained_red_states,
+    ) = pm.recursive_merge_two_states(
+        0,
+        1,
+        pathway_matrix,
+        states,
+        alpha=0.05,
+        alphabet=alphabet,
+        red_states=red_states,
+        method="Higuera",
+    )
+
+    assert np.array_equal(
+        obtained_matrix,
+        pathway_matrix,
+    )
+    assert obtained_states == states
+    assert obtained_recursive_merge is False
+    assert obtained_red_states == red_states
+
+
 def test_recursive_merge_two_states_simple_example(simple_pta):
     (
         obtained_matrix,

@@ -1169,7 +1169,7 @@ def _recursive_merge_two_states(
                 initial_pathway_matrix, 
                 initial_states, 
                 recursive_merge, 
-                red_states,
+                initial_red_states,
             )
         
     return new_matrix, new_states, recursive_merge, red_states
