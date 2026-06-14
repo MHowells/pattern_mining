@@ -153,7 +153,9 @@ def _validate_alpha(alpha):
     Parameters
     ----------
     alpha : float
-        Significance level for the Hoeffding bound.
+        Significance level used by the Hoeffding compatibility test.
+        Smaller values generally permit more merges, while larger values 
+        generally permit fewer merges. Must lie in the interval ``(0, 2]``.
 
     Raises
     ------
@@ -549,8 +551,9 @@ def hoeffding_bound(q1, q2, alpha, transition_matrix, alphabet, states):
     q2 : int or str
         Second state to compare.
     alpha : float
-        Significance level used to calculate the Hoeffding bound. Expected
-        to be in the range ``(0, 2]``.
+        Significance level used by the Hoeffding compatibility test.
+        Smaller values generally permit more merges, while larger values 
+        generally permit fewer merges. Must lie in the interval ``(0, 2]``.
     transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
@@ -826,6 +829,8 @@ def recursive_merge_two_states(
         transition_matrix.
     alpha : float
         Significance level used by the Hoeffding compatibility test.
+        Smaller values generally permit more merges, while larger values 
+        generally permit fewer merges. Must lie in the interval ``(0, 2]``.
     alphabet : iterable of str
         Alphabet corresponding to the first dimension of transition_matrix.
     red_states : list, optional
@@ -959,6 +964,8 @@ def _recursive_merge_two_states(
         transition_matrix.
     alpha : float
         Significance level used by the Hoeffding compatibility test.
+        Smaller values generally permit more merges, while larger values 
+        generally permit fewer merges. Must lie in the interval ``(0, 2]``.
     alphabet : collection of str
         Alphabet corresponding to the first dimension of transition_matrix.
     red_states : list, optional
@@ -1225,6 +1232,8 @@ def alergia(
         Alphabet corresponding to the first dimension of transition_matrix.
     alpha : float
         Significance level used by the Hoeffding compatibility test.
+        Smaller values generally permit more merges, while larger values 
+        generally permit fewer merges. Must lie in the interval ``(0, 2]``.
     output_level : {"Suppressed", "Truncated", "Full"}, default="Suppressed"
         Controls the amount of progress information printed during the
         state-merging process:
@@ -1994,8 +2003,10 @@ def proportion_constraint(
         Observed sequences. The number of sequences is used in the sampling
         threshold calculation.
     alpha : float
-        Tail probability used to obtain the standard-normal critical value.
-        Must be in the range ``(0, 1)``.
+        Significance level used by the Hoeffding compatibility test.
+        Smaller values generally permit more merges, while larger values 
+        generally permit fewer merges. Must lie in the interval ``(0, 1)``
+        for this test.
     p_value : {"pattern", "sequence"}, default="pattern"
         Whether to estimate the probability of an ordered pattern or an
         exact sequence.
