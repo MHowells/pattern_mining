@@ -1,19 +1,116 @@
 # pattern-mining
 
-This is code for running the grammatical inference algorithm ALERGIA for sequential pattern mining. It includes evaluation metrics and methods, as well as code to visualise prefix-tree acceptors (PTAs), deterministic finitie automata (PDAs), and their probabilistic counterparts (PPTAs and PDFAs respectively).
+This repository contains code for running the grammatical inference algorithm 
+ALERGIA for sequential pattern mining. It includes functions for constructing 
+prefix-tree acceptors (PTAs) and probabilistic prefix-tree acceptors (PPTAs), 
+learning deterministic finite automata (DFAs) and probabilistic deterministic 
+finite automata (PDFAs), estimating pattern and sequence probabilities, and 
+visualising the resulting automata. 
+
+There are two approaches to the ALERGIA algorithm implemented in this codebase. 
+The first is the `Carrasco` approach, found in the original paper for the 
+ALERGIA algorithm by Carrasco and Oncina (1994)[[1]](#1). The second is the 
+`Higuera` approach, that uses a red-blue framework to solve the algorithm, as 
+outlined in Higuera (2010)[[2]](#2). The default method is `Carrasco`, although 
+the `Higuera` approach is cheaper to compute.
+
+## Installing Dependencies
+
+The codebase has been tested with Python 3.9.22, with the requirements 
+specified in `requirements.txt`.
+
+To create a virtual environment:
+
+    $ python -m venv env
+
+To start using the new virtual environment:
+
+    $ source env/bin/activate
+
+To install the dependencies:
+
+    $ python -m pip install -r requirements.txt
+
+Alternatively, you can use conda to create a new environment with the required
+dependencies by running the following command:
+
+    $ conda env create --file environment.yml
+
+Note that the visualisation functions require Graphviz to be installed on your
+system. 
 
 ## Input data
 
-Given an initial list of sequences  [ "0", "0", "0", "0", "0", "0", "0", "0", "01", "01", "01", "01", "01", "01", "01", "10", "10", "10", "10", "10", "11", "11", "11", "11", "11", "12", "12", "1", "1", "1"], we can derive the following PPTA from this data:
+The initial data is provided as a list of sequences. Each character in a 
+sequence represents a symbol from the alphabet.
+
+For example, given the following list of sequences:
+
+```python
+sequences = [
+    "0", "0", "0", "0", "0", "0", "0", "0", 
+    "01", "01", "01", "01", "01", "01", "01", 
+    "10", "10", "10", "10", "10", 
+    "11", "11", "11", "11", "11", 
+    "12", "12", 
+    "1", "1", "1"
+]
+```
+
+We can derive the following PTA from this data:
 
 ![example_ppta](https://github.com/MHowells/pattern_mining/blob/main/figs/example_pta.svg)
 
-For this initial PTA, with three actions, or an alphabet, ['0', '1', '2'] and 7 states, [0, 1, 2, 3, 4, 5, 6], the example input would be:
+The alphabet, states, and transition-count matrix for this PTA can be
+constructed directly from the sequences:
 
 ```python
-states = ["*", 0, 1, 2, 3, 4, 5, 6]
-alphabet = ['0', '1', '2']
-pathway_matrix = np.array([
+import pattern_mining as pm
+
+alphabet = pm.get_alphabet(sequences) 
+states = pm.get_initial_states(sequences) 
+
+pathway_matrix = pm.get_transition_matrix(
+    sequences, 
+    alphabet, 
+)
+```
+
+For this example, the alphabet (or actions) is:
+
+```python 
+["0", "1", "2"] 
+```
+
+The state list contains seven prefix states along with the artificial starting
+state `"*"`:
+
+```python
+["*", 0, 1, 2, 3, 4, 5, 6]
+```
+
+The `pathway_matrix` is a three-dimensional NumPy array. Its first dimension 
+represents the alphabet symbol, its second dimension represents the current 
+state, and its third dimension represents the destination state.
+
+For example:
+
+```python
+pathway_matrix[0, 1, 2]
+```
+
+contains the number of transitions from state `0` to state `1` using 
+symbol `"0"`.
+
+Note that the transition from the starting state `"*"` is stored in the first
+alphabet layer of the matrix, here, `'0'`. This is not true and does not 
+represent a genuine emitted symbol, but has no effect on the results of the 
+algorithm.
+
+The full transition-count matrix for this example is:
+
+```python
+np.array([
     [
         [0, 30, 0, 0, 0, 0, 0, 0],
         [0, 0, 15, 0, 0, 0, 0, 0],
@@ -47,17 +144,113 @@ pathway_matrix = np.array([
 ])
 ```
 
-The `states` includes an extra state `"*"` representing the starting state. The `pathway_matrix` is a 3D matrix with the first dimension representing the action, the second dimension representing the state, and the third dimension representing the next state. For example, `pathway_matrix[0, 1, 4]` is the number of times that action '0' was taken from state 0 to state 3.
+## Running ALERGIA
 
-Note that we have assumed that you go from the starting state `"*"` to state `0` by using action `'0'`. This is not true, but has no effect on the results of the algorithm.
+The transition-count matrix can be passed to `alergia()` to learn a smaller 
+DFA:
 
-There are two approaches to the ALERGIA algorithm implemented in this codebase, dictated by the `method` parameter in the `alergia` function. The first is the `Carrasco` approach, found in the original paper for the ALERGIA algorithmby Carrasco and Oncina (1994)[[1]](#1). The second is the `Higuera` approach, that uses a red-blue framework to solve the algorithm, as outlined in Higuera (2010)[[2]](#2). By default, it is set to `Carrasco`.
+```python
+learned_matrix, learned_states, tracking = pm.alergia(
+    pathway_matrix,
+    states,
+    alphabet,
+    alpha=0.2,
+    method="Carrasco",
+)
+```
+
+The `method` parameter can be either:
+
+```python
+method="Carrasco"
+```
+
+or:
+
+```python
+method="Higuera"
+```
+
+The function returns:
+
+- `learned_matrix`, containing the transition counts of the learned automaton;
+- `learned_states`, containing the remaining state identifiers;
+- `tracking`, containing information about the attempted, successful, and 
+failed merges.
+
+The amount of information printed while the algorithm runs can be controlled 
+using the `output` parameter:
+
+```python
+output="Suppressed"
+output="Truncated"
+output="Full"
+```
+
+The default value is `"Suppressed"`, that suppresses all output.
+
+## Probability Deterministic Finite Automata (PDFA)
+
+The learned transition-count matrix (DFA) can be converted into a probability 
+transition matrix, or PDFA:
+
+```python
+probability_matrix = pm.probability_transition_matrix(
+    learned_matrix,
+    learned_states,
+    alphabet,
+)
+```
+
+The probability matrix can then be used by the pattern and sequence probability 
+functions contained in `pattern_mining.py`.
+
+For example:
+
+```python
+pattern_probability = pm.probability_estimate_of_pattern(
+    probability_matrix,
+    pattern="01",
+    alphabet=alphabet,
+)
+
+sequence_probability = pm.probability_estimate_of_exact_sequence(
+    probability_matrix,
+    sequence="01",
+    alphabet=alphabet,
+)
+```
 
 ## Running tests
 
+You can run the complete test suite using the following command:
+
 ```bash
-$ python -m pytest tests.py
+$ python -m pytest
 ```
+
+Run the tests with statement and branch coverage using:
+
+```bash
+python -m pytest \
+    --cov=pattern_mining \
+    --cov-branch \
+    --cov-report=term-missing
+```
+
+## Author ORCID
+
+- Matthew Howells: [0000-0002-3931-7027](https://orcid.org/0000-0002-3931-7027)
+- Paul Harper: [0000-0001-7894-4907](https://orcid.org/0000-0001-7894-4907)
+- Daniel Gartner: [0000-0003-4361-8559](https://orcid.org/0000-0003-4361-8559)
+- Geraint Palmer: [0000-0001-7865-6964](https://orcid.org/0000-0001-7865-6964)
+
+## Funding 
+
+This code is funded by an Engineering and Physical Sciences Research Council 
+(EPSRC) Enhanced CASE PhD Studentship with Cardiff and Vale University Health 
+Board as the project partner (Project reference: 2601327, in relation to 
+EP/T517951/1).
 
 ## References
 <a id="1">[1]</a> 
