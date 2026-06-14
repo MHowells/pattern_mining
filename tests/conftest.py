@@ -45,7 +45,7 @@ def simple_pta():
 
     alternate_state_names = ["*", "A", "B", "C", "D", "E", "F", "G"]
 
-    pathway_matrix = np.array(
+    transition_matrix = np.array(
         [
             [
                 [0, 30, 0, 0, 0, 0, 0, 0],
@@ -82,7 +82,7 @@ def simple_pta():
 
     red_states = [0]
 
-    final_pathway_matrix = np.array(
+    final_transition_matrix = np.array(
         [
             [
                 [0, 30, 0, 0],
@@ -112,9 +112,9 @@ def simple_pta():
         alphabet=alphabet,
         states=states,
         alternate_state_names=alternate_state_names,
-        pathway_matrix=pathway_matrix,
+        transition_matrix=transition_matrix,
         red_states=red_states,
-        final_pathway_matrix=final_pathway_matrix,
+        final_transition_matrix=final_transition_matrix,
         final_states=final_states,
     )
 
@@ -127,7 +127,7 @@ def arnolds_example():
 
     states = ["*", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
-    pathway_matrix = np.array(
+    transition_matrix = np.array(
         [
             [
                 [0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -185,7 +185,7 @@ def arnolds_example():
 
     red_states = [0]
 
-    pathway_matrix_after_merges = np.array(
+    transition_matrix_after_merges = np.array(
         [
             [
                 [0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -233,7 +233,7 @@ def arnolds_example():
 
     red_states_after_merges = [0, 1, 12]
 
-    final_pathway_matrix = np.array(
+    final_transition_matrix = np.array(
         [
             [
                 [0, 10, 0],
@@ -281,12 +281,12 @@ def arnolds_example():
         sequences=sequences,
         alphabet=alphabet,
         states=states,
-        pathway_matrix=pathway_matrix,
+        transition_matrix=transition_matrix,
         red_states=red_states,
-        pathway_matrix_after_merges=pathway_matrix_after_merges,
+        transition_matrix_after_merges=transition_matrix_after_merges,
         states_after_merges=states_after_merges,
         red_states_after_merges=red_states_after_merges,
-        final_pathway_matrix=final_pathway_matrix,
+        final_transition_matrix=final_transition_matrix,
         final_states=final_states,
         final_p_matrix_point9=final_p_matrix_point9,
     )

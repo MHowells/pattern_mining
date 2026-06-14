@@ -211,7 +211,7 @@ def test_get_transition_matrix_simple_example(simple_pta):
     obtained_transition_matrix = pm.get_transition_matrix(
         simple_pta.sequences, simple_pta.alphabet
     )
-    expected_pathway_matrix = np.array(
+    expected_transition_matrix = np.array(
         [
             [
                 [0, 30, 0, 0, 0, 0, 0, 0],
@@ -245,14 +245,14 @@ def test_get_transition_matrix_simple_example(simple_pta):
             ],
         ]
     )
-    assert np.allclose(obtained_transition_matrix, expected_pathway_matrix)
+    assert np.allclose(obtained_transition_matrix, expected_transition_matrix)
 
 
 def test_get_transition_matrix_arnolds_example(arnolds_example):
     obtained_transition_matrix = pm.get_transition_matrix(
         arnolds_example.sequences, arnolds_example.alphabet
     )
-    expected_pathway_matrix = np.array(
+    expected_transition_matrix = np.array(
         [
             [
                 [0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -307,7 +307,7 @@ def test_get_transition_matrix_arnolds_example(arnolds_example):
             ],
         ]
     )
-    assert np.allclose(obtained_transition_matrix, expected_pathway_matrix)
+    assert np.allclose(obtained_transition_matrix, expected_transition_matrix)
 
 
 def test_get_initial_states_simple_example(simple_pta):

@@ -5,7 +5,7 @@ import pytest
 
 def test_get_blue_states_simple_example(simple_pta):
     obtained_blue_states = pm.get_blue_states(
-        simple_pta.pathway_matrix, simple_pta.red_states, simple_pta.states
+        simple_pta.transition_matrix, simple_pta.red_states, simple_pta.states
     )
     expected_blue_states = [1, 2]
     assert obtained_blue_states == expected_blue_states
@@ -13,7 +13,7 @@ def test_get_blue_states_simple_example(simple_pta):
 
 def test_get_blue_states_arnolds_example(arnolds_example):
     obtained_blue_states = pm.get_blue_states(
-        arnolds_example.pathway_matrix,
+        arnolds_example.transition_matrix,
         arnolds_example.red_states,
         arnolds_example.states,
     )
@@ -153,7 +153,7 @@ def test_alergia_raises_for_invalid_output(simple_pta):
         match="output_level must be",
     ):
         pm.alergia(
-            simple_pta.pathway_matrix,
+            simple_pta.transition_matrix,
             simple_pta.states,
             simple_pta.alphabet,
             alpha=0.2,
@@ -167,7 +167,7 @@ def test_alergia_raises_for_invalid_method(simple_pta):
         match="method must be",
     ):
         pm.alergia(
-            simple_pta.pathway_matrix,
+            simple_pta.transition_matrix,
             simple_pta.states,
             simple_pta.alphabet,
             alpha=0.2,
@@ -181,7 +181,7 @@ def test_alergia_raises_for_invalid_alpha_less_than_or_equal_to_zero(simple_pta)
         match="alpha must be in",
     ):
         pm.alergia(
-            simple_pta.pathway_matrix,
+            simple_pta.transition_matrix,
             simple_pta.states,
             simple_pta.alphabet,
             alpha=0,
@@ -194,7 +194,7 @@ def test_alergia_raises_for_invalid_alpha_greater_than_two(simple_pta):
         match="alpha must be in",
     ):
         pm.alergia(
-            simple_pta.pathway_matrix,
+            simple_pta.transition_matrix,
             simple_pta.states,
             simple_pta.alphabet,
             alpha=2.1,
@@ -655,7 +655,7 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_not_satisfied(
 
 def test_alergia_simple_example(simple_pta):
     obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
-        simple_pta.pathway_matrix, simple_pta.states, simple_pta.alphabet, 0.2
+        simple_pta.transition_matrix, simple_pta.states, simple_pta.alphabet, 0.2
     )
     expected_matrix = np.array(
         [
@@ -705,7 +705,7 @@ def test_alergia_simple_example(simple_pta):
 
 def test_alergia_arnolds_example_alpha_point_two(arnolds_example):
     obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
-        arnolds_example.pathway_matrix,
+        arnolds_example.transition_matrix,
         arnolds_example.states,
         arnolds_example.alphabet,
         0.2,
@@ -752,7 +752,7 @@ def test_alergia_arnolds_example_alpha_point_two(arnolds_example):
 
 def test_alergia_arnolds_example_alpha_point_nine_carrasco(arnolds_example):
     obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
-        arnolds_example.pathway_matrix,
+        arnolds_example.transition_matrix,
         arnolds_example.states,
         arnolds_example.alphabet,
         0.9,
@@ -802,7 +802,7 @@ def test_alergia_arnolds_example_alpha_point_nine_carrasco(arnolds_example):
 
 def test_alergia_arnolds_example_alpha_point_nine_higuera(arnolds_example):
     obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
-        arnolds_example.pathway_matrix,
+        arnolds_example.transition_matrix,
         arnolds_example.states,
         arnolds_example.alphabet,
         0.9,

@@ -369,19 +369,19 @@ def get_transition_matrix(sequences, alphabet, build="breadth"):
 
     n = len(all_nodes)
 
-    pathway_matrix = np.zeros((len(alphabet), n, n), dtype=int)
-    pathway_matrix[0, 0, 1] = len(sequences)
+    transition_matrix = np.zeros((len(alphabet), n, n), dtype=int)
+    transition_matrix[0, 0, 1] = len(sequences)
 
     for i in range(1, n):
         for k in range(len(alphabet)):
             next_node = all_nodes[i] + alphabet[k]
 
             if next_node in all_nodes:
-                pathway_matrix[k, i, all_nodes.index(next_node)] = len(
+                transition_matrix[k, i, all_nodes.index(next_node)] = len(
                     [x for x in sequences if x.startswith(next_node)]
                 )
 
-    return pathway_matrix
+    return transition_matrix
 
 
 def get_initial_states(sequences):
@@ -416,7 +416,7 @@ def get_initial_states(sequences):
     return states
 
 
-def get_n(q, pathway_matrix, states):
+def get_n(q, transition_matrix, states):
     """
     Return the number of sequences entering a state.
 
@@ -427,12 +427,12 @@ def get_n(q, pathway_matrix, states):
     ----------
     q : int or str
         State identifier.
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
 
     Returns
     -------
@@ -440,10 +440,10 @@ def get_n(q, pathway_matrix, states):
         Number of sequences entering the state.
     """
     i = states.index(q)
-    return pathway_matrix[:, :, i].sum()
+    return transition_matrix[:, :, i].sum()
 
 
-def get_endpoint(q, pathway_matrix, states):
+def get_endpoint(q, transition_matrix, states):
     """
     Return the number of sequences terminating at a state.
 
@@ -454,12 +454,12 @@ def get_endpoint(q, pathway_matrix, states):
     ----------
     q : int or str
         State identifier.
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
 
     Returns
     -------
@@ -467,10 +467,10 @@ def get_endpoint(q, pathway_matrix, states):
         Number of sequences terminating at the state.
     """
     i = states.index(q)
-    return pathway_matrix[:, :, i].sum() - pathway_matrix[:, i, :].sum()
+    return transition_matrix[:, :, i].sum() - transition_matrix[:, i, :].sum()
 
 
-def get_pi(q, z, pathway_matrix, states):
+def get_pi(q, z, transition_matrix, states):
     """
     Return the probability of leaving a state via a symbol.
 
@@ -482,13 +482,13 @@ def get_pi(q, z, pathway_matrix, states):
     q : int or str
         State identifier.
     z : int
-        Index of the symbol in the first dimension of pathway_matrix.
-    pathway_matrix : np.ndarray
+        Index of the symbol in the first dimension of transition_matrix.
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
 
     Returns
     -------
@@ -496,10 +496,10 @@ def get_pi(q, z, pathway_matrix, states):
         Probability of leaving state q via the indexed symbol.
     """
     i = states.index(q)
-    return pathway_matrix[z, i, :].sum() / get_n(q, pathway_matrix, states)
+    return transition_matrix[z, i, :].sum() / get_n(q, transition_matrix, states)
 
 
-def get_pi_endpoint(q, pathway_matrix, alphabet, states):
+def get_pi_endpoint(q, transition_matrix, alphabet, states):
     """
     Return the probability of terminating at a state.
 
@@ -510,14 +510,14 @@ def get_pi_endpoint(q, pathway_matrix, alphabet, states):
     ----------
     q : int or str
         State identifier.
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     alphabet : collection of str
-        Alphabet associated with the first dimension of pathway_matrix.
+        Alphabet associated with the first dimension of transition_matrix.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
 
     Returns
     -------
@@ -528,14 +528,14 @@ def get_pi_endpoint(q, pathway_matrix, alphabet, states):
         get_pi(
             q,
             z,
-            pathway_matrix,
+            transition_matrix,
             states,
         )
         for z in range(len(alphabet))
     )
 
 
-def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
+def hoeffding_bound(q1, q2, alpha, transition_matrix, alphabet, states):
     """
     Determine whether two states satisfy the Hoeffding compatibility bound.
 
@@ -551,14 +551,14 @@ def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
     alpha : float
         Significance level used to calculate the Hoeffding bound. Expected
         to be in the range ``(0, 2]``.
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     alphabet : collection of str
-        Alphabet associated with the first dimension of pathway_matrix.
+        Alphabet associated with the first dimension of transition_matrix.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
 
     Returns
     -------
@@ -569,22 +569,22 @@ def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
     alpha_constant = (np.log(2 / alpha) / 2) ** 0.5
 
     rhs = alpha_constant * (
-        (1 / np.sqrt(get_n(q1, pathway_matrix, states)))
-        + (1 / np.sqrt(get_n(q2, pathway_matrix, states)))
+        (1 / np.sqrt(get_n(q1, transition_matrix, states)))
+        + (1 / np.sqrt(get_n(q2, transition_matrix, states)))
     )
 
     for z in range(len(alphabet)):
         lhs = abs(
-            get_pi(q1, z, pathway_matrix, states)
-            - get_pi(q2, z, pathway_matrix, states)
+            get_pi(q1, z, transition_matrix, states)
+            - get_pi(q2, z, transition_matrix, states)
         )
 
         if lhs > rhs:
             return False
 
     lhs = abs(
-        get_pi_endpoint(q1, pathway_matrix, alphabet, states)
-        - get_pi_endpoint(q2, pathway_matrix, alphabet, states)
+        get_pi_endpoint(q1, transition_matrix, alphabet, states)
+        - get_pi_endpoint(q2, transition_matrix, alphabet, states)
     )
 
     if lhs > rhs:
@@ -596,7 +596,7 @@ def hoeffding_bound(q1, q2, alpha, pathway_matrix, alphabet, states):
 def merge_two_states(
     q1,
     q2,
-    pathway_matrix,
+    transition_matrix,
     states,
     alphabet,
     red_states=None,
@@ -613,20 +613,20 @@ def merge_two_states(
         First state to merge.
     q2 : int or str
         Second state to merge.
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
     alphabet : iterable of str
-        Alphabet corresponding to the first dimension of pathway_matrix.
+        Alphabet corresponding to the first dimension of transition_matrix.
     red_states : list, optional
         Red states to update after the merge.
 
     Returns
     -------
-    pathway_matrix_copy : np.ndarray
+    transition_matrix_copy : np.ndarray
         Transition-count matrix after merging the states.
     states_copy : list
         Updated state identifiers.
@@ -636,17 +636,17 @@ def merge_two_states(
     Raises
     ------
     TypeError
-        If pathway_matrix is not a NumPy array or alphabet has an invalid
+        If transition_matrix is not a NumPy array or alphabet has an invalid
         type.
     ValueError
-        If alphabet or pathway_matrix has invalid contents or dimensions,
+        If alphabet or transition_matrix has invalid contents or dimensions,
         q1 or q2 is not present in states, q1 and q2 are identical, or the
         artificial initial state is selected for merging.
     """
     alphabet = _validate_alphabet(alphabet)
 
     _validate_transition_matrix(
-        pathway_matrix,
+        transition_matrix,
         alphabet,
         states,
     )
@@ -660,13 +660,13 @@ def merge_two_states(
     return _merge_two_states(
         q1,
         q2,
-        pathway_matrix,
+        transition_matrix,
         states,
         red_states=red_states,
     )
 
 
-def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
+def _merge_two_states(q1, q2, transition_matrix, states, red_states=None):
     """
     Internal function that merges two states in a transition-count matrix.
 
@@ -680,18 +680,18 @@ def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
         First state to merge.
     q2 : int or str
         Second state to merge.
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
     red_states : list, optional
         Red states to update after the merge.
 
     Returns
     -------
-    pathway_matrix_copy : np.ndarray
+    transition_matrix_copy : np.ndarray
         Transition-count matrix after merging the states.
     states_copy : list
         Updated state identifiers.
@@ -707,25 +707,25 @@ def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
     surviving_state = states[which_min]
     removed_state = states[which_max]
 
-    pathway_matrix_copy = np.copy(pathway_matrix)
+    transition_matrix_copy = np.copy(transition_matrix)
     states_copy = states.copy()
 
-    pathway_matrix_copy[:, :, which_min] = (
-        pathway_matrix_copy[:, :, i1] + pathway_matrix_copy[:, :, i2]
+    transition_matrix_copy[:, :, which_min] = (
+        transition_matrix_copy[:, :, i1] + transition_matrix_copy[:, :, i2]
     )
 
-    pathway_matrix_copy = np.delete(
-        pathway_matrix_copy,
+    transition_matrix_copy = np.delete(
+        transition_matrix_copy,
         which_max,
         axis=2,
     )
 
-    pathway_matrix_copy[:, which_min, :] = (
-        pathway_matrix_copy[:, i1, :] + pathway_matrix_copy[:, i2, :]
+    transition_matrix_copy[:, which_min, :] = (
+        transition_matrix_copy[:, i1, :] + transition_matrix_copy[:, i2, :]
     )
 
-    pathway_matrix_copy = np.delete(
-        pathway_matrix_copy,
+    transition_matrix_copy = np.delete(
+        transition_matrix_copy,
         which_max,
         axis=1,
     )
@@ -740,15 +740,15 @@ def _merge_two_states(q1, q2, pathway_matrix, states, red_states=None):
         red_states_copy = list(dict.fromkeys(updated_red_states))
 
         return (
-            pathway_matrix_copy,
+            transition_matrix_copy,
             states_copy,
             red_states_copy,
         )
 
-    return pathway_matrix_copy, states_copy
+    return transition_matrix_copy, states_copy
 
 
-def check_is_deterministic(pathway_matrix, states, alphabet):
+def check_is_deterministic(transition_matrix, states, alphabet):
     """
     Identify nondeterministic state pairs in a transition matrix.
 
@@ -759,14 +759,14 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
 
     Parameters
     ----------
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
     alphabet : collection of str
-        Alphabet associated with the first dimension of pathway_matrix.
+        Alphabet associated with the first dimension of transition_matrix.
 
     Returns
     -------
@@ -778,10 +778,10 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
     nondeterministic_pairs = []
 
     for a in range(len(alphabet)):
-        rows = np.where((pathway_matrix[a, :, :] > 0).sum(axis=1) > 1)[0]
+        rows = np.where((transition_matrix[a, :, :] > 0).sum(axis=1) > 1)[0]
 
         for row in rows:
-            where_non_det = np.where(pathway_matrix[a, row, :] > 0)[0]
+            where_non_det = np.where(transition_matrix[a, row, :] > 0)[0]
 
             if len(where_non_det) > 2:
                 nond_pairs = np.reshape(where_non_det[:2], (1, 2))
@@ -797,7 +797,7 @@ def check_is_deterministic(pathway_matrix, states, alphabet):
 def recursive_merge_two_states(
     q1,
     q2,
-    pathway_matrix,
+    transition_matrix,
     states,
     alpha,
     alphabet,
@@ -818,16 +818,16 @@ def recursive_merge_two_states(
         First state to merge.
     q2 : int or str
         Second state to merge.
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
     alpha : float
         Significance level used by the Hoeffding compatibility test.
     alphabet : iterable of str
-        Alphabet corresponding to the first dimension of pathway_matrix.
+        Alphabet corresponding to the first dimension of transition_matrix.
     red_states : list, optional
         Red states to update during a Higuera merge. Required when
         method is ``"Higuera"``.
@@ -858,12 +858,12 @@ def recursive_merge_two_states(
     Raises
     ------
     TypeError
-        If alpha is not numeric, pathway_matrix is not a NumPy array, or
+        If alpha is not numeric, transition_matrix is not a NumPy array, or
         alphabet has an invalid type.
     ValueError
         If output_level or method is invalid, red_states is not provided for the
         Higuera method, alpha is outside ``(0, 2]``, alphabet or
-        pathway_matrix is invalid, either state is unknown, the states are
+        transition_matrix is invalid, either state is unknown, the states are
         identical, or the artificial initial state is selected.
     """
     valid_outputs = {"Suppressed", "Truncated", "Full"}
@@ -884,7 +884,7 @@ def recursive_merge_two_states(
     alphabet = _validate_alphabet(alphabet)
 
     _validate_transition_matrix(
-        pathway_matrix,
+        transition_matrix,
         alphabet,
         states,
     )
@@ -898,7 +898,7 @@ def recursive_merge_two_states(
     return _recursive_merge_two_states(
         q1,
         q2,
-        pathway_matrix,
+        transition_matrix,
         states,
         alpha,
         alphabet,
@@ -911,7 +911,7 @@ def recursive_merge_two_states(
 def _recursive_merge_two_states(
     q1,
     q2,
-    pathway_matrix,
+    transition_matrix,
     states,
     alpha,
     alphabet,
@@ -922,7 +922,7 @@ def _recursive_merge_two_states(
     """
     Recursively merge previously validated states until determinism is restored.
 
-    The function assumes that q1, q2, pathway_matrix, states, alpha, and
+    The function assumes that q1, q2, transition_matrix, states, alpha, and
     alphabet have already been validated. It attempts to resolve each
     nondeterministic pair created by the initial merge using the Hoeffding
     compatibility bound.
@@ -933,16 +933,16 @@ def _recursive_merge_two_states(
         First state to merge.
     q2 : int or str
         Second state to merge.
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
     alpha : float
         Significance level used by the Hoeffding compatibility test.
     alphabet : collection of str
-        Alphabet corresponding to the first dimension of pathway_matrix.
+        Alphabet corresponding to the first dimension of transition_matrix.
     red_states : list, optional
         Red states to update during a Higuera merge. Required when
         method is ``"Higuera"``.
@@ -964,13 +964,13 @@ def _recursive_merge_two_states(
         ``"Higuera"``.
     """
     if method == "Carrasco":
-        initial_pathway_matrix = np.copy(pathway_matrix)
+        initial_transition_matrix = np.copy(transition_matrix)
         initial_states = states.copy()
 
         new_matrix, new_states = _merge_two_states(
             q1,
             q2,
-            pathway_matrix,
+            transition_matrix,
             states,
         )
 
@@ -1029,21 +1029,21 @@ def _recursive_merge_two_states(
             else:
                 recursive_merge = False
                 return (
-                    initial_pathway_matrix,
+                    initial_transition_matrix,
                     initial_states,
                     recursive_merge,
                 )
 
         return new_matrix, new_states, recursive_merge
 
-    initial_pathway_matrix = np.copy(pathway_matrix)
+    initial_transition_matrix = np.copy(transition_matrix)
     initial_states = states.copy()
     initial_red_states = red_states.copy()
 
     new_matrix, new_states, red_states = _merge_two_states(
         q1,
         q2,
-        pathway_matrix,
+        transition_matrix,
         states,
         red_states=red_states,
     )
@@ -1106,7 +1106,7 @@ def _recursive_merge_two_states(
         else:
             recursive_merge = False
             return (
-                initial_pathway_matrix,
+                initial_transition_matrix,
                 initial_states,
                 recursive_merge,
                 initial_red_states,
@@ -1115,7 +1115,7 @@ def _recursive_merge_two_states(
     return new_matrix, new_states, recursive_merge, red_states
 
 
-def get_blue_states(pathway_matrix, red_states, states):
+def get_blue_states(transition_matrix, red_states, states):
     """
     Return the blue states associated with a set of red states.
 
@@ -1124,14 +1124,14 @@ def get_blue_states(pathway_matrix, red_states, states):
 
     Parameters
     ----------
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     red_states : list
         State identifiers currently classified as red.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
 
     Returns
     -------
@@ -1143,7 +1143,7 @@ def get_blue_states(pathway_matrix, red_states, states):
     for q in red_states:
         blue_states += [
             states[x]
-            for x in list(np.where(pathway_matrix[:, states.index(q), :] > 0)[1])
+            for x in list(np.where(transition_matrix[:, states.index(q), :] > 0)[1])
         ]
 
     blue_states = [x for x in blue_states if x not in red_states]
@@ -1463,7 +1463,7 @@ def alergia(
     return current_matrix, current_states, tracking
 
 
-def probability_transition_matrix(pathway_matrix, states, alphabet):
+def probability_transition_matrix(transition_matrix, states, alphabet):
     """
     Convert a transition-count matrix into a probability transition matrix.
 
@@ -1473,49 +1473,49 @@ def probability_transition_matrix(pathway_matrix, states, alphabet):
 
     Parameters
     ----------
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
     alphabet : iterable of str
-        Alphabet corresponding to the first dimension of pathway_matrix.
+        Alphabet corresponding to the first dimension of transition_matrix.
 
     Returns
     -------
     np.ndarray
         Probability transition matrix with the same shape as
-        pathway_matrix.
+        transition_matrix.
 
     Raises
     ------
     TypeError
-        If pathway_matrix is not a NumPy array or alphabet has an invalid
+        If transition_matrix is not a NumPy array or alphabet has an invalid
         type.
     ValueError
-        If alphabet or pathway_matrix has invalid contents or dimensions.
+        If alphabet or transition_matrix has invalid contents or dimensions.
     """
     alphabet = _validate_alphabet(alphabet)
 
     _validate_transition_matrix(
-        pathway_matrix,
+        transition_matrix,
         alphabet,
         states,
     )
 
-    p_mat = pathway_matrix.copy().astype(float)
+    p_mat = transition_matrix.copy().astype(float)
     for j in range(len(alphabet)):
-        p_mat[j, 0, :] = pathway_matrix[j, 0, :] / pathway_matrix[0, 0, :].sum()
+        p_mat[j, 0, :] = transition_matrix[j, 0, :] / transition_matrix[0, 0, :].sum()
         for i in range(1, len(states)):
-            p_mat[j, i, :] = pathway_matrix[j, i, :] / get_n(
-                states[i], pathway_matrix, states
+            p_mat[j, i, :] = transition_matrix[j, i, :] / get_n(
+                states[i], transition_matrix, states
             )
     return p_mat
 
 
 def network_visualisation(
-    pathway_matrix,
+    transition_matrix,
     states,
     alphabet,
     name=None,
@@ -1532,14 +1532,14 @@ def network_visualisation(
 
     Parameters
     ----------
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        pathway_matrix.
+        transition_matrix.
     alphabet : iterable of str
-        Alphabet corresponding to the first dimension of pathway_matrix.
+        Alphabet corresponding to the first dimension of transition_matrix.
     name : str, optional
         Graph name and output filename stem. The default output filename is
         ``"my_graph"``.
@@ -1560,15 +1560,15 @@ def network_visualisation(
     Raises
     ------
     TypeError
-        If pathway_matrix is not a NumPy array or alphabet has an invalid
+        If transition_matrix is not a NumPy array or alphabet has an invalid
         type.
     ValueError
-        If alphabet or pathway_matrix has invalid contents or dimensions.
+        If alphabet or transition_matrix has invalid contents or dimensions.
     """
     alphabet = _validate_alphabet(alphabet)
 
     _validate_transition_matrix(
-        pathway_matrix,
+        transition_matrix,
         alphabet,
         states,
     )
@@ -1580,14 +1580,14 @@ def network_visualisation(
         filename = name
 
     if probabilities:
-        p_mat = probability_transition_matrix(pathway_matrix, states, alphabet)
+        p_mat = probability_transition_matrix(transition_matrix, states, alphabet)
 
     dot = graphviz.Digraph(identifier, filename=filename)
 
     for node in states:
         if node == "*":
             dot.attr("node", shape="circle")
-        elif get_pi_endpoint(node, pathway_matrix, alphabet, states) > 0:
+        elif get_pi_endpoint(node, transition_matrix, alphabet, states) > 0:
             dot.attr("node", shape="doublecircle")
         else:
             dot.attr("node", shape="circle")
@@ -1597,14 +1597,14 @@ def network_visualisation(
         if i == "*":
             dot.attr("node", shape="circle")
             dot.node(str(i), str(i), fontsize="14")
-        elif get_pi_endpoint(i, pathway_matrix, alphabet, states) > 0:
+        elif get_pi_endpoint(i, transition_matrix, alphabet, states) > 0:
             dot.attr("node", shape="doublecircle")
             if probabilities:
                 dot.node(
                     str(i),
                     "{}: {}".format(
                         i,
-                        round(get_pi_endpoint(i, pathway_matrix, alphabet, states), 2),
+                        round(get_pi_endpoint(i, transition_matrix, alphabet, states), 2),
                     ),
                     fontsize="11",
                     fixedsize="true",
@@ -1612,7 +1612,7 @@ def network_visualisation(
             else:
                 dot.node(
                     str(i),
-                    "{}: {}".format(i, get_endpoint(i, pathway_matrix, states)),
+                    "{}: {}".format(i, get_endpoint(i, transition_matrix, states)),
                     fontsize="12",
                     fixedsize="true",
                 )
@@ -1620,9 +1620,9 @@ def network_visualisation(
             dot.attr("node", shape="circle")
             dot.node(str(i), "{}: 0".format(i), fontsize="12", fixedsize="true")
         for m, j in enumerate(states):
-            if any(pathway_matrix[:, n, m] != 0):
+            if any(transition_matrix[:, n, m] != 0):
                 for k in range(len(alphabet)):
-                    if pathway_matrix[k, n, m] != 0:
+                    if transition_matrix[k, n, m] != 0:
                         if probabilities:
                             if i == "*":
                                 dot.edge(
@@ -1647,7 +1647,7 @@ def network_visualisation(
                                 dot.edge(
                                     str(i),
                                     str(j),
-                                    label="{}".format(pathway_matrix[k, n, m]),
+                                    label="{}".format(transition_matrix[k, n, m]),
                                     arrowsize="0.35",
                                     fontsize="11",
                                 )
@@ -1656,7 +1656,7 @@ def network_visualisation(
                                     str(i),
                                     str(j),
                                     label="{}: {}".format(
-                                        alphabet[k], pathway_matrix[k, n, m]
+                                        alphabet[k], transition_matrix[k, n, m]
                                     ),
                                     arrowsize="0.35",
                                     fontsize="11",

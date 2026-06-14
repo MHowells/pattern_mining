@@ -5,7 +5,7 @@ import pytest
 
 def test_probability_transition_matrix_simple_example(simple_pta):
     obtained_matrix = pm.probability_transition_matrix(
-        simple_pta.final_pathway_matrix, simple_pta.final_states, simple_pta.alphabet
+        simple_pta.final_transition_matrix, simple_pta.final_states, simple_pta.alphabet
     )
     expected_matrix = np.array(
         [
@@ -34,7 +34,7 @@ def test_probability_transition_matrix_simple_example(simple_pta):
 
 def test_probability_transition_matrix_arnolds_example(arnolds_example):
     obtained_matrix = pm.probability_transition_matrix(
-        arnolds_example.final_pathway_matrix,
+        arnolds_example.final_transition_matrix,
         arnolds_example.final_states,
         arnolds_example.alphabet,
     )
