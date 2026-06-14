@@ -352,6 +352,7 @@ def get_transition_matrix(sequences, alphabet, build="breadth"):
         If sequences or alphabet is empty, build is invalid, alphabet
         contains duplicate symbols, or alphabet omits observed symbols.
     """
+    sequences = _validate_sequences(sequences)
     alphabet = _validate_alphabet(alphabet)
 
     observed_symbols = set("".join(sequences))
