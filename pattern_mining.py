@@ -1261,7 +1261,7 @@ def alergia(
             if output in ("Full", "Truncated"):
                 print(
                     "The next pair of states to check is:",
-                    to_check[0],
+                    pair,
                 )
 
             if output == "Full":
@@ -1281,7 +1281,7 @@ def alergia(
                 if output in ("Full", "Truncated"):
                     print(
                         "Hoeffding Bound satisfied for",
-                        to_check[0],
+                        pair,
                     )
 
                 recursive_attempt_counter += 1
@@ -1307,7 +1307,7 @@ def alergia(
                     if output in ("Full", "Truncated"):
                         print(
                             "Recursively merged states. Successfully merged",
-                            to_check[0],
+                            pair,
                         )
 
                     to_check = get_pairs_to_check(current_states)
@@ -1750,37 +1750,50 @@ def probability_estimate_of_exact_sequence(p_mat, sequence, alphabet):
     float
         Estimated probability of generating the exact sequence.
     """
-    symbols = [sequence[i] for i in range(len(sequence))]
-    indices = [alphabet.index(symbol) for symbol in symbols]
+    indices = [
+        alphabet.index(symbol)
+        for symbol in sequence
+    ]
 
     p_mat = np.delete(p_mat, 0, axis=1)
     p_mat = np.delete(p_mat, 0, axis=2)
 
-    p_est = np.sum(p_mat[indices[0], 0, :])
+    first_transition = p_mat[indices[0], 0, :]
+    p_est = np.sum(first_transition)
 
     if p_est == 0:
         return 0
 
-    next_state = np.where(p_mat[indices[0], 0, :] > 0)[0][0]
+    next_state = np.where(first_transition > 0)[0][0]
 
     if len(sequence) == 1:
-        p_est *= 1 - np.sum(p_mat[:, next_state, :])
+        p_est *= 1 - np.sum(
+            p_mat[:, next_state, :]
+        )
         return p_est
 
     for i in range(1, len(sequence)):
-        if i != len(sequence) - 1:
-            p_est *= np.sum(p_mat[indices[i], next_state, :])
-            if np.where(p_mat[indices[i], next_state, :] > 0)[0].size > 0:
-                next_state = np.where(p_mat[indices[i], next_state, :] > 0)[0][0]
-            else:
-                return 0
-        else:
-            p_est *= np.sum(p_mat[indices[i], next_state, :])
-            if np.where(p_mat[indices[i], next_state, :] > 0)[0].size > 0:
-                next_state = np.where(p_mat[indices[i], next_state, :] > 0)[0][0]
-            else:
-                return 0
-            p_est *= 1 - min(np.sum(p_mat[:, next_state, :]), 1)
+        transitions = p_mat[
+            indices[i],
+            next_state,
+            :,
+        ]
+
+        p_est *= np.sum(transitions)
+
+        destinations = np.where(
+            transitions > 0
+        )[0]
+
+        if destinations.size == 0:
+            return 0
+
+        next_state = destinations[0]
+
+    p_est *= 1 - min(
+        np.sum(p_mat[:, next_state, :]),
+        1,
+    )
 
     return p_est
 
