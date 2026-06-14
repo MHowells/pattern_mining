@@ -178,6 +178,25 @@ The function returns:
 - `tracking`, containing information about the attempted, successful, and 
 failed merges.
 
+### Choosing the alpha Parameter
+
+The `alpha` parameter controls the tolerance used when deciding whether 
+two states are statistically compatible and may therefore be merged. 
+
+In this implementation: 
+- smaller `alpha` values produce a wider compatibility bound and generally 
+allow more state merges; 
+- larger `alpha` values produce a narrower compatibility bound and generally 
+result in fewer state merges. 
+
+Consequently, smaller values tend to produce more compact, generalised 
+automata, whereas larger values tend to preserve more of the structure 
+present in the original prefix tree.
+
+The appropriate value of alpha is application dependent and may be selected 
+by comparing the resulting automata using validation data or other 
+model selection criteria.
+
 ### Controlling Print Output
 
 The amount of information printed while the algorithm runs can be controlled 
