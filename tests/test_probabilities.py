@@ -1,6 +1,12 @@
+import importlib
+
 import numpy as np
 import pattern_mining as pm
 import pytest
+
+probabilities_module = importlib.import_module(
+    "pattern_mining.probabilities"
+)
 
 
 def test_probability_transition_matrix_simple_example(simple_pta):
@@ -291,7 +297,7 @@ def test_proportion_constraint_raises_for_probability_outside_range(
     invalid_probability,
 ):
     monkeypatch.setattr(
-        pm,
+        probabilities_module,
         "probability_estimate_of_pattern",
         lambda p_mat, pattern, alphabet: np.array([invalid_probability]),
     )

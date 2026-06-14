@@ -1,6 +1,12 @@
+import importlib
+
 import numpy as np
 import pattern_mining as pm
 import pytest
+
+state_merging_module = importlib.import_module(
+    "pattern_mining.state_merging",
+)
 
 
 def test_validate_states_for_merging_accepts_valid_states():
@@ -523,7 +529,7 @@ def test_recursive_merge_two_states_prints_nondeterministic_pairs(
     transition_matrix[0, 3, 4] = 1
 
     monkeypatch.setattr(
-        pm,
+        state_merging_module,
         "hoeffding_bound",
         lambda *args, **kwargs: False,
     )
@@ -766,13 +772,13 @@ def test_recursive_merge_two_states_restores_initial_input(
     )
 
     monkeypatch.setattr(
-        pm,
+        state_merging_module,
         "check_is_deterministic",
         lambda *args, **kwargs: next(nondeterministic_results),
     )
 
     monkeypatch.setattr(
-        pm,
+        state_merging_module,
         "hoeffding_bound",
         lambda *args, **kwargs: next(hoeffding_results),
     )

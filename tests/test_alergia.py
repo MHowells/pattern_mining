@@ -1,6 +1,12 @@
+import importlib
+
 import numpy as np
 import pattern_mining as pm
 import pytest
+
+alergia_module = importlib.import_module(
+    "pattern_mining.alergia"
+)
 
 
 def test_get_blue_states_simple_example(simple_pta):
@@ -211,7 +217,7 @@ def test_alergia_prints_next_pair_of_states(
     transition_matrix = np.zeros((1, 3, 3), dtype=int)
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "hoeffding_bound",
         lambda *args, **kwargs: False,
     )
@@ -244,7 +250,7 @@ def test_alergia_prints_iteration_number(
     transition_matrix = np.zeros((1, 3, 3), dtype=int)
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "hoeffding_bound",
         lambda *args, **kwargs: False,
     )
@@ -277,13 +283,13 @@ def test_alergia_prints_when_hoeffding_bound_is_satisfied(
     transition_matrix = np.zeros((1, 3, 3), dtype=int)
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "hoeffding_bound",
         lambda *args, **kwargs: True,
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "_recursive_merge_two_states",
         lambda *args, **kwargs: (
             transition_matrix,
@@ -324,13 +330,13 @@ def test_alergia_prints_successful_recursive_merge(
     merged_states = ["*", 0]
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "hoeffding_bound",
         lambda *args, **kwargs: True,
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "_recursive_merge_two_states",
         lambda *args, **kwargs: (
             merged_matrix,
@@ -369,13 +375,13 @@ def test_alergia_prints_failed_recursive_merge(
     transition_matrix = np.zeros((1, 3, 3), dtype=int)
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "hoeffding_bound",
         lambda *args, **kwargs: True,
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "_recursive_merge_two_states",
         lambda *args, **kwargs: (
             transition_matrix,
@@ -414,7 +420,7 @@ def test_alergia_prints_when_hoeffding_bound_is_not_satisfied(
     transition_matrix = np.zeros((1, 3, 3), dtype=int)
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "hoeffding_bound",
         lambda *args, **kwargs: False,
     )
@@ -456,13 +462,13 @@ def test_alergia_higuera_prints_iteration_number(
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "get_blue_states",
         lambda *args, **kwargs: next(blue_state_results),
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "hoeffding_bound",
         lambda *args, **kwargs: False,
     )
@@ -502,19 +508,19 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_satisfied(
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "get_blue_states",
         lambda *args, **kwargs: next(blue_state_results),
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "hoeffding_bound",
         lambda *args, **kwargs: True,
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "_recursive_merge_two_states",
         lambda *args, **kwargs: (
             transition_matrix,
@@ -563,19 +569,19 @@ def test_alergia_higuera_prints_successful_recursive_merge(
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "get_blue_states",
         lambda *args, **kwargs: next(blue_state_results),
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "hoeffding_bound",
         lambda *args, **kwargs: True,
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "_recursive_merge_two_states",
         lambda *args, **kwargs: (
             merged_matrix,
@@ -622,13 +628,13 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_not_satisfied(
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "get_blue_states",
         lambda *args, **kwargs: next(blue_state_results),
     )
 
     monkeypatch.setattr(
-        pm,
+        alergia_module,
         "hoeffding_bound",
         lambda *args, **kwargs: False,
     )
