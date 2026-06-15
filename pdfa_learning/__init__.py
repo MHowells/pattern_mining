@@ -3,13 +3,6 @@ Functions for constructing probabilistic prefix-tree acceptors and
 learning probabilistic deterministic finite automata using ALERGIA.
 """
 
-from ._validation import (
-    _validate_alpha,
-    _validate_alphabet,
-    _validate_sequences,
-    _validate_states_for_merging,
-    _validate_transition_matrix,
-)
 
 from .ppta import (
     get_alphabet,
@@ -51,4 +44,42 @@ from .probabilities import (
     string_probabilities,
 )
 
+from .evaluation import (
+    calculate_pdfa_metrics,
+    evaluate_pdfa,
+    get_sequence_probability_table,
+)
+
 from .visualisation import network_visualisation
+
+__all__ = [
+    "get_alphabet",
+    "get_initial_states",
+    "get_state_paths",
+    "get_transition_matrix",
+    "get_endpoint",
+    "get_n",
+    "get_pi",
+    "get_pi_endpoint",
+    "check_is_deterministic",
+    "get_blue_states",
+    "get_pairs_to_check",
+    "hoeffding_bound",
+    "merge_two_states",
+    "recursive_merge_two_states",
+    "alergia",
+    "probability_estimate_of_exact_sequence",
+    "probability_estimate_of_pattern",
+    "probability_estimate_of_symbol",
+    "probability_sequence_contains_digram",
+    "probability_sequence_contains_letter_at_distance_theta",
+    "probability_to_encounter_a_pattern_at_a_distance_theta",
+    "probability_transition_matrix",
+    "proportion_constraint",
+    "string_enumerator",
+    "string_probabilities",
+    "calculate_pdfa_metrics",
+    "evaluate_pdfa",
+    "get_sequence_probability_table",
+    "network_visualisation",
+]
