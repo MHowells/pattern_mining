@@ -22,155 +22,221 @@ from .state_statistics import (
 
 
 def network_visualisation(
-    transition_matrix,
+    pathway_matrix,
     states,
     alphabet,
-    name=None,
-    view=True,
+    filename="my_graph",
+    save=False,
     probabilities=False,
     graph_format="pdf",
+    node_size=0.5,
+    node_fontsize=None,
+    edge_fontsize=11,
+    line_width=1.1,
 ):
     """
-    Render an automaton as a directed Graphviz network.
+    Visualise a probabilistic automaton as a directed Graphviz network.
 
     States are represented as nodes and positive transitions as directed
-    edges. Edge and terminating-state labels display either counts or
-    probabilities, depending on the value of probabilities.
+    edges. Terminating states are displayed using double circles. Node and
+    edge labels show either observed counts or estimated probabilities,
+    depending on the value of ``probabilities``.
 
     Parameters
     ----------
-    transition_matrix : np.ndarray
+    pathway_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        transition_matrix.
+        ``pathway_matrix``.
     alphabet : iterable of str
-        Alphabet corresponding to the first dimension of transition_matrix.
-    name : str, optional
-        Graph name and output filename stem. The default output filename is
-        ``"my_graph"``.
-    view : bool, default=True
-        Whether to open the rendered graph using the system's default
-        viewer.
+        Alphabet corresponding to the first dimension of
+        ``pathway_matrix``.
+    filename : str, default="my_graph"
+        Name of the Graphviz graph and output filename stem.
+    save : bool, default=False
+        Whether to render and save the graph to disk.
     probabilities : bool, default=False
-        Whether to label nodes and edges with probabilities rather than
-        transition counts.
+        Whether to label nodes and edges with estimated probabilities rather
+        than observed transition counts.
     graph_format : str, default="pdf"
-        Graphviz output format.
+        Graphviz output format used when ``save`` is True.
+    node_size : float, default=0.5
+        Size of the nodes in the graph.
+    node_fontsize : float, default=None
+        Font size of the node labels. If None, uses the default font size.
+    edge_fontsize : float, default=11
+        Font size of the edge labels.
+    line_width : float, default=1.1
+        Width of the lines representing transitions.
 
     Returns
     -------
-    None
-        The rendered graph is written to disk.
+    graphviz.Digraph
+        The constructed Graphviz directed graph.
 
     Raises
     ------
     TypeError
-        If transition_matrix is not a NumPy array or alphabet has an invalid
-        type.
+        If ``pathway_matrix`` is not a NumPy array or ``alphabet`` has an
+        invalid type.
     ValueError
-        If alphabet or transition_matrix has invalid contents or dimensions.
+        If ``alphabet`` or ``pathway_matrix`` has invalid contents or
+        dimensions.
     """
     alphabet = _validate_alphabet(alphabet)
 
     _validate_transition_matrix(
-        transition_matrix,
+        pathway_matrix,
         alphabet,
         states,
     )
 
-    if name == None:
-        filename = "my_graph"
-    else:
-        identifier = name
-        filename = name
-
     if probabilities:
-        p_mat = probability_transition_matrix(transition_matrix, states, alphabet)
+        label_matrix = probability_transition_matrix(
+            pathway_matrix,
+            states,
+            alphabet,
+        )
+    else:
+        label_matrix = pathway_matrix
 
-    dot = graphviz.Digraph(identifier, filename=filename)
-
-    for node in states:
-        if node == "*":
-            dot.attr("node", shape="circle")
-        elif get_pi_endpoint(node, transition_matrix, alphabet, states) > 0:
-            dot.attr("node", shape="doublecircle")
-        else:
-            dot.attr("node", shape="circle")
-        dot.node(str(node), str(node))
-
-    for n, i in enumerate(states):
-        if i == "*":
-            dot.attr("node", shape="circle")
-            dot.node(str(i), str(i), fontsize="14")
-        elif get_pi_endpoint(i, transition_matrix, alphabet, states) > 0:
-            dot.attr("node", shape="doublecircle")
-            if probabilities:
-                dot.node(
-                    str(i),
-                    "{}: {}".format(
-                        i,
-                        round(get_pi_endpoint(i, transition_matrix, alphabet, states), 2),
-                    ),
-                    fontsize="11",
-                    fixedsize="true",
-                )
-            else:
-                dot.node(
-                    str(i),
-                    "{}: {}".format(i, get_endpoint(i, transition_matrix, states)),
-                    fontsize="12",
-                    fixedsize="true",
-                )
-        else:
-            dot.attr("node", shape="circle")
-            dot.node(str(i), "{}: 0".format(i), fontsize="12", fixedsize="true")
-        for m, j in enumerate(states):
-            if any(transition_matrix[:, n, m] != 0):
-                for k in range(len(alphabet)):
-                    if transition_matrix[k, n, m] != 0:
-                        if probabilities:
-                            if i == "*":
-                                dot.edge(
-                                    str(i),
-                                    str(j),
-                                    label="{}".format(round(p_mat[k, n, m], 2)),
-                                    arrowsize="0.35",
-                                    fontsize="11",
-                                )
-                            else:
-                                dot.edge(
-                                    str(i),
-                                    str(j),
-                                    label="{}: {}".format(
-                                        alphabet[k], round(p_mat[k, n, m], 2)
-                                    ),
-                                    arrowsize="0.35",
-                                    fontsize="11",
-                                )
-                        else:
-                            if i == "*":
-                                dot.edge(
-                                    str(i),
-                                    str(j),
-                                    label="{}".format(transition_matrix[k, n, m]),
-                                    arrowsize="0.35",
-                                    fontsize="11",
-                                )
-                            else:
-                                dot.edge(
-                                    str(i),
-                                    str(j),
-                                    label="{}: {}".format(
-                                        alphabet[k], transition_matrix[k, n, m]
-                                    ),
-                                    arrowsize="0.35",
-                                    fontsize="11",
-                                )
+    dot = graphviz.Digraph(
+        name=filename,
+        filename=filename,
+        format=graph_format,
+    )
 
     dot.graph_attr["rankdir"] = "LR"
-    dot.render(filename, format=graph_format, cleanup=True)
 
-    if view:
-        dot.view()
+    # Add states.
+    for state in states:
+        if state == "*":
+            node_label = str(state)
+            node_shape = "circle"
+            default_font_size = 14
+        else:
+            endpoint_probability = get_pi_endpoint(
+                state,
+                pathway_matrix,
+                alphabet,
+                states,
+            )
+
+            if endpoint_probability > 0:
+                node_shape = "doublecircle"
+                default_font_size = 11
+
+                if probabilities:
+                    endpoint_label = f"{endpoint_probability:.2f}"
+                else:
+                    endpoint_count = get_endpoint(
+                        state,
+                        pathway_matrix,
+                        states,
+                    )
+                    endpoint_label = str(endpoint_count)
+
+                node_label = f"{state}: {endpoint_label}"
+            else:
+                node_label = str(state)
+                node_shape = "circle"
+                default_font_size = 12
+
+        font_size = (
+            default_font_size
+            if node_fontsize is None
+            else node_fontsize
+        )
+
+        dot.node(
+            str(state),
+            label=node_label,
+            shape=node_shape,
+            fontsize=str(font_size),
+            fixedsize="true",
+            width=str(node_size),
+            height=str(node_size),
+            penwidth=str(line_width),
+        )
+
+    # Add positive transitions.
+    for source_index, source_state in enumerate(states):
+        for destination_index, destination_state in enumerate(states):
+
+            # Combine multiple self-loop labels into a single loop.
+            if source_state == destination_state:
+                self_loop_labels = []
+
+                for symbol_index, symbol in enumerate(alphabet):
+                    transition_count = pathway_matrix[
+                        symbol_index,
+                        source_index,
+                        destination_index,
+                    ]
+
+                    if transition_count <= 0:
+                        continue
+
+                    label_value = label_matrix[
+                        symbol_index,
+                        source_index,
+                        destination_index,
+                    ]
+
+                    if probabilities:
+                        self_loop_labels.append(
+                            f"{symbol}: {label_value:.2f}"
+                        )
+                    else:
+                        self_loop_labels.append(
+                            f"{symbol}: {label_value}"
+                        )
+
+                if self_loop_labels:
+                    dot.edge(
+                        str(source_state),
+                        str(destination_state),
+                        label="\n".join(self_loop_labels),
+                        arrowsize="0.35",
+                        fontsize=str(edge_fontsize),
+                        penwidth=str(line_width),
+                    )
+
+            # Keep transitions between different states as separate edges.
+            else:
+                for symbol_index, symbol in enumerate(alphabet):
+                    transition_count = pathway_matrix[
+                        symbol_index,
+                        source_index,
+                        destination_index,
+                    ]
+
+                    if transition_count <= 0:
+                        continue
+
+                    label_value = label_matrix[
+                        symbol_index,
+                        source_index,
+                        destination_index,
+                    ]
+
+                    if probabilities:
+                        edge_label = f"{symbol}: {label_value:.2f}"
+                    else:
+                        edge_label = f"{symbol}: {label_value}"
+
+                    dot.edge(
+                        str(source_state),
+                        str(destination_state),
+                        label=edge_label,
+                        arrowsize="0.35",
+                        fontsize=str(edge_fontsize),
+                        penwidth=str(line_width),
+                    )
+
+    if save:
+        dot.render(cleanup=True)
+
+    return dot
