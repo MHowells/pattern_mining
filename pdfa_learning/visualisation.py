@@ -22,7 +22,7 @@ from .state_statistics import (
 
 
 def network_visualisation(
-    pathway_matrix,
+    transition_matrix,
     states,
     alphabet,
     filename="my_graph",
@@ -44,15 +44,15 @@ def network_visualisation(
 
     Parameters
     ----------
-    pathway_matrix : np.ndarray
+    transition_matrix : np.ndarray
         Transition-count matrix with shape
         ``(n_symbols, n_states, n_states)``.
     states : list
         State identifiers corresponding to the final two dimensions of
-        ``pathway_matrix``.
+        ``transition_matrix``.
     alphabet : iterable of str
         Alphabet corresponding to the first dimension of
-        ``pathway_matrix``.
+        ``transition_matrix``.
     filename : str, default="my_graph"
         Name of the Graphviz graph and output filename stem.
     save : bool, default=False
@@ -79,28 +79,28 @@ def network_visualisation(
     Raises
     ------
     TypeError
-        If ``pathway_matrix`` is not a NumPy array or ``alphabet`` has an
+        If ``transition_matrix`` is not a NumPy array or ``alphabet`` has an
         invalid type.
     ValueError
-        If ``alphabet`` or ``pathway_matrix`` has invalid contents or
+        If ``alphabet`` or ``transition_matrix`` has invalid contents or
         dimensions.
     """
     alphabet = _validate_alphabet(alphabet)
 
     _validate_transition_matrix(
-        pathway_matrix,
+        transition_matrix,
         alphabet,
         states,
     )
 
     if probabilities:
         label_matrix = probability_transition_matrix(
-            pathway_matrix,
+            transition_matrix,
             states,
             alphabet,
         )
     else:
-        label_matrix = pathway_matrix
+        label_matrix = transition_matrix
 
     dot = graphviz.Digraph(
         name=filename,
@@ -119,7 +119,7 @@ def network_visualisation(
         else:
             endpoint_probability = get_pi_endpoint(
                 state,
-                pathway_matrix,
+                transition_matrix,
                 alphabet,
                 states,
             )
@@ -133,7 +133,7 @@ def network_visualisation(
                 else:
                     endpoint_count = get_endpoint(
                         state,
-                        pathway_matrix,
+                        transition_matrix,
                         states,
                     )
                     endpoint_label = str(endpoint_count)
@@ -170,7 +170,7 @@ def network_visualisation(
                 self_loop_labels = []
 
                 for symbol_index, symbol in enumerate(alphabet):
-                    transition_count = pathway_matrix[
+                    transition_count = transition_matrix[
                         symbol_index,
                         source_index,
                         destination_index,
@@ -207,7 +207,7 @@ def network_visualisation(
             # Keep transitions between different states as separate edges.
             else:
                 for symbol_index, symbol in enumerate(alphabet):
-                    transition_count = pathway_matrix[
+                    transition_count = transition_matrix[
                         symbol_index,
                         source_index,
                         destination_index,

@@ -70,7 +70,7 @@ import pdfa_learning as pl
 alphabet = pl.get_alphabet(sequences) 
 states = pl.get_initial_states(sequences) 
 
-pathway_matrix = pl.get_transition_matrix(
+transition_matrix = pl.get_transition_matrix(
     sequences, 
     alphabet, 
 )
@@ -89,14 +89,14 @@ state `"*"`:
 ["*", 0, 1, 2, 3, 4, 5, 6]
 ```
 
-The `pathway_matrix` is a three-dimensional NumPy array. Its first dimension 
+The `transition_matrix` is a three-dimensional NumPy array. Its first dimension 
 represents the alphabet symbol, its second dimension represents the current 
 state, and its third dimension represents the destination state.
 
 For example:
 
 ```python
-pathway_matrix[0, 1, 2]
+transition_matrix[0, 1, 2]
 ```
 
 contains the number of transitions from state `0` to state `1` using 
@@ -151,7 +151,7 @@ DFA:
 
 ```python
 learned_matrix, learned_states, tracking = pl.alergia(
-    pathway_matrix,
+    transition_matrix,
     states,
     alphabet,
     alpha=0.2,
