@@ -9,7 +9,6 @@ red and blue states under the de la Higuera procedure.
 """
 
 import numpy as np
-from scipy.stats import norm
 
 from ._validation import (
     _validate_alpha,

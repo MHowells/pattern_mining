@@ -9,7 +9,6 @@ of the public interface.
 """
 
 import numpy as np
-from scipy.stats import norm
 
 
 def _validate_sequences(sequences):

@@ -32,7 +32,7 @@ learned_matrix, learned_states, tracking = pm.alergia(
     states,
     alphabet,
     alpha=0.2,
-    method="Carrasco",
+    method="carrasco",
 )
 
 probability_matrix = pm.probability_transition_matrix(

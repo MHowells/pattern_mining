@@ -7,9 +7,6 @@ tree acceptors, and creates their initial state identifiers.
 """
 
 import numpy as np
-from scipy.stats import norm
-
-import numpy as np
 
 from ._validation import (
     _validate_alphabet,
