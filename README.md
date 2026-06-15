@@ -265,12 +265,16 @@ A minimal runnable example is available in
 [`examples/basic_usage.py`](examples/basic_usage.py).
 
 The following step-by-step notebooks are also provided:
-- [`01_basic_usage.ipynb`](examples/notebooks/01_basic_usage.ipynb) –
+- [`01_basic_usage.ipynb`](examples/nbs/01_basic_usage.ipynb) –
   Construct a PTA and learn a PDFA using ALERGIA.
-- [`02_visualising_a_pdfa.ipynb`](examples/notebooks/02_visualising_a_pdfa.ipynb) –
+- [`02_visualising_a_pdfa.ipynb`](examples/nbs/02_visualising_a_pdfa.ipynb) –
   Visualise the original prefix tree and learned automaton.
-- [`03_evaluating_a_pdfa.ipynb`](examples/notebooks/03_evaluating_a_pdfa.ipynb) –
+- [`03_evaluating_a_pdfa.ipynb`](examples/nbs/03_evaluating_a_pdfa.ipynb) –
   Evaluate a learned PDFA on observed sequences.
+
+A notebook is also provided to verify the results of the examples in the 
+literature:
+- [`04_verifying_literature.ipynb`](examples/nbs/04_verifying_literature.ipynb)
 
 ## Running tests
 
