@@ -1,3 +1,11 @@
+"""
+Construction utilities for probabilistic prefix tree acceptors.
+
+This module derives alphabets and prefix-state paths from observed
+sequences, constructs transition-count matrices for probabilistic prefix
+tree acceptors, and creates their initial state identifiers.
+"""
+
 import numpy as np
 from scipy.stats import norm
 

@@ -1,3 +1,13 @@
+"""
+State compatibility and merging operations for ALERGIA.
+
+This module implements Hoeffding-bound compatibility testing, direct and
+recursive state merging, and checks for nondeterministic transitions
+created by a merge. It also provides helper functions for selecting state
+pairs under the Carrasco and Oncina all-pairs procedure and identifying
+red and blue states under the de la Higuera procedure.
+"""
+
 import numpy as np
 from scipy.stats import norm
 

@@ -1,3 +1,12 @@
+"""
+ALERGIA learning algorithms for probabilistic deterministic finite automata.
+
+This module provides the main routine for learning a probabilistic
+deterministic finite automaton from a prefix tree acceptor. It supports 
+both the Carrasco and Oncina all pairs methodology and the de la Higuera 
+red-blue framework methodology.
+"""
+
 from ._validation import (
     _validate_alpha,
     _validate_alphabet,

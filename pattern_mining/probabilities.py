@@ -1,3 +1,14 @@
+"""
+Probability calculations and pattern queries for probabilistic automata.
+
+This module converts transition-count matrices into probability transition
+matrices and estimates probabilities associated with symbols, ordered
+patterns, exact sequences, fixed-distance events, and digrams. It also
+provides utilities for enumerating strings, calculating probabilities for
+collections of strings, and evaluating sampling-based probability
+constraints.
+"""
+
 import itertools as it
 
 import numpy as np

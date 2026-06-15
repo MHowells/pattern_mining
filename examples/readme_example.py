@@ -1,4 +1,14 @@
+"""
+Basic usage example for the pattern-mining package.
+
+This script demonstrates how to construct a prefix tree acceptor from 
+observed sequences, learn a deterministic finite automaton 
+using ALERGIA, and convert the learned transition-count matrix into a 
+probability transition matrix.
+"""
+
 import pattern_mining as pm
+
 
 sequences = [
     "0", "0", "0", "0", "0", "0", "0", "0", 

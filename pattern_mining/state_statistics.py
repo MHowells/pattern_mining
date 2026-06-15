@@ -1,3 +1,13 @@
+"""
+State-level count and probability statistics for probabilistic automata.
+
+This module provides the fundamental state statistics used during ALERGIA
+learning. These include the number of sequences entering and terminating
+at a state, symbol-specific transition probabilities, and the probability
+that a sequence terminates at a state.
+"""
+
+
 def get_n(q, transition_matrix, states):
     """
     Return the number of sequences entering a state.

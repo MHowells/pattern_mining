@@ -1,3 +1,13 @@
+"""
+Graphviz visualisation utilities for probabilistic automata.
+
+This module renders an automaton as a directed Graphviz network using its
+transition matrix, state identifiers, and alphabet. Nodes and transitions
+may be labelled using either observed transition counts or estimated
+probabilities, and the resulting graph can be written to a range of
+Graphviz-supported output formats.
+"""
+
 import graphviz
 
 from ._validation import (

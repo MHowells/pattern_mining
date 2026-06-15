@@ -1,3 +1,13 @@
+"""
+Internal validation utilities for the pattern-mining package.
+
+This module centralises validation of observed sequences, alphabets,
+transition-count matrices, ALERGIA significance parameters, and state
+identifiers used during state merging. Its functions are private and are
+intended for use by other modules within the package rather than as part
+of the public interface.
+"""
+
 import numpy as np
 from scipy.stats import norm
 
