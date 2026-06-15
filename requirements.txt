@@ -3,3 +3,4 @@ graphviz==0.16
 pytest==8.4.2
 coverage==7.10.7
 scipy==1.13.1
+pandas==2.3.3
