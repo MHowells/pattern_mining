@@ -14,6 +14,20 @@ ALERGIA algorithm by Carrasco and Oncina (1994) [[1]](#1). The second is the
 outlined in de la Higuera (2010) [[2]](#2). The default method is `carrasco`, although 
 the `de_la_higuera` approach is cheaper to compute.
 
+## Contents
+
+- [Installing Dependencies](#installing-dependencies)
+- [Input Data](#input-data)
+- [Running ALERGIA](#running-alergia)
+  - [Choosing the Alpha Parameter](#choosing-the-alpha-parameter)
+  - [Controlling Print Output](#controlling-print-output)
+- [Probabilistic Deterministic Finite Automata](#probabilistic-deterministic-finite-automata-pdfa)
+- [Examples and Tutorials](#examples-and-tutorials)
+- [Running Tests](#running-tests)
+- [Author ORCID](#author-orcid)
+- [Funding](#funding)
+- [References](#references)
+
 ## Installing Dependencies
 
 The codebase has been tested with Python 3.9.22, with the requirements 
@@ -244,6 +258,19 @@ sequence_probability = pl.probability_estimate_of_exact_sequence(
     alphabet=alphabet,
 )
 ```
+
+## Examples and tutorials
+
+A minimal runnable example is available in
+[`examples/basic_usage.py`](examples/basic_usage.py).
+
+The following step-by-step notebooks are also provided:
+- [`01_basic_usage.ipynb`](examples/notebooks/01_basic_usage.ipynb) –
+  Construct a PTA and learn a PDFA using ALERGIA.
+- [`02_visualising_a_pdfa.ipynb`](examples/notebooks/02_visualising_a_pdfa.ipynb) –
+  Visualise the original prefix tree and learned automaton.
+- [`03_evaluating_a_pdfa.ipynb`](examples/notebooks/03_evaluating_a_pdfa.ipynb) –
+  Evaluate a learned PDFA on observed sequences.
 
 ## Running tests
 
