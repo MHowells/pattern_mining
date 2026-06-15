@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdfa-learning"
+version = "0.1.0"
+description = "Tools for learning probabilistic deterministic finite automata using ALERGIA."
+readme = "README.md"
+authors = [
+    { name = "Matthew Howells" }
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pdfa_learning*"]
