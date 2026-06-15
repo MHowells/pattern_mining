@@ -3,6 +3,13 @@ Functions for constructing probabilistic prefix-tree acceptors and
 learning probabilistic deterministic finite automata using ALERGIA.
 """
 
+from ._validation import (
+    _validate_alpha,
+    _validate_alphabet,
+    _validate_sequences,
+    _validate_states_for_merging,
+    _validate_transition_matrix,
+)
 
 from .ppta import (
     get_alphabet,
