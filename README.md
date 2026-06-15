@@ -9,9 +9,9 @@ visualising the resulting automata.
 
 There are two approaches to the ALERGIA algorithm implemented in this codebase. 
 The first is the `carrasco` approach, found in the original paper for the 
-ALERGIA algorithm by Carrasco and Oncina (1994)[[1]](#1). The second is the 
+ALERGIA algorithm by Carrasco and Oncina (1994) [[1]](#1). The second is the 
 `de_la_higuera` approach, that uses a red-blue framework to solve the algorithm, as 
-outlined in Higuera (2010)[[2]](#2). The default method is `carrasco`, although 
+outlined in de la Higuera (2010) [[2]](#2). The default method is `carrasco`, although 
 the `de_la_higuera` approach is cheaper to compute.
 
 ## Installing Dependencies
