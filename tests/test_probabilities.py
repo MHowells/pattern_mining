@@ -1,16 +1,16 @@
 import importlib
 
 import numpy as np
-import pattern_mining as pm
+import pdfa_learning as pl
 import pytest
 
 probabilities_module = importlib.import_module(
-    "pattern_mining.probabilities"
+    "pdfa_learning.probabilities"
 )
 
 
 def test_probability_transition_matrix_simple_example(simple_pta):
-    obtained_matrix = pm.probability_transition_matrix(
+    obtained_matrix = pl.probability_transition_matrix(
         simple_pta.final_transition_matrix, simple_pta.final_states, simple_pta.alphabet
     )
     expected_matrix = np.array(
@@ -39,7 +39,7 @@ def test_probability_transition_matrix_simple_example(simple_pta):
 
 
 def test_probability_transition_matrix_arnolds_example(arnolds_example):
-    obtained_matrix = pm.probability_transition_matrix(
+    obtained_matrix = pl.probability_transition_matrix(
         arnolds_example.final_transition_matrix,
         arnolds_example.final_states,
         arnolds_example.alphabet,
@@ -67,7 +67,7 @@ def test_probability_transition_matrix_arnolds_example(arnolds_example):
 
 
 def test_probability_estimate_of_symbol(jacquemont_example):
-    obtained_vector = pm.probability_estimate_of_symbol(
+    obtained_vector = pl.probability_estimate_of_symbol(
         jacquemont_example.probability_matrix, "c", jacquemont_example.alphabet
     )
     expected_vector = np.array([0.47068936, 0.47068936, 0.42719615, 0.42719615])
@@ -75,7 +75,7 @@ def test_probability_estimate_of_symbol(jacquemont_example):
 
 
 def test_probability_estimate_of_pattern(jacquemont_example):
-    obtained_vector = pm.probability_estimate_of_pattern(
+    obtained_vector = pl.probability_estimate_of_pattern(
         jacquemont_example.probability_matrix, "cc", jacquemont_example.alphabet
     )
     expected_vector = np.array([0.21552208, 0.21552208, 0.1861079, 0.1861079])
@@ -87,7 +87,7 @@ def test_probability_estimate_of_exact_sequence_returns_zero_when_first_symbol_i
 
     p_mat = np.zeros((1, 3, 3))
 
-    probability = pm.probability_estimate_of_exact_sequence(
+    probability = pl.probability_estimate_of_exact_sequence(
         p_mat,
         sequence="A",
         alphabet=alphabet,
@@ -103,7 +103,7 @@ def test_probability_estimate_of_exact_sequence_returns_zero_when_intermediate_s
 
     p_mat[0, 1, 2] = 1.0
 
-    probability = pm.probability_estimate_of_exact_sequence(
+    probability = pl.probability_estimate_of_exact_sequence(
         p_mat,
         sequence="ABC",
         alphabet=alphabet,
@@ -113,7 +113,7 @@ def test_probability_estimate_of_exact_sequence_returns_zero_when_intermediate_s
 
 
 def test_probability_estimate_of_exact_sequence(arnolds_example):
-    obtained_probability = pm.probability_estimate_of_exact_sequence(
+    obtained_probability = pl.probability_estimate_of_exact_sequence(
         arnolds_example.final_p_matrix_point9, "ABC", arnolds_example.alphabet
     )
     expected_probability = 0.0016163599573759896
@@ -128,7 +128,7 @@ def test_probability_sequence_contains_letter_at_distance_theta_rejects_non_inte
         TypeError,
         match="theta must be an integer.",
     ):
-        pm.probability_sequence_contains_letter_at_distance_theta(
+        pl.probability_sequence_contains_letter_at_distance_theta(
             p_mat,
             letter="A",
             theta=1.5,
@@ -144,7 +144,7 @@ def test_probability_sequence_contains_letter_at_distance_theta_rejects_negative
         ValueError,
         match="theta must be non-negative.",
     ):
-        pm.probability_sequence_contains_letter_at_distance_theta(
+        pl.probability_sequence_contains_letter_at_distance_theta(
             p_mat,
             letter="A",
             theta=-1,
@@ -153,7 +153,7 @@ def test_probability_sequence_contains_letter_at_distance_theta_rejects_negative
 
 
 def test_probability_sequence_contains_letter_at_distance_theta(jacquemont_example):
-    obtained_vector = pm.probability_sequence_contains_letter_at_distance_theta(
+    obtained_vector = pl.probability_sequence_contains_letter_at_distance_theta(
         jacquemont_example.probability_matrix, "a", 2, jacquemont_example.alphabet
     )
     expected_vector = np.array([0.201467, 0.3629, 0.2146, 0.137696])
@@ -165,7 +165,7 @@ def test_pattern_at_distance_raises_for_single_symbol(jacquemont_example):
         ValueError,
         match="pattern must contain at least two symbols",
     ):
-        pm.probability_to_encounter_a_pattern_at_a_distance_theta(
+        pl.probability_to_encounter_a_pattern_at_a_distance_theta(
             jacquemont_example.probability_matrix,
             "A",
             1,
@@ -175,7 +175,7 @@ def test_pattern_at_distance_raises_for_single_symbol(jacquemont_example):
 
 def test_pattern_at_distance_raises_for_non_integer_theta(jacquemont_example):
     with pytest.raises(TypeError, match="theta must be an integer"):
-        pm.probability_to_encounter_a_pattern_at_a_distance_theta(
+        pl.probability_to_encounter_a_pattern_at_a_distance_theta(
             jacquemont_example.probability_matrix,
             "AB",
             1.5,
@@ -185,7 +185,7 @@ def test_pattern_at_distance_raises_for_non_integer_theta(jacquemont_example):
 
 def test_pattern_at_distance_raises_for_negative_theta(jacquemont_example):
     with pytest.raises(ValueError, match="theta must be non-negative"):
-        pm.probability_to_encounter_a_pattern_at_a_distance_theta(
+        pl.probability_to_encounter_a_pattern_at_a_distance_theta(
             jacquemont_example.probability_matrix,
             "AB",
             -1,
@@ -194,13 +194,13 @@ def test_pattern_at_distance_raises_for_negative_theta(jacquemont_example):
 
 
 def test_probability_to_encounter_a_pattern_at_a_distance_theta(jacquemont_example):
-    obtained_vector = pm.probability_to_encounter_a_pattern_at_a_distance_theta(
+    obtained_vector = pl.probability_to_encounter_a_pattern_at_a_distance_theta(
         jacquemont_example.probability_matrix, "ab", 2, jacquemont_example.alphabet
     )
     expected_vector = np.array([0.165817, 0.2079, 0.1346, 0.116896])
     assert np.allclose(obtained_vector, expected_vector)
 
-    obtained_vector = pm.probability_to_encounter_a_pattern_at_a_distance_theta(
+    obtained_vector = pl.probability_to_encounter_a_pattern_at_a_distance_theta(
         jacquemont_example.probability_matrix, "abc", 2, jacquemont_example.alphabet
     )
     expected_vector = np.array([0.0773778, 0.0949411, 0.06185016, 0.0546305])
@@ -214,7 +214,7 @@ def test_proportion_constraint_raises_for_invalid_p_value(
         ValueError,
         match="p_value must be either 'pattern' or 'sequence'",
     ):
-        pm.proportion_constraint(
+        pl.proportion_constraint(
             jacquemont_example.probability_matrix,
             "AB",
             jacquemont_example.alphabet,
@@ -231,7 +231,7 @@ def test_proportion_constraint_raises_for_non_numeric_alpha(
         TypeError,
         match="alpha must be numeric",
     ):
-        pm.proportion_constraint(
+        pl.proportion_constraint(
             jacquemont_example.probability_matrix,
             "AB",
             jacquemont_example.alphabet,
@@ -257,7 +257,7 @@ def test_proportion_constraint_raises_for_invalid_alpha(
         ValueError,
         match="alpha must be in the range",
     ):
-        pm.proportion_constraint(
+        pl.proportion_constraint(
             jacquemont_example.probability_matrix,
             "AB",
             jacquemont_example.alphabet,
@@ -274,7 +274,7 @@ def test_proportion_constraint_raises_for_empty_sequences(
         ValueError,
         match="sequences must contain at least one observed sequence",
     ):
-        pm.proportion_constraint(
+        pl.proportion_constraint(
             jacquemont_example.probability_matrix,
             "AB",
             jacquemont_example.alphabet,
@@ -306,7 +306,7 @@ def test_proportion_constraint_raises_for_probability_outside_range(
         ValueError,
         match="estimated probability must be between 0 and 1",
     ):
-        pm.proportion_constraint(
+        pl.proportion_constraint(
             jacquemont_example.probability_matrix,
             "AB",
             jacquemont_example.alphabet,
@@ -318,7 +318,7 @@ def test_proportion_constraint_raises_for_probability_outside_range(
 
 def test_proportion_constraint_jacquemont_example(jacquemont_example):
     assert (
-        pm.proportion_constraint(
+        pl.proportion_constraint(
             jacquemont_example.probability_matrix,
             "cc",
             jacquemont_example.alphabet,
@@ -329,7 +329,7 @@ def test_proportion_constraint_jacquemont_example(jacquemont_example):
     )
 
     assert (
-        pm.proportion_constraint(
+        pl.proportion_constraint(
             jacquemont_example.probability_matrix,
             "bcc",
             jacquemont_example.alphabet,
@@ -342,7 +342,7 @@ def test_proportion_constraint_jacquemont_example(jacquemont_example):
 
 def test_proportion_constraint_arnolds_example(arnolds_example):
     assert (
-        pm.proportion_constraint(
+        pl.proportion_constraint(
             arnolds_example.final_p_matrix_point9,
             "AAC",
             arnolds_example.alphabet,
@@ -354,7 +354,7 @@ def test_proportion_constraint_arnolds_example(arnolds_example):
     )
 
     assert (
-        pm.proportion_constraint(
+        pl.proportion_constraint(
             arnolds_example.final_p_matrix_point9,
             "ABC",
             arnolds_example.alphabet,
@@ -382,7 +382,7 @@ def test_probability_sequence_contains_digram_raises_for_invalid_length(
         ValueError,
         match="digram must contain exactly two symbols",
     ):
-        pm.probability_sequence_contains_digram(
+        pl.probability_sequence_contains_digram(
             jacquemont_example.probability_matrix,
             invalid_digram,
             jacquemont_example.alphabet,
@@ -390,7 +390,7 @@ def test_probability_sequence_contains_digram_raises_for_invalid_length(
 
 
 def test_probability_sequence_contains_digram(jacquemont_example):
-    obtained_vector = pm.probability_sequence_contains_digram(
+    obtained_vector = pl.probability_sequence_contains_digram(
         jacquemont_example.probability_matrix, "ab", jacquemont_example.alphabet
     )
     expected_vector = np.array([0.2987013, 0, 0.29800281, 0.28378378])
@@ -402,7 +402,7 @@ def test_string_enumerator_raises_for_non_integer_n():
         TypeError,
         match="n must be an integer",
     ):
-        pm.string_enumerator(
+        pl.string_enumerator(
             ["A", "B"],
             1.5,
         )
@@ -422,14 +422,14 @@ def test_string_enumerator_raises_for_n_less_than_one(
         ValueError,
         match="n must be greater than 0",
     ):
-        pm.string_enumerator(
+        pl.string_enumerator(
             ["A", "B"],
             invalid_n,
         )
 
 
 def test_string_enumerator(jacquemont_example):
-    obtained_strings = pm.string_enumerator(jacquemont_example.alphabet, 2)
+    obtained_strings = pl.string_enumerator(jacquemont_example.alphabet, 2)
     expected_strings = [
         "a",
         "b",
@@ -448,7 +448,7 @@ def test_string_enumerator(jacquemont_example):
 
 
 def test_string_probabilities(arnolds_example):
-    obtained_probabilities = pm.string_probabilities(
+    obtained_probabilities = pl.string_probabilities(
         arnolds_example.final_p_matrix_point9, arnolds_example.alphabet, ["A", "B", "C"]
     )
     expected_probabilities = [

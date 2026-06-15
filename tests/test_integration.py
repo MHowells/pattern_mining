@@ -1,7 +1,7 @@
-import pattern_mining as pm
+import pdfa_learning as pl
 
 
-def test_pattern_mining_pipeline_returns_valid_pdfa_carrasco():
+def test_pdfa_learning_pipeline_returns_valid_pdfa_carrasco():
     sequences = [
         "A",
         "A",
@@ -10,16 +10,16 @@ def test_pattern_mining_pipeline_returns_valid_pdfa_carrasco():
         "B",
     ]
 
-    alphabet = pm.get_alphabet(sequences)
+    alphabet = pl.get_alphabet(sequences)
 
-    transition_matrix = pm.get_transition_matrix(
+    transition_matrix = pl.get_transition_matrix(
         sequences,
         alphabet,
     )
 
-    states = pm.get_initial_states(sequences)
+    states = pl.get_initial_states(sequences)
 
-    learned_matrix, learned_states, tracking = pm.alergia(
+    learned_matrix, learned_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -27,7 +27,7 @@ def test_pattern_mining_pipeline_returns_valid_pdfa_carrasco():
         method="carrasco",
     )
 
-    probability_matrix = pm.probability_transition_matrix(
+    probability_matrix = pl.probability_transition_matrix(
         learned_matrix,
         learned_states,
         alphabet,
@@ -42,7 +42,7 @@ def test_pattern_mining_pipeline_returns_valid_pdfa_carrasco():
     assert probability_matrix.shape == learned_matrix.shape
 
     assert (
-        pm.check_is_deterministic(
+        pl.check_is_deterministic(
             learned_matrix,
             learned_states,
             alphabet,
@@ -54,7 +54,7 @@ def test_pattern_mining_pipeline_returns_valid_pdfa_carrasco():
     assert tracking["final_states"] == len(learned_states)
 
 
-def test_pattern_mining_pipeline_returns_valid_pdfa_higuera():
+def test_pdfa_learning_pipeline_returns_valid_pdfa_higuera():
     sequences = [
         "A",
         "A",
@@ -63,16 +63,16 @@ def test_pattern_mining_pipeline_returns_valid_pdfa_higuera():
         "B",
     ]
 
-    alphabet = pm.get_alphabet(sequences)
+    alphabet = pl.get_alphabet(sequences)
 
-    transition_matrix = pm.get_transition_matrix(
+    transition_matrix = pl.get_transition_matrix(
         sequences,
         alphabet,
     )
 
-    states = pm.get_initial_states(sequences)
+    states = pl.get_initial_states(sequences)
 
-    learned_matrix, learned_states, tracking = pm.alergia(
+    learned_matrix, learned_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -80,7 +80,7 @@ def test_pattern_mining_pipeline_returns_valid_pdfa_higuera():
         method="de_la_higuera",
     )
 
-    probability_matrix = pm.probability_transition_matrix(
+    probability_matrix = pl.probability_transition_matrix(
         learned_matrix,
         learned_states,
         alphabet,
@@ -95,7 +95,7 @@ def test_pattern_mining_pipeline_returns_valid_pdfa_higuera():
     assert probability_matrix.shape == learned_matrix.shape
 
     assert (
-        pm.check_is_deterministic(
+        pl.check_is_deterministic(
             learned_matrix,
             learned_states,
             alphabet,

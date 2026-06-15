@@ -1,18 +1,18 @@
 import importlib
 
 import numpy as np
-import pattern_mining as pm
+import pdfa_learning as pl
 import pytest
 
 state_merging_module = importlib.import_module(
-    "pattern_mining.state_merging",
+    "pdfa_learning.state_merging",
 )
 
 
 def test_validate_states_for_merging_accepts_valid_states():
     states = ["*", 0, 1, 2]
 
-    pm._validate_states_for_merging(
+    pl._validate_states_for_merging(
         0,
         1,
         states,
@@ -26,7 +26,7 @@ def test_validate_states_for_merging_raises_for_invalid_q1():
         ValueError,
         match="q1 must be a valid state",
     ):
-        pm._validate_states_for_merging(
+        pl._validate_states_for_merging(
             3,
             1,
             states,
@@ -40,7 +40,7 @@ def test_validate_states_for_merging_raises_for_invalid_q2():
         ValueError,
         match="q2 must be a valid state",
     ):
-        pm._validate_states_for_merging(
+        pl._validate_states_for_merging(
             0,
             3,
             states,
@@ -54,7 +54,7 @@ def test_validate_states_for_merging_raises_for_same_state():
         ValueError,
         match="q1 and q2 must refer to different states",
     ):
-        pm._validate_states_for_merging(
+        pl._validate_states_for_merging(
             1,
             1,
             states,
@@ -78,7 +78,7 @@ def test_validate_states_for_merging_raises_for_initial_state(
         ValueError,
         match="artificial initial state",
     ):
-        pm._validate_states_for_merging(
+        pl._validate_states_for_merging(
             q1,
             q2,
             states,
@@ -101,7 +101,7 @@ def test_validate_alpha_raises_for_non_numeric_values(
         TypeError,
         match="alpha must be numeric",
     ):
-        pm._validate_alpha(invalid_alpha)
+        pl._validate_alpha(invalid_alpha)
 
 
 @pytest.mark.parametrize(
@@ -121,37 +121,37 @@ def test_validate_alpha_raises_for_values_outside_range(
         ValueError,
         match=r"alpha must be in the range \(0, 2\]",
     ):
-        pm._validate_alpha(invalid_alpha)
+        pl._validate_alpha(invalid_alpha)
 
 
 def test_hoeffding_bound_simple_example(simple_pta):
     assert (
-        pm.hoeffding_bound(
+        pl.hoeffding_bound(
             0, 3, 0.2, simple_pta.transition_matrix, simple_pta.alphabet, simple_pta.states
         )
         == False
     )
     assert (
-        pm.hoeffding_bound(
+        pl.hoeffding_bound(
             1, 5, 0.2, simple_pta.transition_matrix, simple_pta.alphabet, simple_pta.states
         )
         == True
     )
     assert (
-        pm.hoeffding_bound(
+        pl.hoeffding_bound(
             2, 0, 0.2, simple_pta.transition_matrix, simple_pta.alphabet, simple_pta.states
         )
         == True
     )
     assert (
-        pm.hoeffding_bound(
+        pl.hoeffding_bound(
             5, 0, 0.2, simple_pta.transition_matrix, simple_pta.alphabet, simple_pta.states
         )
         == False
     )
 
     assert (
-        pm.hoeffding_bound(
+        pl.hoeffding_bound(
             "B",
             "F",
             0.2,
@@ -162,7 +162,7 @@ def test_hoeffding_bound_simple_example(simple_pta):
         == True
     )
     assert (
-        pm.hoeffding_bound(
+        pl.hoeffding_bound(
             "D",
             "A",
             0.2,
@@ -176,7 +176,7 @@ def test_hoeffding_bound_simple_example(simple_pta):
 
 def test_hoeffding_bound_arnolds_example(arnolds_example):
     assert (
-        pm.hoeffding_bound(
+        pl.hoeffding_bound(
             0,
             1,
             0.2,
@@ -187,7 +187,7 @@ def test_hoeffding_bound_arnolds_example(arnolds_example):
         == True
     )
     assert (
-        pm.hoeffding_bound(
+        pl.hoeffding_bound(
             1,
             2,
             0.2,
@@ -198,7 +198,7 @@ def test_hoeffding_bound_arnolds_example(arnolds_example):
         == True
     )
     assert (
-        pm.hoeffding_bound(
+        pl.hoeffding_bound(
             0,
             1,
             0.9,
@@ -209,7 +209,7 @@ def test_hoeffding_bound_arnolds_example(arnolds_example):
         == False
     )
     assert (
-        pm.hoeffding_bound(
+        pl.hoeffding_bound(
             1,
             3,
             0.9,
@@ -222,7 +222,7 @@ def test_hoeffding_bound_arnolds_example(arnolds_example):
 
 
 def test_merge_two_states_simple_example(simple_pta):
-    obtained_transition_matrix, obtained_states = pm.merge_two_states(
+    obtained_transition_matrix, obtained_states = pl.merge_two_states(
         0, 1, simple_pta.transition_matrix, simple_pta.states, simple_pta.alphabet
     )
     expected_transition_matrix = np.array(
@@ -260,7 +260,7 @@ def test_merge_two_states_simple_example(simple_pta):
     assert np.allclose(obtained_transition_matrix, expected_transition_matrix)
     assert obtained_states == expected_states
 
-    obtained_transition_matrix, obtained_states = pm.merge_two_states(
+    obtained_transition_matrix, obtained_states = pl.merge_two_states(
         2, 6, simple_pta.transition_matrix, simple_pta.states, simple_pta.alphabet
     )
     expected_transition_matrix = np.array(
@@ -300,7 +300,7 @@ def test_merge_two_states_simple_example(simple_pta):
 
 
 def test_merge_two_states_arnolds_example(arnolds_example):
-    obtained_transition_matrix, obtained_states = pm.merge_two_states(
+    obtained_transition_matrix, obtained_states = pl.merge_two_states(
         0,
         1,
         arnolds_example.transition_matrix,
@@ -365,34 +365,34 @@ def test_merge_two_states_arnolds_example(arnolds_example):
 
 
 def test_check_is_deterministic_simple_example(simple_pta):
-    obtained_nondeterministic_pairs = pm.check_is_deterministic(
+    obtained_nondeterministic_pairs = pl.check_is_deterministic(
         simple_pta.transition_matrix, simple_pta.states, simple_pta.alphabet
     )
     expected_nondeterministic_pairs = []
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
-    obtained_transition_matrix, obtained_states = pm.merge_two_states(
+    obtained_transition_matrix, obtained_states = pl.merge_two_states(
         0, 1, simple_pta.transition_matrix, simple_pta.states, simple_pta.alphabet
     )
-    obtained_nondeterministic_pairs = pm.check_is_deterministic(
+    obtained_nondeterministic_pairs = pl.check_is_deterministic(
         obtained_transition_matrix, obtained_states, simple_pta.alphabet
     )
     expected_nondeterministic_pairs = [(2, 3)]
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
-    obtained_transition_matrix, obtained_states = pm.merge_two_states(
+    obtained_transition_matrix, obtained_states = pl.merge_two_states(
         2, 6, simple_pta.transition_matrix, simple_pta.states, simple_pta.alphabet
     )
-    obtained_nondeterministic_pairs = pm.check_is_deterministic(
+    obtained_nondeterministic_pairs = pl.check_is_deterministic(
         obtained_transition_matrix, obtained_states, simple_pta.alphabet
     )
     expected_nondeterministic_pairs = []
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
-    obtained_transition_matrix, obtained_states = pm.merge_two_states(
+    obtained_transition_matrix, obtained_states = pl.merge_two_states(
         0, 2, simple_pta.transition_matrix, simple_pta.states, simple_pta.alphabet
     )
-    obtained_nondeterministic_pairs = pm.check_is_deterministic(
+    obtained_nondeterministic_pairs = pl.check_is_deterministic(
         obtained_transition_matrix, obtained_states, simple_pta.alphabet
     )
     expected_nondeterministic_pairs = [(1, 4), (0, 5)]
@@ -400,33 +400,33 @@ def test_check_is_deterministic_simple_example(simple_pta):
 
 
 def test_check_is_deterministic_arnolds_example(arnolds_example):
-    obtained_nondeterministic_pairs = pm.check_is_deterministic(
+    obtained_nondeterministic_pairs = pl.check_is_deterministic(
         arnolds_example.transition_matrix, arnolds_example.states, arnolds_example.alphabet
     )
     expected_nondeterministic_pairs = []
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
-    obtained_transition_matrix, obtained_states = pm.merge_two_states(
+    obtained_transition_matrix, obtained_states = pl.merge_two_states(
         0,
         1,
         arnolds_example.transition_matrix,
         arnolds_example.states,
         arnolds_example.alphabet,
     )
-    obtained_nondeterministic_pairs = pm.check_is_deterministic(
+    obtained_nondeterministic_pairs = pl.check_is_deterministic(
         obtained_transition_matrix, obtained_states, arnolds_example.alphabet
     )
     expected_nondeterministic_pairs = [(2, 3)]
     assert obtained_nondeterministic_pairs == expected_nondeterministic_pairs
 
-    obtained_transition_matrix, obtained_states = pm.merge_two_states(
+    obtained_transition_matrix, obtained_states = pl.merge_two_states(
         0,
         3,
         arnolds_example.transition_matrix,
         arnolds_example.states,
         arnolds_example.alphabet,
     )
-    obtained_nondeterministic_pairs = pm.check_is_deterministic(
+    obtained_nondeterministic_pairs = pl.check_is_deterministic(
         obtained_transition_matrix, obtained_states, arnolds_example.alphabet
     )
     expected_nondeterministic_pairs = [(1, 5), (2, 6)]
@@ -468,7 +468,7 @@ def test_check_is_deterministic_with_multiple_pairs_simple_example(simple_pta):
             ],
         ]
     )
-    obtained_nondeterministic_pairs = pm.check_is_deterministic(
+    obtained_nondeterministic_pairs = pl.check_is_deterministic(
         wrong_transition_matrix, simple_pta.states, simple_pta.alphabet
     )
     expected_nondeterministic_pairs = [(1, 6), (1, 4), (2, 4)]
@@ -477,7 +477,7 @@ def test_check_is_deterministic_with_multiple_pairs_simple_example(simple_pta):
 
 def test_recursive_merge_raises_for_invalid_output(simple_pta):
     with pytest.raises(ValueError, match="output_level must be"):
-        pm.recursive_merge_two_states(
+        pl.recursive_merge_two_states(
             1,
             2,
             simple_pta.transition_matrix,
@@ -490,7 +490,7 @@ def test_recursive_merge_raises_for_invalid_output(simple_pta):
 
 def test_recursive_merge_raises_for_invalid_method(simple_pta):
     with pytest.raises(ValueError, match="method must be"):
-        pm.recursive_merge_two_states(
+        pl.recursive_merge_two_states(
             1,
             2,
             simple_pta.transition_matrix,
@@ -506,7 +506,7 @@ def test_recursive_merge_higuera_requires_red_states(simple_pta):
         ValueError,
         match="red_states must be provided",
     ):
-        pm.recursive_merge_two_states(
+        pl.recursive_merge_two_states(
             1,
             2,
             simple_pta.transition_matrix,
@@ -534,7 +534,7 @@ def test_recursive_merge_two_states_prints_nondeterministic_pairs(
         lambda *args, **kwargs: False,
     )
 
-    pm._recursive_merge_two_states(
+    pl._recursive_merge_two_states(
         q1=1,
         q2=2,
         transition_matrix=transition_matrix,
@@ -563,7 +563,7 @@ def test_recursive_merge_two_states_prints_successful_merge(capsys):
     transition_matrix[0, 1, 3] = 5
     transition_matrix[0, 2, 4] = 5
 
-    new_matrix, new_states, recursive_merge = pm._recursive_merge_two_states(
+    new_matrix, new_states, recursive_merge = pl._recursive_merge_two_states(
         0,
         1,
         transition_matrix,
@@ -600,7 +600,7 @@ def test_recursive_merge_two_states_prints_new_nondeterministic_pairs(
     transition_matrix[0, 3, 5] = 5
     transition_matrix[0, 4, 6] = 5
 
-    new_matrix, new_states, recursive_merge = pm._recursive_merge_two_states(
+    new_matrix, new_states, recursive_merge = pl._recursive_merge_two_states(
         0,
         1,
         transition_matrix,
@@ -640,7 +640,7 @@ def test_recursive_merge_two_states_higuera_prints_nondeterministic_pairs(
         new_states,
         recursive_merge,
         new_red_states,
-    ) = pm._recursive_merge_two_states(
+    ) = pl._recursive_merge_two_states(
         0,
         1,
         transition_matrix,
@@ -686,7 +686,7 @@ def test_recursive_merge_two_states_keeps_red_states_unique():
         new_states,
         recursive_merge,
         new_red_states,
-    ) = pm._recursive_merge_two_states(
+    ) = pl._recursive_merge_two_states(
         0,
         1,
         transition_matrix,
@@ -724,7 +724,7 @@ def test_recursive_merge_two_states_higuera_prints_new_nondeterministic_pairs(
         new_states,
         recursive_merge,
         new_red_states,
-    ) = pm._recursive_merge_two_states(
+    ) = pl._recursive_merge_two_states(
         0,
         1,
         transition_matrix,
@@ -788,7 +788,7 @@ def test_recursive_merge_two_states_restores_initial_input(
         obtained_states,
         obtained_recursive_merge,
         obtained_red_states,
-    ) = pm.recursive_merge_two_states(
+    ) = pl.recursive_merge_two_states(
         0,
         1,
         transition_matrix,
@@ -813,7 +813,7 @@ def test_recursive_merge_two_states_simple_example(simple_pta):
         obtained_matrix,
         obtained_states,
         obtained_recursive_merge,
-    ) = pm.recursive_merge_two_states(
+    ) = pl.recursive_merge_two_states(
         1, 2, simple_pta.transition_matrix, simple_pta.states, 0.2, simple_pta.alphabet
     )
     expected_matrix = np.array(
@@ -856,7 +856,7 @@ def test_recursive_merge_two_states_arnolds_example(arnolds_example):
         obtained_matrix,
         obtained_states,
         obtained_recursive_merge,
-    ) = pm.recursive_merge_two_states(
+    ) = pl.recursive_merge_two_states(
         0,
         1,
         arnolds_example.transition_matrix,
@@ -914,7 +914,7 @@ def test_recursive_merge_two_states_arnolds_example(arnolds_example):
         obtained_matrix,
         obtained_states,
         obtained_recursive_merge,
-    ) = pm.recursive_merge_two_states(
+    ) = pl.recursive_merge_two_states(
         0,
         3,
         arnolds_example.transition_matrix,
@@ -933,7 +933,7 @@ def test_recursive_merge_two_states_with_red_states_simple_example(simple_pta):
         obtained_states,
         obtained_recursive_merge,
         red_states,
-    ) = pm.recursive_merge_two_states(
+    ) = pl.recursive_merge_two_states(
         1,
         2,
         simple_pta.transition_matrix,
@@ -985,7 +985,7 @@ def test_recursive_merge_two_states_with_red_states_arnolds_example(arnolds_exam
         obtained_states,
         obtained_recursive_merge,
         red_states,
-    ) = pm.recursive_merge_two_states(
+    ) = pl.recursive_merge_two_states(
         0,
         1,
         arnolds_example.transition_matrix,
@@ -1051,7 +1051,7 @@ def test_recursive_merge_two_states_with_red_states_arnolds_example_failure(
         obtained_states,
         obtained_recursive_merge,
         red_states,
-    ) = pm.recursive_merge_two_states(
+    ) = pl.recursive_merge_two_states(
         0,
         3,
         arnolds_example.transition_matrix,
@@ -1109,7 +1109,7 @@ def test_recursive_merge_two_states_with_red_states_arnolds_example_merge_red_st
         obtained_states,
         obtained_recursive_merge,
         red_states,
-    ) = pm.recursive_merge_two_states(
+    ) = pl.recursive_merge_two_states(
         1,
         3,
         arnolds_example.transition_matrix_after_merges,

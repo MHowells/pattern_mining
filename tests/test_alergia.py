@@ -1,16 +1,16 @@
 import importlib
 
 import numpy as np
-import pattern_mining as pm
+import pdfa_learning as pl
 import pytest
 
 alergia_module = importlib.import_module(
-    "pattern_mining.alergia"
+    "pdfa_learning.alergia"
 )
 
 
 def test_get_blue_states_simple_example(simple_pta):
-    obtained_blue_states = pm.get_blue_states(
+    obtained_blue_states = pl.get_blue_states(
         simple_pta.transition_matrix, simple_pta.red_states, simple_pta.states
     )
     expected_blue_states = [1, 2]
@@ -18,7 +18,7 @@ def test_get_blue_states_simple_example(simple_pta):
 
 
 def test_get_blue_states_arnolds_example(arnolds_example):
-    obtained_blue_states = pm.get_blue_states(
+    obtained_blue_states = pl.get_blue_states(
         arnolds_example.transition_matrix,
         arnolds_example.red_states,
         arnolds_example.states,
@@ -28,7 +28,7 @@ def test_get_blue_states_arnolds_example(arnolds_example):
 
 
 def test_get_pairs_to_check_simple_example(simple_pta):
-    obtained_pairs = pm.get_pairs_to_check(simple_pta.states)
+    obtained_pairs = pl.get_pairs_to_check(simple_pta.states)
     expected_pairs = [
         (1, 0),
         (2, 0),
@@ -56,7 +56,7 @@ def test_get_pairs_to_check_simple_example(simple_pta):
 
 
 def test_get_pairs_to_check_arnolds_example(arnolds_example):
-    obtained_pairs = pm.get_pairs_to_check(arnolds_example.states)
+    obtained_pairs = pl.get_pairs_to_check(arnolds_example.states)
     expected_pairs = [
         (1, 0),
         (2, 0),
@@ -158,7 +158,7 @@ def test_alergia_raises_for_invalid_output(simple_pta):
         ValueError,
         match="output_level must be",
     ):
-        pm.alergia(
+        pl.alergia(
             simple_pta.transition_matrix,
             simple_pta.states,
             simple_pta.alphabet,
@@ -172,7 +172,7 @@ def test_alergia_raises_for_invalid_method(simple_pta):
         ValueError,
         match="method must be",
     ):
-        pm.alergia(
+        pl.alergia(
             simple_pta.transition_matrix,
             simple_pta.states,
             simple_pta.alphabet,
@@ -186,7 +186,7 @@ def test_alergia_raises_for_invalid_alpha_less_than_or_equal_to_zero(simple_pta)
         ValueError,
         match="alpha must be in",
     ):
-        pm.alergia(
+        pl.alergia(
             simple_pta.transition_matrix,
             simple_pta.states,
             simple_pta.alphabet,
@@ -199,7 +199,7 @@ def test_alergia_raises_for_invalid_alpha_greater_than_two(simple_pta):
         ValueError,
         match="alpha must be in",
     ):
-        pm.alergia(
+        pl.alergia(
             simple_pta.transition_matrix,
             simple_pta.states,
             simple_pta.alphabet,
@@ -222,7 +222,7 @@ def test_alergia_prints_next_pair_of_states(
         lambda *args, **kwargs: False,
     )
 
-    final_matrix, final_states, tracking = pm.alergia(
+    final_matrix, final_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -255,7 +255,7 @@ def test_alergia_prints_iteration_number(
         lambda *args, **kwargs: False,
     )
 
-    final_matrix, final_states, tracking = pm.alergia(
+    final_matrix, final_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -298,7 +298,7 @@ def test_alergia_prints_when_hoeffding_bound_is_satisfied(
         ),
     )
 
-    final_matrix, final_states, tracking = pm.alergia(
+    final_matrix, final_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -345,7 +345,7 @@ def test_alergia_prints_successful_recursive_merge(
         ),
     )
 
-    final_matrix, final_states, tracking = pm.alergia(
+    final_matrix, final_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -390,7 +390,7 @@ def test_alergia_prints_failed_recursive_merge(
         ),
     )
 
-    final_matrix, final_states, tracking = pm.alergia(
+    final_matrix, final_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -425,7 +425,7 @@ def test_alergia_prints_when_hoeffding_bound_is_not_satisfied(
         lambda *args, **kwargs: False,
     )
 
-    final_matrix, final_states, tracking = pm.alergia(
+    final_matrix, final_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -473,7 +473,7 @@ def test_alergia_higuera_prints_iteration_number(
         lambda *args, **kwargs: False,
     )
 
-    final_matrix, final_states, tracking = pm.alergia(
+    final_matrix, final_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -530,7 +530,7 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_satisfied(
         ),
     )
 
-    final_matrix, final_states, tracking = pm.alergia(
+    final_matrix, final_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -591,7 +591,7 @@ def test_alergia_higuera_prints_successful_recursive_merge(
         ),
     )
 
-    final_matrix, final_states, tracking = pm.alergia(
+    final_matrix, final_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -639,7 +639,7 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_not_satisfied(
         lambda *args, **kwargs: False,
     )
 
-    final_matrix, final_states, tracking = pm.alergia(
+    final_matrix, final_states, tracking = pl.alergia(
         transition_matrix,
         states,
         alphabet,
@@ -660,7 +660,7 @@ def test_alergia_higuera_prints_when_hoeffding_bound_is_not_satisfied(
 
 
 def test_alergia_simple_example(simple_pta):
-    obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
+    obtained_matrix, obtained_states, obtained_tracking = pl.alergia(
         simple_pta.transition_matrix, simple_pta.states, simple_pta.alphabet, 0.2
     )
     expected_matrix = np.array(
@@ -710,7 +710,7 @@ def test_alergia_simple_example(simple_pta):
 
 
 def test_alergia_arnolds_example_alpha_point_two(arnolds_example):
-    obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
+    obtained_matrix, obtained_states, obtained_tracking = pl.alergia(
         arnolds_example.transition_matrix,
         arnolds_example.states,
         arnolds_example.alphabet,
@@ -757,7 +757,7 @@ def test_alergia_arnolds_example_alpha_point_two(arnolds_example):
 
 
 def test_alergia_arnolds_example_alpha_point_nine_carrasco(arnolds_example):
-    obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
+    obtained_matrix, obtained_states, obtained_tracking = pl.alergia(
         arnolds_example.transition_matrix,
         arnolds_example.states,
         arnolds_example.alphabet,
@@ -807,7 +807,7 @@ def test_alergia_arnolds_example_alpha_point_nine_carrasco(arnolds_example):
 
 
 def test_alergia_arnolds_example_alpha_point_nine_higuera(arnolds_example):
-    obtained_matrix, obtained_states, obtained_tracking = pm.alergia(
+    obtained_matrix, obtained_states, obtained_tracking = pl.alergia(
         arnolds_example.transition_matrix,
         arnolds_example.states,
         arnolds_example.alphabet,

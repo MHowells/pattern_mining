@@ -1,5 +1,5 @@
 """
-Basic usage example for the pattern-mining package.
+Basic usage example for the pdfa-learning package.
 
 This script demonstrates how to construct a prefix tree acceptor from 
 observed sequences, learn a deterministic finite automaton 
@@ -7,7 +7,7 @@ using ALERGIA, and convert the learned transition-count matrix into a
 probability transition matrix.
 """
 
-import pattern_mining as pm
+import pdfa_learning as pl
 
 
 sequences = [
@@ -19,15 +19,15 @@ sequences = [
     "1", "1", "1"
 ]
 
-alphabet = pm.get_alphabet(sequences)
-states = pm.get_initial_states(sequences) 
+alphabet = pl.get_alphabet(sequences)
+states = pl.get_initial_states(sequences) 
 
-pathway_matrix = pm.get_transition_matrix(
+pathway_matrix = pl.get_transition_matrix(
     sequences, 
     alphabet, 
 )
 
-learned_matrix, learned_states, tracking = pm.alergia(
+learned_matrix, learned_states, tracking = pl.alergia(
     pathway_matrix,
     states,
     alphabet,
@@ -35,7 +35,7 @@ learned_matrix, learned_states, tracking = pm.alergia(
     method="carrasco",
 )
 
-probability_matrix = pm.probability_transition_matrix(
+probability_matrix = pl.probability_transition_matrix(
     learned_matrix,
     learned_states,
     alphabet,

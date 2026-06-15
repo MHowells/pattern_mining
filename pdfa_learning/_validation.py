@@ -1,5 +1,5 @@
 """
-Internal validation utilities for the pattern-mining package.
+Internal validation utilities for the pdfa-learning package.
 
 This module centralises validation of observed sequences, alphabets,
 transition-count matrices, ALERGIA significance parameters, and state

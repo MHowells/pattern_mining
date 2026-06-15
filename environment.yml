@@ -1,4 +1,4 @@
-name: pattern-mining
+name: pdfa-learning
 channels:
   - defaults
   - conda-forge

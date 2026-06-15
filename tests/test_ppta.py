@@ -1,5 +1,5 @@
 import numpy as np
-import pattern_mining as pm
+import pdfa_learning as pl
 import pytest
 
 
@@ -8,7 +8,7 @@ def test_validate_sequences_raises_for_none():
         TypeError,
         match="sequences must be an iterable of strings",
     ):
-        pm._validate_sequences(None)
+        pl._validate_sequences(None)
 
 
 def test_validate_sequences_raises_for_single_string():
@@ -16,7 +16,7 @@ def test_validate_sequences_raises_for_single_string():
         TypeError,
         match="sequences must be an iterable of strings",
     ):
-        pm._validate_sequences("ABC")
+        pl._validate_sequences("ABC")
 
 
 def test_validate_sequences_raises_for_empty_sequences():
@@ -24,7 +24,7 @@ def test_validate_sequences_raises_for_empty_sequences():
         ValueError,
         match="sequences must contain at least one sequence",
     ):
-        pm._validate_sequences([])
+        pl._validate_sequences([])
 
 
 @pytest.mark.parametrize(
@@ -42,7 +42,7 @@ def test_validate_sequences_raises_for_non_string_sequences(
         TypeError,
         match="every sequence must be a string",
     ):
-        pm._validate_sequences(invalid_sequences)
+        pl._validate_sequences(invalid_sequences)
 
 
 def test_validate_alphabet_raises_for_none():
@@ -50,7 +50,7 @@ def test_validate_alphabet_raises_for_none():
         TypeError,
         match="alphabet must be an iterable of strings",
     ):
-        pm._validate_alphabet(None)
+        pl._validate_alphabet(None)
 
 
 def test_validate_alphabet_raises_for_single_string():
@@ -58,7 +58,7 @@ def test_validate_alphabet_raises_for_single_string():
         TypeError,
         match="alphabet must be an iterable of strings",
     ):
-        pm._validate_alphabet("ABC")
+        pl._validate_alphabet("ABC")
 
 
 def test_validate_alphabet_raises_for_empty_alphabet():
@@ -66,7 +66,7 @@ def test_validate_alphabet_raises_for_empty_alphabet():
         ValueError,
         match="alphabet must contain at least one symbol",
     ):
-        pm._validate_alphabet([])
+        pl._validate_alphabet([])
 
 
 @pytest.mark.parametrize(
@@ -84,7 +84,7 @@ def test_validate_alphabet_raises_for_non_string_symbols(
         TypeError,
         match="every alphabet symbol must be a string",
     ):
-        pm._validate_alphabet(invalid_alphabet)
+        pl._validate_alphabet(invalid_alphabet)
 
 
 @pytest.mark.parametrize(
@@ -101,7 +101,7 @@ def test_validate_alphabet_raises_for_non_single_character_symbols(
         ValueError,
         match="every alphabet symbol must contain exactly one character.",
     ):
-        pm._validate_alphabet(invalid_alphabet_sizes)
+        pl._validate_alphabet(invalid_alphabet_sizes)
 
 
 def test_validate_alphabet_raises_for_duplicate_symbols():
@@ -109,11 +109,11 @@ def test_validate_alphabet_raises_for_duplicate_symbols():
         ValueError,
         match="alphabet must not contain duplicate symbols",
     ):
-        pm._validate_alphabet(["A", "B", "A"])
+        pl._validate_alphabet(["A", "B", "A"])
 
 
 def test_validate_alphabet_returns_validated_alphabet():
-    obtained = pm._validate_alphabet(("A", "B", "C"))
+    obtained = pl._validate_alphabet(("A", "B", "C"))
 
     expected = ["A", "B", "C"]
 
@@ -121,13 +121,13 @@ def test_validate_alphabet_returns_validated_alphabet():
 
 
 def test_get_alphabet_simple_example(simple_pta):
-    obtained_alphabet = pm.get_alphabet(simple_pta.sequences)
+    obtained_alphabet = pl.get_alphabet(simple_pta.sequences)
     expected_alphabet = simple_pta.alphabet
     assert obtained_alphabet == expected_alphabet
 
 
 def test_get_alphabet_arnolds_example(arnolds_example):
-    obtained_alphabet = pm.get_alphabet(arnolds_example.sequences)
+    obtained_alphabet = pl.get_alphabet(arnolds_example.sequences)
     expected_alphabet = arnolds_example.alphabet
     assert obtained_alphabet == expected_alphabet
 
@@ -137,23 +137,23 @@ def test_get_state_paths_raises_for_invalid_build(simple_pta):
         ValueError,
         match="build must be either 'breadth' or 'depth'.",
     ):
-        pm.get_state_paths(
+        pl.get_state_paths(
             simple_pta.sequences,
             build="invalid",
         )
 
 
 def test_get_state_paths_simple_example(simple_pta):
-    obtained_state_paths_breadth = pm.get_state_paths(simple_pta.sequences, "breadth")
+    obtained_state_paths_breadth = pl.get_state_paths(simple_pta.sequences, "breadth")
     expected_state_paths_breadth = ["", "0", "1", "01", "10", "11", "12"]
-    obtained_state_paths_depth = pm.get_state_paths(simple_pta.sequences, "depth")
+    obtained_state_paths_depth = pl.get_state_paths(simple_pta.sequences, "depth")
     expected_state_paths_depth = ["", "0", "1", "01", "10", "11", "12"]
     assert obtained_state_paths_breadth == expected_state_paths_breadth
     assert obtained_state_paths_depth == expected_state_paths_depth
 
 
 def test_get_state_paths_arnolds_example(arnolds_example):
-    obtained_state_paths_breadth = pm.get_state_paths(
+    obtained_state_paths_breadth = pl.get_state_paths(
         arnolds_example.sequences, "breadth"
     )
     expected_state_paths_breadth = [
@@ -172,7 +172,7 @@ def test_get_state_paths_arnolds_example(arnolds_example):
         "BAA",
         "BCA",
     ]
-    obtained_state_paths_depth = pm.get_state_paths(arnolds_example.sequences, "depth")
+    obtained_state_paths_depth = pl.get_state_paths(arnolds_example.sequences, "depth")
     expected_state_paths_depth = [
         "",
         "A",
@@ -201,14 +201,14 @@ def test_get_transition_matrix_raises_when_alphabet_is_missing_symbols():
         ValueError,
         match="alphabet is missing symbols found in sequences",
     ):
-        pm.get_transition_matrix(
+        pl.get_transition_matrix(
             sequences,
             alphabet,
         )
 
 
 def test_get_transition_matrix_simple_example(simple_pta):
-    obtained_transition_matrix = pm.get_transition_matrix(
+    obtained_transition_matrix = pl.get_transition_matrix(
         simple_pta.sequences, simple_pta.alphabet
     )
     expected_transition_matrix = np.array(
@@ -249,7 +249,7 @@ def test_get_transition_matrix_simple_example(simple_pta):
 
 
 def test_get_transition_matrix_arnolds_example(arnolds_example):
-    obtained_transition_matrix = pm.get_transition_matrix(
+    obtained_transition_matrix = pl.get_transition_matrix(
         arnolds_example.sequences, arnolds_example.alphabet
     )
     expected_transition_matrix = np.array(
@@ -311,12 +311,12 @@ def test_get_transition_matrix_arnolds_example(arnolds_example):
 
 
 def test_get_initial_states_simple_example(simple_pta):
-    obtained_states = pm.get_initial_states(simple_pta.sequences)
+    obtained_states = pl.get_initial_states(simple_pta.sequences)
     expected_states = ["*", 0, 1, 2, 3, 4, 5, 6]
     assert obtained_states == expected_states
 
 
 def test_get_initial_states_arnolds_example(arnolds_example):
-    obtained_states = pm.get_initial_states(arnolds_example.sequences)
+    obtained_states = pl.get_initial_states(arnolds_example.sequences)
     expected_states = ["*", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     assert obtained_states == expected_states

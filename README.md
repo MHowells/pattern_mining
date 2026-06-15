@@ -1,4 +1,4 @@
-# pattern-mining
+# pdfa-learning
 
 This repository contains code for running the grammatical inference algorithm 
 ALERGIA for sequential pattern mining. It includes functions for constructing 
@@ -59,18 +59,18 @@ sequences = [
 
 We can derive the following PTA from this data:
 
-![example_ppta](https://github.com/MHowells/pattern_mining/blob/main/figs/example_pta.svg)
+![example_ppta](https://github.com/MHowells/pdfa_learning/blob/main/figs/example_pta.svg)
 
 The alphabet, states, and transition-count matrix for this PTA can be
 constructed directly from the sequences:
 
 ```python
-import pattern_mining as pm
+import pdfa_learning as pl
 
-alphabet = pm.get_alphabet(sequences) 
-states = pm.get_initial_states(sequences) 
+alphabet = pl.get_alphabet(sequences) 
+states = pl.get_initial_states(sequences) 
 
-pathway_matrix = pm.get_transition_matrix(
+pathway_matrix = pl.get_transition_matrix(
     sequences, 
     alphabet, 
 )
@@ -150,7 +150,7 @@ The transition-count matrix can be passed to `alergia()` to learn a smaller
 DFA:
 
 ```python
-learned_matrix, learned_states, tracking = pm.alergia(
+learned_matrix, learned_states, tracking = pl.alergia(
     pathway_matrix,
     states,
     alphabet,
@@ -218,7 +218,7 @@ The learned transition-count matrix (DFA) can be converted into a probability
 transition matrix, or PDFA:
 
 ```python
-probability_matrix = pm.probability_transition_matrix(
+probability_matrix = pl.probability_transition_matrix(
     learned_matrix,
     learned_states,
     alphabet,
@@ -226,18 +226,18 @@ probability_matrix = pm.probability_transition_matrix(
 ```
 
 The probability matrix can then be used by the pattern and sequence probability 
-functions contained in `pattern_mining.py`.
+functions contained in `pdfa_learning.py`.
 
 For example:
 
 ```python
-pattern_probability = pm.probability_estimate_of_pattern(
+pattern_probability = pl.probability_estimate_of_pattern(
     probability_matrix,
     pattern="01",
     alphabet=alphabet,
 )
 
-sequence_probability = pm.probability_estimate_of_exact_sequence(
+sequence_probability = pl.probability_estimate_of_exact_sequence(
     probability_matrix,
     sequence="01",
     alphabet=alphabet,
@@ -256,7 +256,7 @@ Run the tests with statement and branch coverage using:
 
 ```bash
 python -m pytest \
-    --cov=pattern_mining \
+    --cov=pdfa_learning \
     --cov-branch \
     --cov-report=term-missing
 ```
