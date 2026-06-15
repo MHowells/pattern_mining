@@ -195,7 +195,8 @@ present in the original prefix tree.
 
 The appropriate value of alpha is application dependent and may be selected 
 by comparing the resulting automata using validation data or other 
-model selection criteria.
+model selection criteria. Users may wish to use some of the evaluation 
+functions contained in `evaluation.py` for this purpose.
 
 ### Controlling Print Output
 
