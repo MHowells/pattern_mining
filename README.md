@@ -73,7 +73,7 @@ sequences = [
 
 We can derive the following PTA from this data:
 
-![example_ppta](https://github.com/MHowells/pdfa_learning/blob/main/figs/example_pta.svg)
+![example_ppta](https://github.com/MHowells/pdfa-learning/blob/main/figs/example_pta.svg)
 
 The alphabet, states, and transition-count matrix for this PTA can be
 constructed directly from the sequences:
