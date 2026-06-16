@@ -222,10 +222,16 @@ def network_visualisation(
                         destination_index,
                     ]
 
-                    if probabilities:
-                        edge_label = f"{symbol}: {label_value:.2f}"
+                    if source_state == "*":
+                        if probabilities:
+                            edge_label = f"{label_value:.2f}"
+                        else:
+                            edge_label = str(label_value)
                     else:
-                        edge_label = f"{symbol}: {label_value}"
+                        if probabilities:
+                            edge_label = f"{symbol}: {label_value:.2f}"
+                        else:
+                            edge_label = f"{symbol}: {label_value}"
 
                     dot.edge(
                         str(source_state),
