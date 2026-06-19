@@ -53,6 +53,11 @@ dependencies by running the following command:
 Note that the visualisation functions require Graphviz to be installed on your
 system. 
 
+To install the pdfa_learning package, run the following command from the root
+directory of the repository:
+
+    $ pip install -e .
+
 ## Input data
 
 The initial data is provided as a list of sequences. Each character in a 
