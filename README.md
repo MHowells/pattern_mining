@@ -298,7 +298,7 @@ python -m pytest \
 - Matthew Howells: [0000-0002-3931-7027](https://orcid.org/0000-0002-3931-7027)
 - Paul Harper: [0000-0001-7894-4907](https://orcid.org/0000-0001-7894-4907)
 - Daniel Gartner: [0000-0003-4361-8559](https://orcid.org/0000-0003-4361-8559)
-- Geraint Palmer: [0000-0001-7865-6964](https://orcid.org/0000-0001-7865-6964)
+- Geraint Palmer-Liyu: [0000-0001-7865-6964](https://orcid.org/0000-0001-7865-6964)
 
 ## Funding 
 
