@@ -25,6 +25,11 @@ authors:
     email: PalmerGI1@cardiff.ac.uk
     affiliation: Cardiff University
     orcid: 'https://orcid.org/0000-0001-7865-6964'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.20932563
+  - type: url
+    value: 'https://github.com/MHowells/pdfa-learning'
 repository-code: 'https://github.com/MHowells/pdfa-learning'
 keywords:
   - automata
@@ -33,3 +38,5 @@ keywords:
   - machine learning
   - pattern mining
 license: MIT
+version: 1.0.0
+date-released: '2026-06-26'

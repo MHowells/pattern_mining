@@ -1,5 +1,7 @@
 # pdfa-learning
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20932562.svg)](https://doi.org/10.5281/zenodo.20932562)
+
 This repository contains code for running the grammatical inference algorithm 
 ALERGIA for sequential pattern mining. It includes functions for constructing 
 prefix-tree acceptors (PTAs) and probabilistic prefix-tree acceptors (PPTAs), 
@@ -350,6 +352,30 @@ This code is funded by an Engineering and Physical Sciences Research Council
 (EPSRC) Enhanced CASE PhD Studentship with Cardiff and Vale University Health 
 Board as the project partner (Project reference: 2601327, in relation to 
 EP/T517951/1).
+
+## Citation
+
+If you use `pdfa-learning` in your research, please cite the software as:
+
+> Howells, M., Harper, P., Gartner, D., & Palmer-Liyu, G. (2026). *pdfa_learning* (v.1.0.0). Zenodo. https://doi.org/10.5281/zenodo.20932563
+
+Citation metadata are also available in [`CITATION.cff`](CITATION.cff).
+
+```bibtex
+@software{howells_2026_20932563,
+  author       = {Howells, Matthew and
+                  Harper, Paul and
+                  Gartner, Daniel and
+                  Palmer-Liyu, Geraint},
+  title        = {pdfa\_learning},
+  month        = jun,
+  year         = 2026,
+  publisher    = {Zenodo},
+  version      = {v.1.0.0},
+  doi          = {10.5281/zenodo.20932563},
+  url          = {https://doi.org/10.5281/zenodo.20932563},
+}
+```
 
 ## References
 <a id="1">[1]</a> 
