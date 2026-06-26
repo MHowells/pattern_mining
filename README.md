@@ -30,8 +30,12 @@ the `de_la_higuera` approach is cheaper to compute.
 
 ## Installing Dependencies
 
-The codebase has been tested with Python 3.9.22, with the requirements 
+The codebase has been tested with Python 3.11.1, with the requirements 
 specified in `requirements.txt`.
+
+Please note, the visualisation functions require GraphViz to be installed
+on your system in addition to the Python dependencies. You can install the
+software from the [GraphViz website](https://graphviz.org/download/).
 
 To create a virtual environment:
 
@@ -50,14 +54,6 @@ dependencies by running the following command:
 
     $ conda env create --file environment.yml
 
-Note that the visualisation functions require Graphviz to be installed on your
-system. 
-
-To install the pdfa_learning package, run the following command from the root
-directory of the repository:
-
-    $ pip install -e .
-
 ## Input data
 
 The initial data is provided as a list of sequences. Each character in a 
@@ -67,16 +63,17 @@ For example, given the following list of sequences:
 
 ```python
 sequences = [
-    "0", "0", "0", "0", "0", "0", "0", "0", 
-    "01", "01", "01", "01", "01", "01", "01", 
-    "10", "10", "10", "10", "10", 
-    "11", "11", "11", "11", "11", 
-    "12", "12", 
-    "1", "1", "1"
+    "A", "A", "A", "A", "A", "A", "A", "A", 
+    "AB", "AB", "AB", "AB", "AB", "AB", "AB", 
+    "BA", "BA", "BA", "BA", "BA", 
+    "BB", "BB", "BB", "BB", "BB", 
+    "BC", "BC", 
+    "B", "B", "B",
 ]
 ```
 
-We can derive the following PTA from this data:
+These sequences can be used to construct the following 
+prefix-tree acceptor (PTA):
 
 ![example_ppta](https://github.com/MHowells/pdfa-learning/blob/main/figs/example_pta.svg)
 
@@ -162,6 +159,25 @@ np.array([
     ]
 ])
 ```
+
+Now that the transition-count matrix has been constructed, it can be 
+visualised as the above PTA using the following function:
+
+```python
+pl.network_visualisation(
+    transition_matrix, 
+    states, alphabet, 
+    filename="figs/example_pta", 
+    save=True, 
+    probabilities=False, 
+    graph_format="svg",
+)
+```
+
+Note here we have set `probabilities=False` to visualise the transition
+counts rather than the transition probabilities. Setting `probabilities=True` 
+would instead represent the transition probabilities, and hence a 
+Probabilistic Prefix Tree Acceptor (PPTA).
 
 ## Running ALERGIA
 
@@ -263,6 +279,29 @@ sequence_probability = pl.probability_estimate_of_exact_sequence(
     alphabet=alphabet,
 )
 ```
+
+## Visualising the PDFA
+
+Similar to the PTA visualisation, the learned PDFA can be visualised using
+the `network_visualisation()` function. Note the final transition-count
+matrix is passed to the function, but the `probabilities` parameter is set to
+`True`.
+
+```python
+pl.network_visualisation(
+    learned_matrix, 
+    learned_states, 
+    alphabet, 
+    filename="figs/example_pdfa", 
+    save=True, 
+    probabilities=True, 
+    graph_format="svg",
+)
+```
+
+This produces the following PDFA:
+
+![example_pdfa](https://github.com/MHowells/pdfa-learning/blob/main/figs/example_pdfa.svg)
 
 ## Examples and tutorials
 
