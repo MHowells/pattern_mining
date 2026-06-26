@@ -95,7 +95,7 @@ transition_matrix = pl.get_transition_matrix(
 For this example, the alphabet (or actions) is:
 
 ```python 
-["0", "1", "2"] 
+["A", "B", "C"] 
 ```
 
 The state list contains seven prefix states along with the artificial starting
@@ -116,10 +116,10 @@ transition_matrix[0, 1, 2]
 ```
 
 contains the number of transitions from state `0` to state `1` using 
-symbol `"0"`.
+symbol `"A"`.
 
 Note that the transition from the starting state `"*"` is stored in the first
-alphabet layer of the matrix, here, `'0'`. This is not true and does not 
+alphabet layer of the matrix, here, `'A'`. This is not true and does not 
 represent a genuine emitted symbol, but has no effect on the results of the 
 algorithm.
 
